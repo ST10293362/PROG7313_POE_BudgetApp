@@ -37,28 +37,28 @@ class LoginActivity : AppCompatActivity() {
             loginUser (email, password)
         }
 
-        // Set up the register text view click listener
+
         registerTextView.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
     }
 
     private fun loginUser (email: String, password: String) {
-        // Show loading indicator
+
         loadingIndicator.visibility = ProgressBar.VISIBLE
 
-        // Sign in with Firebase Auth
+
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
-                // Hide loading indicator
+
                 loadingIndicator.visibility = ProgressBar.GONE
 
                 if (task.isSuccessful) {
-                    // Login success, navigate to HomeActivity
+
                     startActivity(Intent(this, HomeActivity::class.java))
-                    finish() // Close the LoginActivity
+                    finish()
                 } else {
-                    // If sign in fails, display a message to the user
+
                     handleLoginError(task.exception)
                 }
             }

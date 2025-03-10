@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
@@ -13,22 +14,29 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_loading)
+        setContentView(R.layout.activity_main)
 
         loadingText = findViewById(R.id.loadingText)
 
-        // Load the animation
         val animation = AnimationUtils.loadAnimation(this, R.anim.typewriter_animation)
 
-        // Start the animation
+
         loadingText.visibility = View.VISIBLE
         loadingText.startAnimation(animation)
 
-        // Simulate loading time
-        Handler().postDelayed({
-            // After loading, navigate to the main screen
-            startActivity(Intent(this, HomeActivity::class.java))
+        val loginButton = findViewById<Button>(R.id.loginButton)
+        val registerButton = findViewById<Button>(R.id.registerButton)
+
+        loginButton.setOnClickListener {
+            val login = Intent(this, LoginActivity::class.java)
+            startActivity(login)
             finish()
-        }, 3000) // 3 seconds delay
+        }
+
+        registerButton.setOnClickListener {
+            val register = Intent(this, RegisterActivity::class.java)
+            startActivity(register)
+            finish()
+        }
     }
 }
