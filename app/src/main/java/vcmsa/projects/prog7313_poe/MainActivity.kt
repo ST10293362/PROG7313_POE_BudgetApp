@@ -29,13 +29,13 @@ class MainActivity : AppCompatActivity() {
         loginButton.setOnClickListener {
             val login = Intent(this, LoginActivity::class.java)
             startActivity(login)
-            finish()
+
         }
 
         registerButton.setOnClickListener {
             val register = Intent(this, RegisterActivity::class.java)
             startActivity(register)
-            finish()
+            
         }
     }
 }
