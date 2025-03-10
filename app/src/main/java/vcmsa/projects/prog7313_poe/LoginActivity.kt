@@ -55,7 +55,7 @@ class LoginActivity : AppCompatActivity() {
 
                 if (task.isSuccessful) {
 
-                    startActivity(Intent(this, HomeActivity::class.java))
+                    startActivity(Intent(this, MainActivity::class.java))
                     finish()
                 } else {
 

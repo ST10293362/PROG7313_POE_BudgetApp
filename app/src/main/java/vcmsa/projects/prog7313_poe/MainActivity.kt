@@ -16,7 +16,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        loadingText = findViewById(R.id.loadingText)
 
         val animation = AnimationUtils.loadAnimation(this, R.anim.typewriter_animation)
 
