@@ -20,23 +20,22 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Initialize Firebase Auth
+
         auth = FirebaseAuth.getInstance()
 
-        // Find views by ID
+
         emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
         loadingIndicator = findViewById(R.id.loadingIndicator)
         val loginButton = findViewById<Button>(R.id.loginButton)
         val registerTextView = findViewById<TextView>(R.id.registerTextView)
 
-        // Set up the login button click listener
+
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
             loginUser (email, password)
         }
-
 
         registerTextView.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
@@ -44,21 +43,20 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun loginUser (email: String, password: String) {
-
         loadingIndicator.visibility = ProgressBar.VISIBLE
-
 
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
-
                 loadingIndicator.visibility = ProgressBar.GONE
 
                 if (task.isSuccessful) {
-
-                    startActivity(Intent(this, MainActivity::class.java))
+                    // Navigate to DashboardActivity
+                    val userEmail = auth.currentUser ?.email
+                    val intent = Intent(this, DashboardActivity::class.java)
+                    intent.putExtra("USER_EMAIL", userEmail)
+                    startActivity(intent)
                     finish()
                 } else {
-
                     handleLoginError(task.exception)
                 }
             }

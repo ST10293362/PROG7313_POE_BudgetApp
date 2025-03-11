@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -14,19 +13,25 @@
         tools:targetApi="31">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".LoadingActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="vcmsa.projects.prog7313_poe.LoginActivity"/>
-        <activity android:name="vcmsa.projects.prog7313_poe.RegisterActivity"/>
 
-        <activity android:name="vcmsa.projects.prog7313_poe.PasswordResetActivity"/>
-
-
+        <activity
+            android:name=".DashboardActivity"
+            android:exported="true" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true" />
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="true" />
+        <activity
+            android:name=".PasswordResetActivity"
+            android:exported="true" />
     </application>
-
 </manifest>
