@@ -18,7 +18,7 @@ class DashboardActivity : AppCompatActivity() {
         logoutButton = findViewById(R.id.logoutButton)
         welcomeTextView = findViewById(R.id.welcomeTextView)
 
-        // Display a welcome message
+
         val userEmail = intent.getStringExtra("USER_EMAIL") ?: "User "
         welcomeTextView.text = "Welcome, $userEmail!"
 

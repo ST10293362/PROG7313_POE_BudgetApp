@@ -7,6 +7,7 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat.FontCallback.getHandler
 import com.google.firebase.auth.FirebaseAuth
 
 class LoadingActivity : AppCompatActivity() {
@@ -21,7 +22,7 @@ class LoadingActivity : AppCompatActivity() {
         loadingText.startAnimation(animation)
         loadingText.visibility = View.VISIBLE
 
-        Handler().postDelayed({
+
             val auth = FirebaseAuth.getInstance()
             if (auth.currentUser  != null) {
 
@@ -33,6 +34,6 @@ class LoadingActivity : AppCompatActivity() {
                 startActivity(Intent(this, LoginActivity::class.java))
             }
             finish()
-        }, 3000)
+
     }
 }
