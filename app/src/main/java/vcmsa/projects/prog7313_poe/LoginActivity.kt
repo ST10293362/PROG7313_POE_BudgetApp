@@ -30,6 +30,7 @@ class LoginActivity : AppCompatActivity() {
 
             if (email.isNotEmpty() && password.isNotEmpty()) {
                 loadingIndicator.visibility = ProgressBar.VISIBLE
+
                 loadingIndicator.postDelayed({
                     loadingIndicator.visibility = ProgressBar.GONE
                     val intent = Intent(this, DashboardActivity::class.java)
