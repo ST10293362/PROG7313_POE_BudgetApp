@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
 
 class DashboardActivity : AppCompatActivity() {
     private lateinit var logoutButton: Button
@@ -18,11 +17,12 @@ class DashboardActivity : AppCompatActivity() {
         logoutButton = findViewById(R.id.logoutButton)
         welcomeTextView = findViewById(R.id.welcomeTextView)
 
+
         val userEmail = intent.getStringExtra("USER_EMAIL") ?: "User "
         welcomeTextView.text = "Welcome, $userEmail!"
 
         logoutButton.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()
+            // Navigate back to LoginActivity
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }

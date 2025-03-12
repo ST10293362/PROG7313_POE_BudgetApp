@@ -6,7 +6,6 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.*
 
 class LoadingActivity : AppCompatActivity() {
@@ -21,18 +20,10 @@ class LoadingActivity : AppCompatActivity() {
         loadingText.startAnimation(animation)
         loadingText.visibility = View.VISIBLE
 
-        val auth = FirebaseAuth.getInstance()
-
 
         CoroutineScope(Dispatchers.Main).launch {
             delay(3000)
-            if (auth.currentUser  != null) {
-                val intent = Intent(this@LoadingActivity, DashboardActivity::class.java)
-                intent.putExtra("USER_EMAIL", auth.currentUser ?.email)
-                startActivity(intent)
-            } else {
-                startActivity(Intent(this@LoadingActivity, LoginActivity::class.java))
-            }
+            startActivity(Intent(this@LoadingActivity, LoginActivity::class.java))
             finish()
         }
     }

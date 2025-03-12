@@ -8,10 +8,8 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
-    private lateinit var auth: FirebaseAuth
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var loadingIndicator: ProgressBar
@@ -20,7 +18,6 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        auth = FirebaseAuth.getInstance()
         emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
         loadingIndicator = findViewById(R.id.loadingIndicator)
@@ -30,40 +27,23 @@ class LoginActivity : AppCompatActivity() {
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
-            loginUser (email, password)
+
+            if (email.isNotEmpty() && password.isNotEmpty()) {
+                loadingIndicator.visibility = ProgressBar.VISIBLE
+                loadingIndicator.postDelayed({
+                    loadingIndicator.visibility = ProgressBar.GONE
+                    val intent = Intent(this, DashboardActivity::class.java)
+                    intent.putExtra("USER_EMAIL", email)
+                    startActivity(intent)
+                    finish()
+                }, 2000)
+            } else {
+                Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
+            }
         }
 
         registerTextView.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
-    }
-
-    private fun loginUser (email: String, password: String) {
-        loadingIndicator.visibility = ProgressBar.VISIBLE
-
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                loadingIndicator.visibility = ProgressBar.GONE
-
-                if (task.isSuccessful) {
-                    val userEmail = auth.currentUser ?.email
-                    val intent = Intent(this, DashboardActivity::class.java)
-                    intent.putExtra("USER_EMAIL", userEmail)
-                    startActivity(intent)
-                    finish()
-                } else {
-                    handleLoginError(task.exception)
-                }
-            }
-    }
-
-    private fun handleLoginError(exception: Exception?) {
-        val errorMessage = when {
-            exception?.message?.contains("no user record") == true -> "No account found with this email."
-            exception?.message?.contains("wrong password") == true -> "Incorrect password. Please try again."
-            exception?.message?.contains("invalid email") == true -> "Invalid email format."
-            else -> "Login failed. Please try again."
-        }
-        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
     }
 }

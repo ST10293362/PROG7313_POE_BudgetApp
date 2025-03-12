@@ -36,20 +36,14 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
-    implementation(platform("com.google.firebase:firebase-bom:31.0.0"))
-    implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.android.material:material:1.6.1")
-
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
-
+    // Remove Firebase dependencies
+    // Keep only necessary dependencies for UI
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
