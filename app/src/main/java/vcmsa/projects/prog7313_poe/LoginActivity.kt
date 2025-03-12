@@ -20,16 +20,12 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-
         auth = FirebaseAuth.getInstance()
-
-
         emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
         loadingIndicator = findViewById(R.id.loadingIndicator)
         val loginButton = findViewById<Button>(R.id.loginButton)
         val registerTextView = findViewById<TextView>(R.id.registerTextView)
-
 
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
@@ -50,7 +46,6 @@ class LoginActivity : AppCompatActivity() {
                 loadingIndicator.visibility = ProgressBar.GONE
 
                 if (task.isSuccessful) {
-                    // Navigate to DashboardActivity
                     val userEmail = auth.currentUser ?.email
                     val intent = Intent(this, DashboardActivity::class.java)
                     intent.putExtra("USER_EMAIL", userEmail)
