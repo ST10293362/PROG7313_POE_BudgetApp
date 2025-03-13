@@ -27,7 +27,8 @@
             android:layout_marginBottom="20dp"
             android:text="Log In"
             android:textColor="#58bc82"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            tools:ignore="HardcodedText"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -39,7 +40,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Email"
-                android:inputType="textEmailAddress" />
+                android:inputType="textEmailAddress"
+                tools:ignore="HardcodedText,TextContrastCheck" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -52,7 +54,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Password"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:textColorHint="#9E9E9E"
+                tools:ignore="HardcodedText,TextContrastCheck" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
@@ -62,7 +66,8 @@
             android:layout_gravity="end"
             android:layout_marginBottom="20dp"
             android:text="Forgot password?"
-            android:textColor="#58bc82" />
+            android:textColor="#58bc82"
+            tools:ignore="HardcodedText"/>
 
         <Button
             android:id="@+id/loginButton"
@@ -71,7 +76,8 @@
             android:layout_marginBottom="10dp"
             android:backgroundTint="#58bc82"
             android:text="Log In"
-            android:textColor="#FFFFFF" />
+            android:textColor="#4E342E"
+            tools:ignore="HardcodedText,DuplicateSpeakableTextCheck,VisualLintButtonSize" />
 
         <TextView
             android:id="@+id/registerTextView"
@@ -79,7 +85,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Don't have an account? Sign up"
-            android:textColor="#58bc82" />
+            android:textColor="#58bc82"
+            tools:ignore="HardcodedText"/>
 
         <ProgressBar
             android:id="@+id/loadingIndicator"

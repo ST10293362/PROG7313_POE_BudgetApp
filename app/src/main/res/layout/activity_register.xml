@@ -19,7 +19,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="TextSizeCheck">
 
         <TextView
             android:layout_width="wrap_content"
@@ -28,7 +29,8 @@
             android:layout_marginBottom="20dp"
             android:text="Register"
             android:textColor="#58bc82"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            tools:ignore="HardcodedText" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -40,7 +42,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="First Name"
-                android:inputType="text" />
+                android:inputType="text"
+                tools:ignore="HardcodedText" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -53,7 +56,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Last Name"
-                android:inputType="text" />
+                android:inputType="text"
+                tools:ignore="HardcodedText" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -66,7 +70,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Email"
-                android:inputType="textEmailAddress" />
+                android:inputType="textEmailAddress"
+                tools:ignore="HardcodedText" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -79,7 +84,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Password"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                tools:ignore="HardcodedText" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -92,7 +98,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Confirm Password"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                tools:ignore="HardcodedText" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
@@ -102,7 +109,8 @@
             android:layout_marginBottom="10dp"
             android:backgroundTint="#58bc82"
             android:text="Register"
-            android:textColor="#FFFFFF" />
+            android:textColor="#4E342E"
+            tools:ignore="HardcodedText,DuplicateSpeakableTextCheck,VisualLintButtonSize" />
 
         <TextView
             android:id="@+id/signInTextView"
@@ -110,7 +118,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Already have an account? Sign in"
-            android:textColor="#58bc82" />
+            android:textColor="#58bc82"
+            tools:ignore="HardcodedText" />
 
         <ProgressBar
             android:id="@+id/loadingIndicator"
