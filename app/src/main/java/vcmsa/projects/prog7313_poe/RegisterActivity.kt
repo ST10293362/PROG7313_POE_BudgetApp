@@ -22,6 +22,7 @@ class RegisterActivity : AppCompatActivity() {
         passwordEditText = findViewById(R.id.passwordEditText)
         loadingIndicator = findViewById(R.id.loadingIndicator)
         val registerButton = findViewById<Button>(R.id.registerButton)
+        val signInTextView = findViewById<TextView>(R.id.signInTextView)
 
         registerButton.setOnClickListener {
             val email = emailEditText.text.toString()
@@ -38,6 +39,10 @@ class RegisterActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        signInTextView.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java))
         }
     }
 }

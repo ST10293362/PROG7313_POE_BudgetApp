@@ -22,7 +22,6 @@ class DashboardActivity : AppCompatActivity() {
         welcomeTextView.text = "Welcome, $userEmail!"
 
         logoutButton.setOnClickListener {
-            // Navigate back to LoginActivity
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
