@@ -3,29 +3,147 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:background="#F8F9FD">
 
     <TextView
-        android:id="@+id/welcomeTextView"
+        android:id="@+id/expensesTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:text="Welcome!"
-        android:textColor="#FFFCFC"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="40dp"
+        android:text="Expenses"
+        android:textColor="#1C1C1E"
+        android:textSize="22sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="HardcodedText" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/logoutButton"
+    <TextView
+        android:id="@+id/monthSelector"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Logout"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:text="September 2024 ▼"
+        android:textColor="#8E8E93"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@id/expensesTitle"
+        app:layout_constraintTop_toBottomOf="@id/expensesTitle" />
+
+    <TextView
+        android:id="@+id/totalExpenses"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="$1,812"
+        android:textColor="#1C1C1E"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/expensesTitle"
+        app:layout_constraintTop_toBottomOf="@id/monthSelector" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/budgetCard"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginHorizontal="16dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="6dp"
+        app:layout_constraintTop_toBottomOf="@id/totalExpenses"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/welcomeTextView"
-        tools:ignore="HardcodedText" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/leftToSpendLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Left to spend"
+                android:textColor="#8E8E93"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/leftToSpendAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$738"
+                android:textColor="#1C1C1E"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@id/leftToSpendLabel"
+                app:layout_constraintTop_toBottomOf="@id/leftToSpendLabel" />
+
+            <TextView
+                android:id="@+id/monthlyBudgetLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Monthly budget"
+                android:textColor="#8E8E93"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/monthlyBudgetAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$2,550"
+                android:textColor="#1C1C1E"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@id/monthlyBudgetLabel"
+                app:layout_constraintTop_toBottomOf="@id/monthlyBudgetLabel" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottomNavBar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginTop="16dp"
+        android:background="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/overviewButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Overview"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="24dp" />
+
+        <Button
+            android:id="@+id/thisMonthButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="This Month"
+            app:layout_constraintStart_toEndOf="@id/overviewButton"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="24dp" />
+
+        <Button
+            android:id="@+id/offersButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Offers"
+            app:layout_constraintStart_toEndOf="@id/thisMonthButton"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="24dp" />
+
+        <Button
+            android:id="@+id/settingsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Settings"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginEnd="24dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
