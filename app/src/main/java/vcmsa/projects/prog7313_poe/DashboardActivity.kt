@@ -16,8 +16,8 @@ class DashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
-        logoutButton = findViewById(R.id.logoutButton)
-        welcomeTextView = findViewById(R.id.welcomeTextView)
+        /*logoutButton = findViewById(R.id.logoutButton)
+        welcomeTextView = findViewById(R.id.welcomeTextView)*/
 
 
         val userEmail = intent.getStringExtra("USER_EMAIL") ?: "User "
