@@ -9,6 +9,7 @@
         android:id="@+id/expensesTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="40dp"
         android:text="Expenses"
         android:textColor="@color/white"
@@ -73,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="R20 000"
-                android:textColor="#1C1C1E"
+                android:textColor="#ffffff"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/leftToSpendLabel"
@@ -94,7 +95,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="R77 000"
-                android:textColor="#1C1C1E"
+                android:textColor="#ffffff"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@id/monthlyBudgetLabel"
@@ -136,15 +137,7 @@
             app:layout_constraintStart_toEndOf="@id/thisMonthButton"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/settingsButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/Icons/"
-            android:contentDescription="Icon button"
-            android:background="?attr/selectableItemBackground"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
