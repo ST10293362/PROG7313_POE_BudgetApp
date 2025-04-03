@@ -1,98 +1,98 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#343434">
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="#FFFFFF">
 
-    <LinearLayout
-        android:layout_width="408dp"
-        android:layout_height="705dp"
+    <ImageView
+        android:id="@+id/logoImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="259dp"
         android:layout_gravity="center"
-        android:layout_margin="20dp"
-        android:background="#343434"
-        android:elevation="4dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:src="@drawable/logo" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="20dp"
-            android:text="Log In"
-            android:textColor="#58bc82"
-            android:textSize="24sp"
-            tools:ignore="HardcodedText"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Log In"
+        android:textSize="24sp"
+        android:textColor="#58bc82"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
+    <EditText
+        android:id="@+id/emailEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:minHeight="48dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/emailEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Email"
-                android:inputType="textEmailAddress"
-                tools:ignore="HardcodedText,TextContrastCheck" />
-        </com.google.android.material.textfield.TextInputLayout>
+    <EditText
+        android:id="@+id/passwordEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:minHeight="48dp" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
+    <ProgressBar
+        android:id="@+id/loadingIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/passwordEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Password"
-                android:inputType="textPassword"
-                android:textColorHint="#9E9E9E"
-                tools:ignore="HardcodedText,TextContrastCheck" />
-        </com.google.android.material.textfield.TextInputLayout>
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="#58bc82"
+        android:text="Log In"
+        android:textColor="#FFFFFF" />
 
-        <TextView
-            android:id="@+id/forgotPasswordTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginBottom="20dp"
-            android:text="Forgot password?"
-            android:textColor="#58bc82"
-            tools:ignore="HardcodedText"/>
+    <TextView
+        android:id="@+id/registerTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Don't have an account? Register"
+        android:textColor="#58bc82"
+        android:layout_gravity="center" />
 
-        <Button
-            android:id="@+id/loginButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:backgroundTint="#58bc82"
-            android:text="Log In"
-            android:textColor="#4E342E"
-            tools:ignore="HardcodedText,DuplicateSpeakableTextCheck,VisualLintButtonSize" />
+    <TextView
+        android:id="@+id/forgotPasswordTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Forgot Password?"
+        android:textColor="#58bc82"
+        android:layout_gravity="center" />
 
-        <TextView
-            android:id="@+id/registerTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Don't have an account? Sign up"
-            android:textColor="#58bc82"
-            tools:ignore="HardcodedText"/>
+    <ImageView
+        android:id="@+id/googleIcon"
+        android:layout_width="57dp"
+        android:layout_height="43dp"
+        android:contentDescription="Home"
+        android:src="@drawable/googlesymbol" />
 
-        <ProgressBar
-            android:id="@+id/loadingIndicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone" />
-    </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageView
+        android:id="@+id/githubIcon"
+        android:layout_width="57dp"
+        android:layout_height="43dp"
+        android:contentDescription="Home"
+        android:src="@drawable/github" />
+
+    <ImageView
+        android:id="@+id/phoneIcon"
+        android:layout_width="57dp"
+        android:layout_height="43dp"
+        android:contentDescription="Home"
+        android:src="@drawable/iphone" />
+
+</LinearLayout>
