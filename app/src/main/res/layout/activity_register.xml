@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="20dp"
     android:background="#FFFFFF">
@@ -9,7 +9,7 @@
     <ImageView
         android:id="@+id/logoImageView"
         android:layout_width="wrap_content"
-        android:layout_height="250dp"
+        android:layout_height="170dp"
         android:layout_gravity="center"
         android:src="@drawable/logo" />
 
@@ -23,10 +23,26 @@
         android:layout_gravity="center" />
 
     <EditText
-        android:id="@+id/emailEditText"
+        android:id="@+id/firstNameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:hint="First Name"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/lastNameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="Last Name"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/emailEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:hint="Email"
         android:inputType="textEmailAddress"
         android:minHeight="48dp" />
@@ -56,21 +72,47 @@
         android:text="Register"
         android:textColor="#FFFFFF" />
 
-    <ImageView
-        android:id="@+id/githubIcon"
-        android:layout_width="60dp"
-        android:layout_height="69dp"
-        app:srcCompat="@drawable/github" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="or register using"
+        android:textColor="#58bc82"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp" />
 
-    <ImageView
-        android:id="@+id/googleIcon"
-        android:layout_width="60dp"
-        android:layout_height="69dp"
-        app:srcCompat="@drawable/google" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="3">
 
-    <ImageView
-        android:id="@+id/phoneIcon"
-        android:layout_width="60dp"
-        android:layout_height="69dp"
-        app:srcCompat="@drawable/smartphone" />
+        <ImageButton
+            android:id="@+id/githubIcon"
+            android:layout_width="0dp"
+            android:layout_height="69dp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/app_name"
+            app:srcCompat="@drawable/github" />
+
+        <ImageButton
+            android:id="@+id/googleIcon"
+            android:layout_width="0dp"
+            android:layout_height="69dp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/app_name"
+            app:srcCompat="@drawable/google" />
+
+        <ImageButton
+            android:id="@+id/phoneIcon"
+            android:layout_width="0dp"
+            android:layout_height="69dp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/app_name"
+            app:srcCompat="@drawable/smartphone" />
+    </LinearLayout>
 </LinearLayout>

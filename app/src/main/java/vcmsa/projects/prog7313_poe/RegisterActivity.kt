@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
 class RegisterActivity : AppCompatActivity() {
+    private lateinit var firstNameEditText: EditText
+    private lateinit var lastNameEditText: EditText
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var loadingIndicator: ProgressBar
@@ -19,6 +21,9 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        // Initialize EditText fields
+        firstNameEditText = findViewById(R.id.firstNameEditText)
+        lastNameEditText = findViewById(R.id.lastNameEditText)
         emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
         loadingIndicator = findViewById(R.id.loadingIndicator)
@@ -27,10 +32,13 @@ class RegisterActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         registerButton.setOnClickListener {
+            val firstName = firstNameEditText.text.toString().trim()
+            val lastName = lastNameEditText.text.toString().trim()
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
 
-            if (email.isNotEmpty() && password.isNotEmpty()) {
+            // Validate input fields
+            if (firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
                 loadingIndicator.visibility = ProgressBar.VISIBLE
 
                 auth.createUserWithEmailAndPassword(email, password)
@@ -45,7 +53,7 @@ class RegisterActivity : AppCompatActivity() {
                     }
                 }
             } else {
-                Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
             }
         }
     }

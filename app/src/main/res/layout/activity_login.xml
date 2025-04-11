@@ -74,22 +74,47 @@
         android:textColor="#58bc82"
         android:layout_gravity="center" />
 
-    <ImageView
-        android:id="@+id/githubIcon"
-        android:layout_width="60dp"
-        android:layout_height="69dp"
-        app:srcCompat="@drawable/github" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="or login with"
+        android:textColor="#58bc82"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp" />
 
-    <ImageView
-        android:id="@+id/googleIcon"
-        android:layout_width="60dp"
-        android:layout_height="69dp"
-        app:srcCompat="@drawable/google" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="3">
 
-    <ImageView
-        android:id="@+id/phoneIcon"
-        android:layout_width="60dp"
-        android:layout_height="69dp"
-        app:srcCompat="@drawable/smartphone" />
+        <ImageButton
+            android:id="@+id/githubIcon"
+            android:layout_width="0dp"
+            android:layout_height="69dp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/app_name"
+            app:srcCompat="@drawable/github" />
 
+        <ImageButton
+            android:id="@+id/googleIcon"
+            android:layout_width="0dp"
+            android:layout_height="69dp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/app_name"
+            app:srcCompat="@drawable/google" />
+
+        <ImageButton
+            android:id="@+id/phoneIcon"
+            android:layout_width="0dp"
+            android:layout_height="69dp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/app_name"
+            app:srcCompat="@drawable/smartphone" />
+    </LinearLayout>
 </LinearLayout>
