@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/logoImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="259dp"
+        android:layout_width="349dp"
+        android:layout_height="220dp"
         android:layout_gravity="center"
         android:src="@drawable/logo" />
 
@@ -75,24 +75,21 @@
         android:layout_gravity="center" />
 
     <ImageView
-        android:id="@+id/googleIcon"
-        android:layout_width="57dp"
-        android:layout_height="43dp"
-        android:contentDescription="Home"
-        android:src="@drawable/googlesymbol" />
+        android:id="@+id/githubIcon"
+        android:layout_width="60dp"
+        android:layout_height="69dp"
+        app:srcCompat="@drawable/github" />
 
     <ImageView
-        android:id="@+id/githubIcon"
-        android:layout_width="57dp"
-        android:layout_height="43dp"
-        android:contentDescription="Home"
-        android:src="@drawable/github" />
+        android:id="@+id/googleIcon"
+        android:layout_width="60dp"
+        android:layout_height="69dp"
+        app:srcCompat="@drawable/google" />
 
     <ImageView
         android:id="@+id/phoneIcon"
-        android:layout_width="57dp"
-        android:layout_height="43dp"
-        android:contentDescription="Home"
-        android:src="@drawable/iphone" />
+        android:layout_width="60dp"
+        android:layout_height="69dp"
+        app:srcCompat="@drawable/smartphone" />
 
 </LinearLayout>

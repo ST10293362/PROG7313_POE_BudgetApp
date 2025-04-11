@@ -1,6 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="20dp"
     android:background="#FFFFFF">
@@ -8,7 +9,7 @@
     <ImageView
         android:id="@+id/logoImageView"
         android:layout_width="wrap_content"
-        android:layout_height="287dp"
+        android:layout_height="250dp"
         android:layout_gravity="center"
         android:src="@drawable/logo" />
 
@@ -56,23 +57,20 @@
         android:textColor="#FFFFFF" />
 
     <ImageView
-        android:id="@+id/googleIcon"
-        android:layout_width="57dp"
-        android:layout_height="43dp"
-        android:contentDescription="Home"
-        android:src="@drawable/googlesymbol" />
+        android:id="@+id/githubIcon"
+        android:layout_width="60dp"
+        android:layout_height="69dp"
+        app:srcCompat="@drawable/github" />
 
     <ImageView
-        android:id="@+id/githubIcon"
-        android:layout_width="57dp"
-        android:layout_height="43dp"
-        android:contentDescription="Home"
-        android:src="@drawable/github" />
+        android:id="@+id/googleIcon"
+        android:layout_width="60dp"
+        android:layout_height="69dp"
+        app:srcCompat="@drawable/google" />
 
     <ImageView
         android:id="@+id/phoneIcon"
-        android:layout_width="57dp"
-        android:layout_height="43dp"
-        android:contentDescription="Home"
-        android:src="@drawable/iphone" />
+        android:layout_width="60dp"
+        android:layout_height="69dp"
+        app:srcCompat="@drawable/smartphone" />
 </LinearLayout>
