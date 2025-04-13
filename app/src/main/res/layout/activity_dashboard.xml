@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"> <!-- Set background to white -->
+    android:background="#FFFFFF"
+    android:backgroundTint="#FFFFFF"> <!-- Set background to white -->
 
     <!-- Title -->
 
@@ -59,8 +60,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="16dp"
-            android:background="#F5F5F5"> <!-- Light background for the card -->
+            android:background="#F5F5F5"
+            android:padding="16dp"> <!-- Light background for the card -->
 
             <TextView
                 android:id="@+id/leftToSpendLabel"
@@ -109,43 +110,61 @@
     <!-- Bottom Navigation Bar -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/navBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:background="#FFFFFF">
+        android:background="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageView
             android:id="@+id/homeButton"
             android:layout_width="46dp"
             android:layout_height="44dp"
-            app:srcCompat="@drawable/home_24px"
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="1dp" />
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/home_24px" />
 
         <ImageView
             android:id="@+id/AccountButton"
             android:layout_width="46dp"
             android:layout_height="44dp"
-            app:srcCompat="@drawable/account_circle_24px"
-            tools:layout_editor_absoluteX="338dp"
-            tools:layout_editor_absoluteY="0dp" />
+            android:layout_marginEnd="27dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/account_circle_24px" />
 
         <ImageView
             android:id="@+id/transactionsButton"
             android:layout_width="46dp"
             android:layout_height="44dp"
-            app:srcCompat="@drawable/account_balance_wallet_24px"
-            tools:layout_editor_absoluteX="246dp"
-            tools:layout_editor_absoluteY="1dp" />
+            android:layout_marginEnd="119dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/account_balance_wallet_24px" />
 
         <ImageView
             android:id="@+id/statsButton"
             android:layout_width="46dp"
             android:layout_height="44dp"
-            app:srcCompat="@drawable/calendar_month_24px"
-            tools:layout_editor_absoluteX="118dp"
-            tools:layout_editor_absoluteY="-1dp" />
+            android:layout_marginStart="118dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/calendar_month_24px" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/addExpenseButton"
+        android:layout_width="66dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="340dp"
+        android:background="@drawable/add_circle_24px"
+        android:contentDescription="@string/app_name"
+        android:foregroundTint="#AF2A54"
+        android:text=""
+        app:layout_constraintEnd_toStartOf="@+id/navBar"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toEndOf="@+id/navBar"
+        app:layout_constraintTop_toBottomOf="@+id/budgetCard" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 class PasswordResetActivity : AppCompatActivity() {
     private lateinit var emailEditText: EditText
+    private lateinit var resetButton: Button
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,13 +17,11 @@ class PasswordResetActivity : AppCompatActivity() {
         setContentView(R.layout.activity_password_reset)
 
         emailEditText = findViewById(R.id.emailEditText)
-        val resetButton = findViewById<Button>(R.id.resetButton)
-
+        resetButton = findViewById(R.id.resetButton)
         auth = FirebaseAuth.getInstance()
 
         resetButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
-
             if (email.isNotEmpty()) {
                 auth.sendPasswordResetEmail(email)
                     .addOnCompleteListener { task ->

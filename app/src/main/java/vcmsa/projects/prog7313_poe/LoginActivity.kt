@@ -45,6 +45,9 @@ class LoginActivity : AppCompatActivity() {
                         } else {
                             Toast.makeText(this, "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                         }
+                    }.addOnFailureListener { e ->
+                        loadingIndicator.visibility = ProgressBar.GONE
+                        Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
             } else {
                 Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
