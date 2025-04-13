@@ -24,7 +24,7 @@ class AddExpenseActivity : AppCompatActivity() {
     private lateinit var addPhotoButton: Button
     private lateinit var submitButton: Button
     private lateinit var imageView: ImageView
-    private var imageUri: Uri? = null
+    private var imageUris: MutableList<Uri> = mutableListOf()
 
     private lateinit var getImageLauncher: ActivityResultLauncher<Intent>
 
@@ -41,11 +41,30 @@ class AddExpenseActivity : AppCompatActivity() {
         submitButton = findViewById(R.id.submitButton)
         imageView = findViewById(R.id.imageView)
 
+        // Automatically set the current date and time
+        val calendar = Calendar.getInstance()
+        dateEditText.setText(String.format("%02d/%02d/%04d", calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.YEAR)))
+        startTimeEditText.setText(String.format("%02d:%02d", calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE)))
+        endTimeEditText.setText(String.format("%02d:%02d", calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE)))
+
         getImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 val data = result.data
-                imageUri = data?.data
-                imageView.setImageURI(imageUri)
+                data?.let {
+                    val clipData = it.clipData
+                    if (clipData != null) {
+                        // Multiple images selected
+                        for (i in 0 until clipData.itemCount) {
+                            val imageUri: Uri = clipData.getItemAt(i).uri
+                            imageUris.add(imageUri)
+                        }
+                    } else {
+                        // Single image selected
+                        val imageUri: Uri? = it.data
+                        imageUri?.let { uri -> imageUris.add(uri) }
+                    }
+                    updateImageView()
+                }
             }
         }
 
@@ -93,12 +112,23 @@ class AddExpenseActivity : AppCompatActivity() {
             } else {
                 endTimeEditText.setText(time)
             }
-        }, hour, minute, true).show()
+        }, hour, minute , true).show()
     }
 
     private fun openGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true) // Allow multiple images to be selected
+        }
         getImageLauncher.launch(intent)
+    }
+
+    private fun updateImageView() {
+        if (imageUris.isNotEmpty()) {
+            imageView.setImageURI(imageUris[0]) // Display the first image for simplicity
+            imageView.visibility = ImageView.VISIBLE
+        } else {
+            imageView.visibility = ImageView.GONE
+        }
     }
 
     private fun submitExpense() {
@@ -113,7 +143,7 @@ class AddExpenseActivity : AppCompatActivity() {
             return
         }
 
-        // Here you can add code to save the expense to your database
+        // Here you can add code to save the expense to your database, including handling multiple images
 
         Toast.makeText(this, "Expense added successfully", Toast.LENGTH_SHORT).show()
         finish()

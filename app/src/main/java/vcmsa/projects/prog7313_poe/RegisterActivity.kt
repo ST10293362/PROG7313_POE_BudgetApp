@@ -71,7 +71,7 @@ class RegisterActivity : AppCompatActivity() {
                     loadingIndicator.visibility = ProgressBar.GONE
                     if (task.isSuccessful) {
                         Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this, LoginActivity::class.java))
+                        startActivity(Intent(this, DashboardActivity::class.java))
                         finish()
                     } else {
                         Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
