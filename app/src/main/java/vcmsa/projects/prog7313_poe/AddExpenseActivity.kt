@@ -1,11 +1,15 @@
 package vcmsa.projects.prog7313_poe
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -13,39 +17,45 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import java.io.File
+import java.text.SimpleDateFormat
 import java.util.*
 
 class AddExpenseActivity : AppCompatActivity() {
     private lateinit var dateEditText: EditText
-    private lateinit var startTimeEditText: EditText
-    private lateinit var endTimeEditText: EditText
+    private lateinit var timeEditText: EditText
     private lateinit var descriptionEditText: EditText
     private lateinit var categoryEditText: EditText
     private lateinit var addPhotoButton: Button
+    private lateinit var capturePhotoButton: Button
     private lateinit var submitButton: Button
     private lateinit var imageView: ImageView
     private var imageUris: MutableList<Uri> = mutableListOf()
-
     private lateinit var getImageLauncher: ActivityResultLauncher<Intent>
+    private lateinit var takePictureLauncher: ActivityResultLauncher<Intent>
+    private lateinit var currentPhotoPath: String
+
+    private val REQUEST_CODE_PERMISSIONS = 1001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_expense)
 
         dateEditText = findViewById(R.id.dateEditText)
-        startTimeEditText = findViewById(R.id.startTimeEditText)
-        endTimeEditText = findViewById(R.id.endTimeEditText)
+        timeEditText = findViewById(R.id.timeEditText)
         descriptionEditText = findViewById(R.id.descriptionEditText)
         categoryEditText = findViewById(R.id.categoryEditText)
         addPhotoButton = findViewById(R.id.addPhotoButton)
+        capturePhotoButton = findViewById(R.id.capturePhotoButton)
         submitButton = findViewById(R.id.submitButton)
         imageView = findViewById(R.id.imageView)
 
-        // Automatically set the current date and time
         val calendar = Calendar.getInstance()
         dateEditText.setText(String.format("%02d/%02d/%04d", calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.YEAR)))
-        startTimeEditText.setText(String.format("%02d:%02d", calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE)))
-        endTimeEditText.setText(String.format("%02d:%02d", calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE)))
+        timeEditText.setText(String.format("%02d:%02d", calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE)))
 
         getImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
@@ -53,13 +63,11 @@ class AddExpenseActivity : AppCompatActivity() {
                 data?.let {
                     val clipData = it.clipData
                     if (clipData != null) {
-                        // Multiple images selected
                         for (i in 0 until clipData.itemCount) {
                             val imageUri: Uri = clipData.getItemAt(i).uri
                             imageUris.add(imageUri)
                         }
                     } else {
-                        // Single image selected
                         val imageUri: Uri? = it.data
                         imageUri?.let { uri -> imageUris.add(uri) }
                     }
@@ -68,24 +76,53 @@ class AddExpenseActivity : AppCompatActivity() {
             }
         }
 
+        takePictureLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val imageUri = Uri.parse(currentPhotoPath)
+                imageUris.add(imageUri)
+                updateImageView()
+            }
+        }
+
         dateEditText.setOnClickListener {
             showDatePicker()
         }
 
-        startTimeEditText.setOnClickListener {
+        timeEditText.setOnClickListener {
             showTimePicker(true)
-        }
-
-        endTimeEditText.setOnClickListener {
-            showTimePicker(false)
         }
 
         addPhotoButton.setOnClickListener {
             openGallery()
         }
 
+        capturePhotoButton.setOnClickListener {
+            checkPermissions()
+        }
+
         submitButton.setOnClickListener {
             submitExpense()
+        }
+    }
+
+    private fun checkPermissions() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSIONS)
+        } else {
+            capturePhoto()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                capturePhoto()
+            } else {
+                Toast.makeText(this, "Camera permission is required to capture photos", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -106,46 +143,56 @@ class AddExpenseActivity : AppCompatActivity() {
         val minute = calendar.get(Calendar.MINUTE)
 
         TimePickerDialog(this, { _, selectedHour, selectedMinute ->
-            val time = String.format("%02d:%02d", selectedHour, selectedMinute)
-            if (isStartTime) {
-                startTimeEditText.setText(time)
-            } else {
-                endTimeEditText.setText(time)
-            }
-        }, hour, minute , true).show()
+            timeEditText.setText(String.format("%02d:%02d", selectedHour, selectedMinute))
+        }, hour, minute, true).show()
     }
 
     private fun openGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
-            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true) // Allow multiple images to be selected
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "image/*"
+            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         }
         getImageLauncher.launch(intent)
     }
 
+    @SuppressLint("QueryPermissionsNeeded")
+    private fun capturePhoto() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (intent.resolveActivity(packageManager) != null) {
+            val photoFile: File? = createImageFile()
+            if (photoFile != null) {
+                currentPhotoPath = photoFile.absolutePath
+                val photoURI: Uri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", photoFile)
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                takePictureLauncher.launch(intent)
+            } else {
+                Toast.makeText(this, "Error creating file for photo", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(this, "No camera app available", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun createImageFile(): File? {
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return try {
+            val file = File.createTempFile("JPEG_${timeStamp}_", ".jpg", storageDir)
+            Log.d("AddExpenseActivity", "Image file created at: ${file.absolutePath}")
+            file
+        } catch (e: Exception) {
+            Log.e("AddExpenseActivity", "Error creating file: ${e.message}")
+            null
+        }
+    }
+
     private fun updateImageView() {
         if (imageUris.isNotEmpty()) {
-            imageView.setImageURI(imageUris[0]) // Display the first image for simplicity
-            imageView.visibility = ImageView.VISIBLE
-        } else {
-            imageView.visibility = ImageView.GONE
+            imageView.setImageURI(imageUris.last())
         }
     }
 
     private fun submitExpense() {
-        val date = dateEditText.text.toString()
-        val startTime = startTimeEditText.text.toString()
-        val endTime = endTimeEditText.text.toString()
-        val description = descriptionEditText.text.toString()
-        val category = categoryEditText.text.toString()
-
-        if (date.isEmpty() || startTime.isEmpty() || endTime.isEmpty() || description.isEmpty() || category.isEmpty()) {
-            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // Here you can add code to save the expense to your database, including handling multiple images
-
-        Toast.makeText(this, "Expense added successfully", Toast.LENGTH_SHORT).show()
-        finish()
+        Toast.makeText(this, "Expense submitted!", Toast.LENGTH_SHORT).show()
     }
 }
