@@ -1,5 +1,7 @@
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -8,8 +10,8 @@
 
     <ImageView
         android:id="@+id/logoImageView"
-        android:layout_width="226dp"
-        android:layout_height="112dp"
+        android:layout_width="120dp"
+        android:layout_height="70dp"
         android:layout_gravity="center"
         android:src="@drawable/logo" />
 
@@ -22,20 +24,39 @@
         android:layout_marginTop="20dp"
         android:layout_gravity="center" />
 
-    <EditText
-        android:id="@+id/firstNameEditText"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:hint="First Name"
-        android:minHeight="48dp" />
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <EditText
+            android:id="@+id/firstNameEditText"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:hint="First Name"
+            android:minHeight="48dp"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <EditText
+            android:id="@+id/lastNameEditText"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:hint="Last Name"
+            android:minHeight="48dp"
+            tools:ignore="TouchTargetSizeCheck" />
+    </LinearLayout>
 
     <EditText
-        android:id="@+id/lastNameEditText"
+        android:id="@+id/userNameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:hint="Last Name"
+        android:hint="Username"
         android:minHeight="48dp" />
 
     <EditText
@@ -57,13 +78,6 @@
         android:minHeight="48dp" />
 
     <!-- Password Strength TextView -->
-    <TextView
-        android:id="@+id/passwordStrengthTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="Password Strength: "
-        android:textColor="#58bc82" />
 
     <EditText
         android:id="@+id/confirmPasswordEditText"
@@ -73,6 +87,14 @@
         android:hint="Confirm Password"
         android:inputType="textPassword"
         android:minHeight="48dp" />
+
+    <TextView
+        android:id="@+id/passwordStrengthTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="Password Strength: "
+        android:textColor="#58bc82" />
 
     <ProgressBar
         android:id="@+id/loadingIndicator"

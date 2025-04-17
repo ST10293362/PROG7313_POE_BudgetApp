@@ -9,6 +9,19 @@
     <!-- Title -->
 
     <TextView
+        android:id="@+id/dashboardTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="136dp"
+        android:layout_marginTop="16dp"
+        android:text="Dashboard"
+        android:textColor="#333333"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/expensesTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -107,7 +120,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Bottom Navigation Bar -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/navBar"
@@ -126,7 +138,7 @@
             app:srcCompat="@drawable/home_24px" />
 
         <ImageView
-            android:id="@+id/AccountButton"
+            android:id="@+id/profileButton"
             android:layout_width="46dp"
             android:layout_height="44dp"
             android:layout_marginEnd="27dp"
@@ -158,7 +170,7 @@
         android:id="@+id/addExpenseButton"
         android:layout_width="66dp"
         android:layout_height="64dp"
-        android:layout_marginTop="340dp"
+        android:layout_marginTop="304dp"
         android:background="@drawable/add_circle_24px"
         android:contentDescription="@string/app_name"
         android:foregroundTint="#AF2A54"

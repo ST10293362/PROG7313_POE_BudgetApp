@@ -11,11 +11,13 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Color // Import the correct Color class
 import com.google.firebase.auth.FirebaseAuth
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var firstNameEditText: EditText
     private lateinit var lastNameEditText: EditText
+    private lateinit var userNameEditText: EditText
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var confirmPasswordEditText: EditText
@@ -30,6 +32,7 @@ class RegisterActivity : AppCompatActivity() {
 
         firstNameEditText = findViewById(R.id.firstNameEditText)
         lastNameEditText = findViewById(R.id.lastNameEditText)
+        userNameEditText = findViewById(R.id.userNameEditText)
         emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
         confirmPasswordEditText = findViewById(R.id.confirmPasswordEditText)
@@ -51,17 +54,20 @@ class RegisterActivity : AppCompatActivity() {
         registerButton.setOnClickListener {
             val firstName = firstNameEditText.text.toString().trim()
             val lastName = lastNameEditText.text.toString().trim()
+            val userName = userNameEditText.text.toString().trim()
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
             val confirmPassword = confirmPasswordEditText.text.toString().trim()
 
-            if (firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty()) {
+            if (firstName.isNotEmpty() && lastName.isNotEmpty() && userName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty()) {
                 if (!isValidEmail(email)) {
                     Toast.makeText(this, "Invalid email format", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
                 }
 
                 if (password != confirmPassword) {
                     Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
                 }
 
                 loadingIndicator.visibility = ProgressBar.VISIBLE
@@ -71,15 +77,19 @@ class RegisterActivity : AppCompatActivity() {
                     loadingIndicator.visibility = ProgressBar.GONE
                     if (task.isSuccessful) {
                         Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this, DashboardActivity::class.java))
+                        val intent = Intent(this, CompleteProfileActivity::class.java)
+                        intent.putExtra("FIRST_NAME", firstName)
+                        intent.putExtra("LAST_NAME", lastName)
+                        startActivity(intent)
                         finish()
                     } else {
                         Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                     }
-                }.addOnFailureListener { e ->
-                    loadingIndicator.visibility = ProgressBar.GONE
-                    Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
+                    .addOnFailureListener { e ->
+                        loadingIndicator.visibility = ProgressBar.GONE
+                        Toast.makeText (this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
             } else {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
             }
@@ -88,9 +98,18 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun checkPasswordStrength(password: String) {
         val strength = when {
-            password.length < 6 -> "Weak"
-            password.length < 10 -> "Medium"
-            else -> "Strong"
+            password.length < 6 -> {
+                passwordStrengthTextView.setTextColor(Color.RED) // Use Color.RED from android.graphics.Color
+                "Weak"
+            }
+            password.length < 10 -> {
+                passwordStrengthTextView.setTextColor(Color.YELLOW) // Use Color.YELLOW from android.graphics.Color
+                "Medium"
+            }
+            else -> {
+                passwordStrengthTextView.setTextColor(Color.GREEN) // Use Color.GREEN from android.graphics.Color
+                "Strong"
+            }
         }
         passwordStrengthTextView.text = "Password Strength: $strength"
     }

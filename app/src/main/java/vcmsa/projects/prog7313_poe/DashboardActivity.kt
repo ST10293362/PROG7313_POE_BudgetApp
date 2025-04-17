@@ -4,22 +4,25 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
 
 class DashboardActivity : AppCompatActivity() {
-    private lateinit var addExpenseButton: Button
-
+    private lateinit var profileButton: Button
+    private lateinit var categoriesButton: Button
+    private lateinit var viewExpensesButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
-        addExpenseButton = findViewById(R.id.addExpenseButton)
+        profileButton = findViewById(R.id.profileButton)
+        viewExpensesButton = findViewById(R.id.statsButton)
 
-
-        addExpenseButton.setOnClickListener {
-            startActivity(Intent(this, AddExpenseActivity::class.java))
+        profileButton.setOnClickListener {
+            startActivity(Intent(this, CompleteProfileActivity::class.java))
         }
 
+        viewExpensesButton.setOnClickListener {
+            startActivity(Intent(this, ViewExpensesActivity::class.java))
+        }
     }
 }

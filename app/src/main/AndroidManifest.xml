@@ -26,6 +26,15 @@
             android:name=".DashboardActivity"
             android:exported="true" />
         <activity
+            android:name=".CompleteProfileActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ManageCategoriesActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ViewExpensesActivity"
+            android:exported="true" />
+        <activity
             android:name=".RegisterActivity"
             android:exported="true" />
         <activity
