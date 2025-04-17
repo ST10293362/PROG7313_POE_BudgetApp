@@ -13,6 +13,8 @@ interface IKeyed {
 
 
     /**
+     * Unique identifier of the entity.
+     *
      * @see [vcmsa.projects.prog7313_poe.core.data.converters.UuidConverter]
      * @author ST10257002
      */
