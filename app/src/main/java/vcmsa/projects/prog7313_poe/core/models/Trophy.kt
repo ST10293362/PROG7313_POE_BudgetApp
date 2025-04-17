@@ -77,4 +77,8 @@ data class Trophy(
 
     //</editor-fold>
 
-) : IKeyed, IAuditable, IStashable
+) : IKeyed, IAuditable, IStashable {
+    companion object {
+        const val TABLE_NAME = "trophy"
+    }
+}

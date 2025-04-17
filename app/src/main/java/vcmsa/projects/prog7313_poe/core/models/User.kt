@@ -162,4 +162,8 @@ data class User(
 
     //</editor-fold>
 
-) : IKeyed, IAuditable
+) : IKeyed, IAuditable {
+    companion object {
+        const val TABLE_NAME = "user"
+    }
+}

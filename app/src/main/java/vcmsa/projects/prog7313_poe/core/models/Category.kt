@@ -92,4 +92,8 @@ data class Category(
 
     //</editor-fold>
 
-) : IKeyed, IAuditable
+) : IKeyed, IAuditable {
+    companion object {
+        const val TABLE_NAME = "category"
+    }
+}

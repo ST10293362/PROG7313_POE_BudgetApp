@@ -127,4 +127,8 @@ data class UserTrophy(
 
     //</editor-fold>
 
-) : IAuditable
+) : IAuditable {
+    companion object {
+        const val TABLE_NAME = "user_trophy"
+    }
+}

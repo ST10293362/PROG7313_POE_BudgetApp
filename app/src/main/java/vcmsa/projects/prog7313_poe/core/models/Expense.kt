@@ -168,4 +168,8 @@ data class Expense(
     
     //</editor-fold>
 
-) : IKeyed, IAuditable
+) : IKeyed, IAuditable {
+    companion object {
+        const val TABLE_NAME = "expense"
+    }
+}
