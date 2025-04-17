@@ -11,11 +11,11 @@ import java.util.UUID
 
 /**
  * SQLite composite key entity.
- * 
+ *
  * Tables that use composite keys do not have an ID of their own. Instead, two
  * columns are both the primary keys and the foreign keys. The purpose of this
  * entity is to link the two tables indirectly to avoid duplicates.
- * 
+ *
  * @author ST10257002
  */
 @Entity(
@@ -68,8 +68,6 @@ data class UserTrophy(
 
 
     /**
-     * TODO: Javadoc
-     *
      * @author ST10257002
      */
     @ColumnInfo(
@@ -79,8 +77,6 @@ data class UserTrophy(
 
 
     /**
-     * TODO: Javadoc
-     *
      * @author ST10257002
      */
     @ColumnInfo(
@@ -90,8 +86,6 @@ data class UserTrophy(
 
 
     /**
-     * TODO: Javadoc
-     *
      * @author ST10257002
      */
     @ColumnInfo(
@@ -101,8 +95,6 @@ data class UserTrophy(
 
 
     /**
-     * TODO: Javadoc
-     *
      * @author ST10257002
      */
     @ColumnInfo(

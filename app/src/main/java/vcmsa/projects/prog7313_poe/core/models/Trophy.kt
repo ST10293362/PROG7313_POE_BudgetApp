@@ -54,7 +54,7 @@ data class Trophy(
 
 
     /**
-     * TODO: Javadoc
+     * The alias of the trophy.
      *
      * @author ST10257002
      */
@@ -65,7 +65,7 @@ data class Trophy(
 
 
     /**
-     * TODO: Javadoc
+     * Description of the trophy.
      *
      * @author ST10257002
      */

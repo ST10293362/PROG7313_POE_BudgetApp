@@ -57,8 +57,6 @@ data class User(
 
 
     /**
-     * TODO: Javadoc
-     *
      * @author ST10257002
      */
     @ColumnInfo(
@@ -68,8 +66,6 @@ data class User(
 
 
     /**
-     * TODO: Javadoc
-     *
      * @author ST10257002
      */
     @ColumnInfo(
@@ -79,8 +75,6 @@ data class User(
 
 
     /**
-     * TODO: Javadoc
-     *
      * @author ST10257002
      */
     @ColumnInfo(
@@ -90,8 +84,6 @@ data class User(
 
 
     /**
-     * TODO: Javadoc
-     *
      * @author ST10257002
      */
     @ColumnInfo(
@@ -101,8 +93,6 @@ data class User(
 
 
     /**
-     * TODO: Javadoc
-     *
      * @author ST10257002
      */
     @ColumnInfo(
@@ -112,8 +102,6 @@ data class User(
 
 
     /**
-     * TODO: Javadoc
-     *
      * @author ST10257002
      */
     @ColumnInfo(
@@ -123,8 +111,6 @@ data class User(
 
 
     /**
-     * TODO: Javadoc
-     *
      * @author ST10257002
      */
     @ColumnInfo(
@@ -134,7 +120,8 @@ data class User(
 
 
     /**
-     * TODO: Javadoc
+     * The minimum monthly spending goal for every expense created by this
+     * [User].
      *
      * @author ST10257002
      */
@@ -145,7 +132,8 @@ data class User(
 
 
     /**
-     * TODO: Javadoc
+     * The maximum monthly spending goal for every expense created by this
+     * [User].
      *
      * @author ST10257002
      */
@@ -160,7 +148,9 @@ data class User(
 
 
     /**
-     * TODO: Javadoc
+     * SQLite Foreign Key relationship to [Image].
+     * 
+     * Connects the profile image of the user to its profile.
      *
      * @author ST10257002
      */

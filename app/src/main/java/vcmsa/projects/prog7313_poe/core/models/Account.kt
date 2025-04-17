@@ -56,7 +56,7 @@ data class Account(
 
 
     /**
-     * TODO: Javadoc
+     * The alias of the account.
      *
      * @author ST10257002
      */

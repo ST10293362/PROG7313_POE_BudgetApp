@@ -56,7 +56,7 @@ data class Category(
 
 
     /**
-     * TODO: Javadoc
+     * The alias of the category.
      *
      * @author ST10257002
      */
@@ -67,7 +67,7 @@ data class Category(
 
 
     /**
-     * TODO: Javadoc
+     * The user-set spending goal for expenses within this category.
      *
      * @author ST10257002
      */
