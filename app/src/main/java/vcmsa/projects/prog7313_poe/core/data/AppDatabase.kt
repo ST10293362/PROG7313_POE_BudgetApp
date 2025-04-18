@@ -5,6 +5,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import vcmsa.projects.prog7313_poe.core.data.access.AccountDao
+import vcmsa.projects.prog7313_poe.core.data.access.CategoryDao
+import vcmsa.projects.prog7313_poe.core.data.access.ExpenseDao
+import vcmsa.projects.prog7313_poe.core.data.access.ImageDao
+import vcmsa.projects.prog7313_poe.core.data.access.TrophyDao
+import vcmsa.projects.prog7313_poe.core.data.access.UserDao
 import vcmsa.projects.prog7313_poe.core.data.converters.DateConverter
 import vcmsa.projects.prog7313_poe.core.data.converters.ImageConverter
 import vcmsa.projects.prog7313_poe.core.data.converters.UuidConverter
@@ -69,5 +75,15 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 
-    // TODO: Implement DAOs
+    //<editor-dold desc="">
+    
+    abstract fun accountDao(): AccountDao
+    abstract fun categoryDao(): CategoryDao
+    abstract fun expenseDao(): ExpenseDao
+    abstract fun imageDao(): ImageDao
+    abstract fun trophyDao(): TrophyDao
+    abstract fun userDao(): UserDao
+    
+    //</editor-fold>
+    
 }
