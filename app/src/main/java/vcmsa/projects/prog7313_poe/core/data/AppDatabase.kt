@@ -6,11 +6,12 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import vcmsa.projects.prog7313_poe.core.data.converters.DateConverter
+import vcmsa.projects.prog7313_poe.core.data.converters.ImageConverter
 import vcmsa.projects.prog7313_poe.core.data.converters.UuidConverter
 
 /**
  * Context class for the room database.
- * 
+ *
  * @see [androidx.room.RoomDatabase]
  * @see [androidx.room.Database]
  * @author ST10257002
@@ -21,6 +22,7 @@ import vcmsa.projects.prog7313_poe.core.data.converters.UuidConverter
 @TypeConverters(
     DateConverter::class,
     UuidConverter::class,
+    ImageConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -33,18 +35,18 @@ abstract class AppDatabase : RoomDatabase() {
 
         /**
          * Fetch the singleton database instance.
-         * 
+         *
          * @author ST10257002
          */
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
-                
+
                 // Build the database anew or from existing contexts
                 val instance = Room.databaseBuilder(
                     context.applicationContext, AppDatabase::class.java, "expense_database"
                 ).build()
                 INSTANCE = instance
-                
+
                 // Function return for the instance
                 instance
             }
