@@ -8,6 +8,13 @@ import androidx.room.TypeConverters
 import vcmsa.projects.prog7313_poe.core.data.converters.DateConverter
 import vcmsa.projects.prog7313_poe.core.data.converters.ImageConverter
 import vcmsa.projects.prog7313_poe.core.data.converters.UuidConverter
+import vcmsa.projects.prog7313_poe.core.models.Account
+import vcmsa.projects.prog7313_poe.core.models.Category
+import vcmsa.projects.prog7313_poe.core.models.Expense
+import vcmsa.projects.prog7313_poe.core.models.Image
+import vcmsa.projects.prog7313_poe.core.models.Trophy
+import vcmsa.projects.prog7313_poe.core.models.User
+import vcmsa.projects.prog7313_poe.core.models.UserTrophy
 
 /**
  * Context class for the room database.
@@ -17,6 +24,15 @@ import vcmsa.projects.prog7313_poe.core.data.converters.UuidConverter
  * @author ST10257002
  */
 @Database(
+    entities = [
+        Trophy::class,
+        UserTrophy::class,
+        Account::class,
+        Expense::class,
+        Category::class,
+        Image::class,
+        User::class,
+    ],
     version = 1
 )
 @TypeConverters(
