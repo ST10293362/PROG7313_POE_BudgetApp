@@ -5,8 +5,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import vcmsa.projects.prog7313_poe.core.models.supers.IAuditable
-import vcmsa.projects.prog7313_poe.core.models.supers.IKeyed
+import vcmsa.projects.prog7313_poe.core.models.supers.AuditableEntity
+import vcmsa.projects.prog7313_poe.core.models.supers.KeyedEntity
 import java.time.Instant
 import java.util.Date
 import java.util.UUID
@@ -168,7 +168,7 @@ data class Expense(
     
     //</editor-fold>
 
-) : IKeyed, IAuditable {
+) : KeyedEntity, AuditableEntity {
     companion object {
         const val TABLE_NAME = "expense"
     }

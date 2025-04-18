@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
-import vcmsa.projects.prog7313_poe.core.models.supers.IAuditable
+import vcmsa.projects.prog7313_poe.core.models.supers.AuditableEntity
 import java.time.Instant
 import java.util.Date
 import java.util.UUID
@@ -127,7 +127,7 @@ data class UserTrophy(
 
     //</editor-fold>
 
-) : IAuditable {
+) : AuditableEntity {
     companion object {
         const val TABLE_NAME = "user_trophy"
     }

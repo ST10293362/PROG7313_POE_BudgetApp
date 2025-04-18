@@ -7,7 +7,7 @@ import java.time.Instant
  *
  * @author ST10257002
  */
-interface IStashable {
+interface StashableEntity {
 
     //<editor-fold desc="Interface members">
 

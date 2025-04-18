@@ -7,7 +7,7 @@ import java.util.UUID
  *
  * @author ST10257002
  */
-interface IKeyed {
+interface KeyedEntity {
 
     //<editor-fold desc="Interface members">
 

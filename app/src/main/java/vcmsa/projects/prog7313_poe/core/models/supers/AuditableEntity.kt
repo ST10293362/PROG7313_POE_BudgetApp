@@ -7,7 +7,7 @@ import java.time.Instant
  *
  * @author ST10257002
  */
-interface IAuditable {
+interface AuditableEntity {
 
     //<editor-fold desc="Interface members">
 
