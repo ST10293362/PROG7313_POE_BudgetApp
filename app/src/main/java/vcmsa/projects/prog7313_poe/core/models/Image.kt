@@ -25,10 +25,8 @@ import java.util.UUID
         )
     ],
     indices = [
-        Index(
-            value = ["id"],
-            unique = true
-        )
+        Index(value = ["id"], unique = true),
+        Index(value = ["id_author"])
     ]
 )
 data class Image(

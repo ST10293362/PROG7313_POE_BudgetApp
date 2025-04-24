@@ -24,10 +24,9 @@ import java.util.UUID
         )
     ],
     indices = [
-        Index(
-            value = ["id"],
-            unique = true
-        )
+        Index(value = ["id"], unique = true),
+        Index(value = ["name", "id_author"], unique = true),
+        Index(value = ["id_author"])
     ]
 )
 data class Account(
@@ -35,19 +34,19 @@ data class Account(
     //<editor-fold desc="Inherited members">
 
 
-    @PrimaryKey 
+    @PrimaryKey
     override val id: UUID = UUID.randomUUID(),
 
 
     @ColumnInfo(
         name = "created_at"
-    ) 
+    )
     override val createdAt: Instant = Instant.now(),
 
 
     @ColumnInfo(
         name = "updated_at"
-    ) 
+    )
     override var updatedAt: Instant = Instant.now(),
 
 

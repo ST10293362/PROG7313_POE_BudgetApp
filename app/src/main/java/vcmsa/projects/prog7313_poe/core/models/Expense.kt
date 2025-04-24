@@ -43,10 +43,12 @@ import java.util.UUID
         ),
     ],
     indices = [
-        Index(
-            value = ["id"],
-            unique = true
-        )
+        Index(value = ["id"], unique = true),
+        Index(value = ["id_author"]),
+        Index(value = ["id_account"]),
+        Index(value = ["id_category"]),
+        Index(value = ["id_document"]),
+        Index(value = ["date_of_expense"])
     ]
 )
 data class Expense(
@@ -165,7 +167,7 @@ data class Expense(
     )
     var idCategory: UUID?,
 
-    
+
     //</editor-fold>
 
 ) : KeyedEntity, AuditableEntity {

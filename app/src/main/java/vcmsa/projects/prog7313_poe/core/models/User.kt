@@ -25,10 +25,10 @@ import java.util.UUID
         )
     ],
     indices = [
-        Index(
-            value = ["id"],
-            unique = true
-        )
+        Index(value = ["id"], unique = true),
+        Index(value = ["username"], unique = true),
+        Index(value = ["email_address"], unique = true),
+        Index(value = ["id_avatar"])
     ]
 )
 data class User(
@@ -149,7 +149,7 @@ data class User(
 
     /**
      * SQLite Foreign Key relationship to [Image].
-     * 
+     *
      * Connects the profile image of the user to its profile.
      *
      * @author ST10257002
