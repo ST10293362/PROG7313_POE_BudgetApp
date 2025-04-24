@@ -3,6 +3,7 @@ package vcmsa.projects.prog7313_poe.core.data.access
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
+import androidx.room.Transaction
 import androidx.room.Update
 import vcmsa.projects.prog7313_poe.core.models.supers.AuditableEntity
 import vcmsa.projects.prog7313_poe.core.models.supers.KeyedEntity
@@ -25,7 +26,7 @@ interface BaseDao<T> where T : KeyedEntity, T : AuditableEntity {
      * @throws [android.database.sqlite.SQLiteConstraintException] on conflicts.
      * @author ST10257002
      */
-    @Insert(onConflict = OnConflictStrategy.Companion.ABORT)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(instance: T)
 
 
@@ -37,7 +38,7 @@ interface BaseDao<T> where T : KeyedEntity, T : AuditableEntity {
      * @throws [android.database.sqlite.SQLiteConstraintException] on conflicts.
      * @author ST10257002
      */
-    @Insert(onConflict = OnConflictStrategy.Companion.ABORT)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertAll(instanceCollection: List<T>)
 
 
@@ -48,19 +49,63 @@ interface BaseDao<T> where T : KeyedEntity, T : AuditableEntity {
      *
      * @author ST10257002
      */
+    @Deprecated(
+        level = DeprecationLevel.WARNING,
+        message = "Use updateAuditable() instead where possible. "
+                + "Ensure that the touch() function is called for all entities "
+                + "implementing `AuditableEntity` before calling this function."
+    )
     @Update
     suspend fun update(instance: T)
 
 
     /**
-     * Updates a collection of existing entities in the database.
+     * Update a collection of existing entities in the database.
      *
      * @param instanceCollection The collection to update in the database.
      *
      * @author ST10257002
      */
+    @Deprecated(
+        level = DeprecationLevel.WARNING,
+        message = "Use updateAuditable() instead where possible. "
+                + "Ensure that the touch() function is called for all entities "
+                + "implementing `AuditableEntity` before calling this function."
+    )
     @Update
     suspend fun updateAll(instanceCollection: List<T>)
+
+
+    /**
+     * Update an existing entity in the database and update audit fields.
+     * 
+     * @param instance The entity to update in the database.
+     *      
+     * @author ST10257002
+     */
+    @Transaction
+    suspend fun updateAuditable(instance: T) {
+        (instance as? AuditableEntity)?.touch()
+        update(instance)
+    }
+
+
+    /**
+     * Update a collection of existing entities in the database and update the
+     * audit fields of each member.
+     * 
+     * @param instanceCollection The collection to update in the database.
+     *
+     * @author ST10257002
+     */
+    @Transaction
+    suspend fun updateAuditableCollection(instanceCollection: List<T>) {
+        for (instance in instanceCollection) {
+            (instance as? AuditableEntity)?.touch()
+        }
+
+        updateAll(instanceCollection)
+    }
 
 
     /**
