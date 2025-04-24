@@ -52,6 +52,11 @@ dependencies {
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.room.ktx)
 
+    // Kotlin coroutines with lifecycle support
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
