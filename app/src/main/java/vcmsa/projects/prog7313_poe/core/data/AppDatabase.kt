@@ -27,19 +27,17 @@ import vcmsa.projects.prog7313_poe.core.models.User
  * @author ST10257002
  */
 @Database(
+    version = 1,
     entities = [
         Account::class,
         Expense::class,
         Category::class,
         Image::class,
         User::class,
-    ],
-    version = 1
+    ]
 )
 @TypeConverters(
-    DateConverter::class,
-    UuidConverter::class,
-    ImageConverter::class
+    DateConverter::class, UuidConverter::class, ImageConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -50,34 +48,42 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
+        private const val DATABASE_NAME = "expense_database.db"
+
         /**
          * Fetch the singleton database instance.
          *
          * @author ST10257002
          */
-        fun getDatabase(context: Context): AppDatabase {
+        fun getDatabase(
+            context: Context
+        ): AppDatabase {
             return INSTANCE ?: synchronized(this) {
 
                 // Build the database anew or from existing contexts
                 val instance = Room.databaseBuilder(
-                    context.applicationContext, AppDatabase::class.java, "expense_database"
-                ).build()
-                INSTANCE = instance
+                    context.applicationContext, AppDatabase::class.java, DATABASE_NAME
+                )
+                    .fallbackToDestructiveMigration(false)
+                    .build()
 
-                // Function return for the instance
+                INSTANCE = instance
                 instance
             }
         }
     }
 
-    //<editor-dold desc="">
-    
+
+    //<editor-dold desc="DAO Registrations">
+
+
     abstract fun accountDao(): AccountDao
     abstract fun categoryDao(): CategoryDao
     abstract fun expenseDao(): ExpenseDao
     abstract fun imageDao(): ImageDao
     abstract fun userDao(): UserDao
-    
+
+
     //</editor-fold>
-    
+
 }
