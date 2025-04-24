@@ -26,7 +26,7 @@ import java.util.*
  */
 import androidx.lifecycle.ViewModelProvider
 import vcmsa.projects.prog7313_poe.core.data.AppDatabase
-import vcmsa.projects.prog7313_poe.core.repository.ExpenseRepository
+import vcmsa.projects.prog7313_poe.core.data.repos.ExpenseRepository
 import vcmsa.projects.prog7313_poe.core.viewmodels.ExpenseViewModel
 import vcmsa.projects.prog7313_poe.core.viewmodels.ExpenseViewModelFactory
 import vcmsa.projects.prog7313_poe.core.models.Expense
