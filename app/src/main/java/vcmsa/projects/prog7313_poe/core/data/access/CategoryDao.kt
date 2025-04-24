@@ -2,7 +2,10 @@ package vcmsa.projects.prog7313_poe.core.data.access
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Transaction
+import vcmsa.projects.prog7313_poe.core.models.AccountWithExpenses
 import vcmsa.projects.prog7313_poe.core.models.Category
+import vcmsa.projects.prog7313_poe.core.models.CategoryWithExpenses
 import java.util.UUID
 
 /**
@@ -84,6 +87,24 @@ interface CategoryDao : BaseDao<Category> {
         """
     )
     suspend fun exists(targetId: UUID): Boolean
+
+
+
+    /**
+     * Fetches an [CategoryWithExpenses] object.
+     *
+     * @param targetId The unique identifier ([UUID]) of the category.
+     *
+     * @author ST10257002
+     */
+    @Transaction
+    @Query(
+        """
+            SELECT * FROM category
+            WHERE id = :targetId
+        """
+    )
+    suspend fun fetchCategoryWithExpenses(targetId: UUID): CategoryWithExpenses
 
 
     //</editor-fold>

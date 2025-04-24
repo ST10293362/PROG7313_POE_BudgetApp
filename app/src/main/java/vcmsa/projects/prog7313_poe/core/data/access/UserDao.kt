@@ -2,7 +2,12 @@ package vcmsa.projects.prog7313_poe.core.data.access
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Transaction
 import vcmsa.projects.prog7313_poe.core.models.User
+import vcmsa.projects.prog7313_poe.core.models.UserWithAccounts
+import vcmsa.projects.prog7313_poe.core.models.UserWithAvatar
+import vcmsa.projects.prog7313_poe.core.models.UserWithCategories
+import vcmsa.projects.prog7313_poe.core.models.UserWithExpenses
 import java.util.UUID
 
 /**
@@ -84,6 +89,74 @@ interface UserDao : BaseDao<User> {
         """
     )
     suspend fun exists(targetId: UUID): Boolean
+
+
+    /**
+     * Fetches an [UserWithAccounts] object.
+     *
+     * @param targetId The unique identifier ([UUID]) of the user.
+     *
+     * @author ST10257002
+     */
+    @Transaction
+    @Query(
+        """
+            SELECT * FROM user
+            WHERE id = :targetId
+        """
+    )
+    suspend fun fetchUserWithAccounts(targetId: UUID): UserWithAccounts
+
+
+    /**
+     * Fetches an [UserWithCategories] object.
+     *
+     * @param targetId The unique identifier ([UUID]) of the user.
+     *
+     * @author ST10257002
+     */
+    @Transaction
+    @Query(
+        """
+            SELECT * FROM user
+            WHERE id = :targetId
+        """
+    )
+    suspend fun fetchUserWithCategories(targetId: UUID): UserWithCategories
+
+
+    /**
+     * Fetches an [UserWithExpenses] object.
+     *
+     * @param targetId The unique identifier ([UUID]) of the user.
+     *
+     * @author ST10257002
+     */
+    @Transaction
+    @Query(
+        """
+            SELECT * FROM user
+            WHERE id = :targetId
+        """
+    )
+    suspend fun fetchUserWithExpenses(targetId: UUID): UserWithExpenses
+
+
+    /**
+     * Fetches an [UserWithAvatar] object.
+     *
+     * @param targetId The unique identifier ([UUID]) of the user.
+     *
+     * @author ST10257002
+     */
+    @Transaction
+    @Query(
+        """
+            SELECT * FROM user
+            WHERE id = :targetId
+        """
+    )
+    suspend fun fetchUserWithAvatar(targetId: UUID): UserWithAvatar
 
 
     //</editor-fold>

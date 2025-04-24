@@ -8,7 +8,7 @@ import androidx.room.Relation
  *
  * @author ST10257002
  */
-data class UserWithImage(
+data class UserWithAvatar(
     
     @Embedded val user: User,
     

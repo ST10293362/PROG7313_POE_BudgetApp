@@ -2,7 +2,9 @@ package vcmsa.projects.prog7313_poe.core.data.access
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Transaction
 import vcmsa.projects.prog7313_poe.core.models.Account
+import vcmsa.projects.prog7313_poe.core.models.AccountWithExpenses
 import java.util.UUID
 
 /**
@@ -40,6 +42,7 @@ interface AccountDao : BaseDao<Account> {
      * @return [List] collection containing every entity in the database.
      * @author ST10257002
      */
+    @Transaction
     @Query(
         """
         SELECT * FROM account
@@ -56,6 +59,7 @@ interface AccountDao : BaseDao<Account> {
      * @return The specific entity that was queried.
      * @author ST10257002
      */
+    @Transaction
     @Query(
         """
         SELECT * FROM account
@@ -84,6 +88,23 @@ interface AccountDao : BaseDao<Account> {
         """
     )
     suspend fun exists(targetId: UUID): Boolean
+
+
+    /**
+     * Fetches an [AccountWithExpenses] object.
+     *
+     * @param targetId The unique identifier ([UUID]) of the account.
+     *
+     * @author ST10257002
+     */
+    @Transaction
+    @Query(
+        """
+            SELECT * FROM account
+            WHERE id = :targetId
+        """
+    )
+    suspend fun fetchAccountWithExpenses(targetId: UUID): AccountWithExpenses
 
 
     //</editor-fold>
