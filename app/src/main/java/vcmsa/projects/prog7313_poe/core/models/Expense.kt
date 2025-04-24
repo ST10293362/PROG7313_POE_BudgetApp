@@ -21,25 +21,29 @@ import java.util.UUID
             entity = User::class,
             parentColumns = ["id"],
             childColumns = ["id_author"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = Account::class,
             parentColumns = ["id"],
             childColumns = ["id_account"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = Image::class,
             parentColumns = ["id"],
             childColumns = ["id_document"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.SET_NULL,
+            onUpdate = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = Category::class,
             parentColumns = ["id"],
             childColumns = ["id_category"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.SET_NULL,
+            onUpdate = ForeignKey.CASCADE
         ),
     ],
     indices = [

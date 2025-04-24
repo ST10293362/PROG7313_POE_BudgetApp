@@ -21,7 +21,8 @@ import java.util.UUID
             entity = User::class,
             parentColumns = ["id"],
             childColumns = ["id_author"],
-            onDelete = ForeignKey.SET_NULL
+            onDelete = ForeignKey.SET_NULL,
+            onUpdate = ForeignKey.CASCADE
         )
     ],
     indices = [

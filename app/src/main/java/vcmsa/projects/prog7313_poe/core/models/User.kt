@@ -21,7 +21,8 @@ import java.util.UUID
             entity = Image::class,
             parentColumns = ["id"],
             childColumns = ["id_avatar"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.SET_NULL,
+            onUpdate = ForeignKey.CASCADE
         )
     ],
     indices = [
