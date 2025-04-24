@@ -66,5 +66,26 @@ interface CategoryDao : BaseDao<Category> {
 
 
     //</editor-fold>
+    //<editor-fold desc="Extensions">
+
+
+    /**
+     * Checks whether an entity with the given ID exists in the database.
+     *
+     * @param targetId The unique identifier ([UUID]) of the entity to query.
+     *
+     * @author ST10257002
+     */
+    @Query(
+        """
+        SELECT EXISTS(
+            SELECT * FROM category WHERE id = :targetId
+        )
+        """
+    )
+    suspend fun exists(targetId: UUID): Boolean
+
+
+    //</editor-fold>
 
 }
