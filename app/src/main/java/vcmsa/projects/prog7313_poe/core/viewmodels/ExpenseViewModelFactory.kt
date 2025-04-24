@@ -1,5 +1,7 @@
 package vcmsa.projects.prog7313_poe.core.viewmodels
-
+/**
+ * @author ST10326084
+ */
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import vcmsa.projects.prog7313_poe.core.repository.ExpenseRepository

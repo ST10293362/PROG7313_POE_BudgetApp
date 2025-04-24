@@ -21,6 +21,9 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * @author ST10326084
+ */
 import androidx.lifecycle.ViewModelProvider
 import vcmsa.projects.prog7313_poe.core.data.AppDatabase
 import vcmsa.projects.prog7313_poe.core.repository.ExpenseRepository
@@ -48,6 +51,9 @@ class AddExpenseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_expense)
 
+        /**
+         * @author ST10326084
+         */
         // Set up ViewModel and Repository
         val db = AppDatabase.getDatabase(applicationContext)
         val repository = ExpenseRepository(db.expenseDao())
@@ -200,7 +206,9 @@ class AddExpenseActivity : AppCompatActivity() {
             imageView.setImageURI(imageUris.last())
         }
     }
-
+    /**
+     * @author ST10326084
+     */
     private fun submitExpense() {
         val description = descriptionEditText.text.toString().trim()
         val category = categoryEditText.text.toString().trim()
