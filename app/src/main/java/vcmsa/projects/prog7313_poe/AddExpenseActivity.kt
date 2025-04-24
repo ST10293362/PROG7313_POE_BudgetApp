@@ -21,6 +21,13 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
+import androidx.lifecycle.ViewModelProvider
+import vcmsa.projects.prog7313_poe.core.data.AppDatabase
+import vcmsa.projects.prog7313_poe.core.repository.ExpenseRepository
+import vcmsa.projects.prog7313_poe.core.viewmodels.ExpenseViewModel
+import vcmsa.projects.prog7313_poe.core.viewmodels.ExpenseViewModelFactory
+import vcmsa.projects.prog7313_poe.core.models.Expense
+
 class AddExpenseActivity : AppCompatActivity() {
     private lateinit var dateEditText: EditText
     private lateinit var timeEditText: EditText
@@ -40,6 +47,12 @@ class AddExpenseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_expense)
+
+        // Set up ViewModel and Repository
+        val db = AppDatabase.getDatabase(applicationContext)
+        val repository = ExpenseRepository(db.expenseDao())
+        val factory = ExpenseViewModelFactory(repository)
+        val expenseViewModel = ViewModelProvider(this, factory)[ExpenseViewModel::class.java]
 
         dateEditText = findViewById(R.id.dateEditText)
         timeEditText = findViewById(R.id.timeEditText)
@@ -189,6 +202,37 @@ class AddExpenseActivity : AppCompatActivity() {
     }
 
     private fun submitExpense() {
-        Toast.makeText(this, "Expense submitted!", Toast.LENGTH_SHORT).show()
+        val description = descriptionEditText.text.toString().trim()
+        val category = categoryEditText.text.toString().trim()
+        val amount = 0.0 // You can replace this with a field later
+        val vendor = "Unknown Vendor" // Replace if you add vendor input
+        val date = Date()
+
+        // TODO: Replace with actual user/account/category IDs
+        val userId = UUID.randomUUID()
+        val accountId = UUID.randomUUID()
+
+        val expense = Expense(
+            detail = description,
+            vendor = vendor,
+            amount = amount,
+            dateOfExpense = date,
+            idAuthor = userId,
+            idAccount = accountId,
+            idDocument = null,
+            idCategory = null
+        )
+
+        // Save to DB using ViewModel
+        val db = AppDatabase.getDatabase(applicationContext)
+        val viewModel = ViewModelProvider(
+            this,
+            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao()))
+        )[ExpenseViewModel::class.java]
+
+        viewModel.addExpense(expense)
+
+        Toast.makeText(this, "Expense saved to database!", Toast.LENGTH_SHORT).show()
     }
+
 }
