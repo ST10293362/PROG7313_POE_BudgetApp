@@ -83,7 +83,6 @@ interface BaseDao<T> where T : KeyedEntity, T : AuditableEntity {
      *      
      * @author ST10257002
      */
-    @Transaction
     suspend fun updateAuditable(instance: T) {
         (instance as? AuditableEntity)?.touch()
         update(instance)
@@ -98,7 +97,6 @@ interface BaseDao<T> where T : KeyedEntity, T : AuditableEntity {
      *
      * @author ST10257002
      */
-    @Transaction
     suspend fun updateAuditableCollection(instanceCollection: List<T>) {
         for (instance in instanceCollection) {
             (instance as? AuditableEntity)?.touch()

@@ -95,7 +95,6 @@ interface ExpenseDao : BaseDao<Expense> {
      *
      * @author ST10257002
      */
-    @Transaction
     @Query(
         """
             SELECT * FROM expense

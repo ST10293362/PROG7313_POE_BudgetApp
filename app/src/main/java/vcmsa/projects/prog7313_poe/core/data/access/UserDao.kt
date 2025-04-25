@@ -98,7 +98,6 @@ interface UserDao : BaseDao<User> {
      *
      * @author ST10257002
      */
-    @Transaction
     @Query(
         """
             SELECT * FROM user
@@ -115,7 +114,6 @@ interface UserDao : BaseDao<User> {
      *
      * @author ST10257002
      */
-    @Transaction
     @Query(
         """
             SELECT * FROM user
@@ -132,7 +130,6 @@ interface UserDao : BaseDao<User> {
      *
      * @author ST10257002
      */
-    @Transaction
     @Query(
         """
             SELECT * FROM user
@@ -149,7 +146,6 @@ interface UserDao : BaseDao<User> {
      *
      * @author ST10257002
      */
-    @Transaction
     @Query(
         """
             SELECT * FROM user

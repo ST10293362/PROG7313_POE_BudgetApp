@@ -42,7 +42,6 @@ interface AccountDao : BaseDao<Account> {
      * @return [List] collection containing every entity in the database.
      * @author ST10257002
      */
-    @Transaction
     @Query(
         """
         SELECT * FROM account
@@ -59,7 +58,6 @@ interface AccountDao : BaseDao<Account> {
      * @return The specific entity that was queried.
      * @author ST10257002
      */
-    @Transaction
     @Query(
         """
         SELECT * FROM account
@@ -97,7 +95,6 @@ interface AccountDao : BaseDao<Account> {
      *
      * @author ST10257002
      */
-    @Transaction
     @Query(
         """
             SELECT * FROM account
