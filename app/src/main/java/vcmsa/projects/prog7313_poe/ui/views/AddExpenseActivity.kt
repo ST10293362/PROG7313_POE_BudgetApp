@@ -1,5 +1,6 @@
-package vcmsa.projects.prog7313_poe
+package vcmsa.projects.prog7313_poe.ui.views
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -25,10 +26,11 @@ import java.util.*
  * @author ST10326084
  */
 import androidx.lifecycle.ViewModelProvider
+import vcmsa.projects.prog7313_poe.R
 import vcmsa.projects.prog7313_poe.core.data.AppDatabase
 import vcmsa.projects.prog7313_poe.core.data.repos.ExpenseRepository
-import vcmsa.projects.prog7313_poe.core.viewmodels.ExpenseViewModel
-import vcmsa.projects.prog7313_poe.core.viewmodels.ExpenseViewModelFactory
+import vcmsa.projects.prog7313_poe.ui.viewmodels.ExpenseViewModel
+import vcmsa.projects.prog7313_poe.ui.viewmodels.ExpenseViewModelFactory
 import vcmsa.projects.prog7313_poe.core.models.Expense
 
 class AddExpenseActivity : AppCompatActivity() {
@@ -123,8 +125,8 @@ class AddExpenseActivity : AppCompatActivity() {
     }
 
     private fun checkPermissions() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA), REQUEST_CODE_PERMISSIONS)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_CODE_PERMISSIONS)
         } else {
             capturePhoto()
         }
@@ -164,7 +166,7 @@ class AddExpenseActivity : AppCompatActivity() {
 
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-            type = "image/*"
+            Intent.setType = "image/*"
             putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         }
         getImageLauncher.launch(intent)

@@ -1,4 +1,4 @@
-package vcmsa.projects.prog7313_poe
+package vcmsa.projects.prog7313_poe.ui.views
 
 import android.os.Bundle
 import android.widget.Button
@@ -6,6 +6,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import vcmsa.projects.prog7313_poe.R
 
 class PasswordResetActivity : AppCompatActivity() {
     private lateinit var emailEditText: EditText

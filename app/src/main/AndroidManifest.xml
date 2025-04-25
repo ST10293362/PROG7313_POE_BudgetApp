@@ -15,7 +15,7 @@
         tools:targetApi="31">
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.views.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,25 +23,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DashboardActivity"
+            android:name=".ui.views.DashboardActivity"
             android:exported="true" />
         <activity
-            android:name=".CompleteProfileActivity"
+            android:name=".ui.views.CompleteProfileActivity"
             android:exported="true" />
         <activity
-            android:name=".ManageCategoriesActivity"
+            android:name=".ui.views.ManageCategoriesActivity"
             android:exported="true" />
         <activity
-            android:name=".ViewExpensesActivity"
+            android:name=".ui.views.ViewExpensesActivity"
             android:exported="true" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".ui.views.RegisterActivity"
             android:exported="true" />
         <activity
-            android:name=".PasswordResetActivity"
+            android:name=".ui.views.PasswordResetActivity"
             android:exported="true" />
         <activity
-            android:name=".AddExpenseActivity"
+            android:name=".ui.views.AddExpenseActivity"
             android:exported="true" />
 
         <provider

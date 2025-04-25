@@ -1,9 +1,8 @@
-package vcmsa.projects.prog7313_poe
+package vcmsa.projects.prog7313_poe.ui.views
 
 import android.os.Bundle
-import android.widget.Button
-import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
+import vcmsa.projects.prog7313_poe.R
 
 class ManageCategoriesActivity : AppCompatActivity() {
 

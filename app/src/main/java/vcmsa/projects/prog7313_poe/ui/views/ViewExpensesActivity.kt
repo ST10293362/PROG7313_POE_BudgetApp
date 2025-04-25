@@ -1,4 +1,4 @@
-package vcmsa.projects.prog7313_poe
+package vcmsa.projects.prog7313_poe.ui.views
 
 import android.os.Bundle
 import android.widget.ListView

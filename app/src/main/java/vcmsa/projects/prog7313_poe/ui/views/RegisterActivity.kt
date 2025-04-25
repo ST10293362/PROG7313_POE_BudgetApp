@@ -1,4 +1,4 @@
-package vcmsa.projects.prog7313_poe
+package vcmsa.projects.prog7313_poe.ui.views
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import android.graphics.Color // Import the correct Color class
 import com.google.firebase.auth.FirebaseAuth
+import vcmsa.projects.prog7313_poe.R
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var firstNameEditText: EditText

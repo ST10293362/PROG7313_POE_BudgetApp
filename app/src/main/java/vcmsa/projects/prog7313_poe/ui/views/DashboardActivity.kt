@@ -1,9 +1,10 @@
-package vcmsa.projects.prog7313_poe
+package vcmsa.projects.prog7313_poe.ui.views
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import vcmsa.projects.prog7313_poe.R
 
 class DashboardActivity : AppCompatActivity() {
     private lateinit var profileButton: Button

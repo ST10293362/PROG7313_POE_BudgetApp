@@ -1,4 +1,4 @@
-package vcmsa.projects.prog7313_poe.core.viewmodels
+package vcmsa.projects.prog7313_poe.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
