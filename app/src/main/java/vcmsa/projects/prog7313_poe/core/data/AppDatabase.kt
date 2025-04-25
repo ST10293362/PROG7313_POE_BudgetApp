@@ -8,15 +8,12 @@ import androidx.room.TypeConverters
 import vcmsa.projects.prog7313_poe.core.data.access.AccountDao
 import vcmsa.projects.prog7313_poe.core.data.access.CategoryDao
 import vcmsa.projects.prog7313_poe.core.data.access.ExpenseDao
-import vcmsa.projects.prog7313_poe.core.data.access.ImageDao
 import vcmsa.projects.prog7313_poe.core.data.access.UserDao
 import vcmsa.projects.prog7313_poe.core.data.converters.DateConverter
-import vcmsa.projects.prog7313_poe.core.data.converters.ImageConverter
 import vcmsa.projects.prog7313_poe.core.data.converters.UuidConverter
 import vcmsa.projects.prog7313_poe.core.models.Account
 import vcmsa.projects.prog7313_poe.core.models.Category
 import vcmsa.projects.prog7313_poe.core.models.Expense
-import vcmsa.projects.prog7313_poe.core.models.Image
 import vcmsa.projects.prog7313_poe.core.models.User
 
 /**
@@ -32,12 +29,12 @@ import vcmsa.projects.prog7313_poe.core.models.User
         Account::class,
         Expense::class,
         Category::class,
-        Image::class,
         User::class,
     ]
 )
 @TypeConverters(
-    DateConverter::class, UuidConverter::class, ImageConverter::class
+    DateConverter::class, 
+    UuidConverter::class,
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -80,7 +77,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao
     abstract fun categoryDao(): CategoryDao
     abstract fun expenseDao(): ExpenseDao
-    abstract fun imageDao(): ImageDao
     abstract fun userDao(): UserDao
 
 

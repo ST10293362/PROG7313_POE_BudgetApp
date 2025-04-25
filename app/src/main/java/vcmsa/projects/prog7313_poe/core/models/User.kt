@@ -16,20 +16,10 @@ import java.util.UUID
  */
 @Entity(
     tableName = "user",
-    foreignKeys = [
-        ForeignKey(
-            entity = Image::class,
-            parentColumns = ["id"],
-            childColumns = ["id_avatar"],
-            onDelete = ForeignKey.SET_NULL,
-            onUpdate = ForeignKey.CASCADE
-        )
-    ],
     indices = [
         Index(value = ["id"], unique = true),
         Index(value = ["username"], unique = true),
         Index(value = ["email_address"], unique = true),
-        Index(value = ["id_avatar"])
     ]
 )
 data class User(
@@ -143,22 +133,9 @@ data class User(
     )
     var maxGoal: Double?,
 
-
-    //</editor-fold>
-    //<editor-fold desc="SQLite relationships">
-
-
-    /**
-     * SQLite Foreign Key relationship to [Image].
-     *
-     * Connects the profile image of the user to its profile.
-     *
-     * @author ST10257002
-     */
-    @ColumnInfo(
-        name = "id_avatar"
-    )
-    var idAvatar: UUID?
+    
+    @ColumnInfo(name = "image_uri")
+    var imageUri: String? = null,
 
 
     //</editor-fold>

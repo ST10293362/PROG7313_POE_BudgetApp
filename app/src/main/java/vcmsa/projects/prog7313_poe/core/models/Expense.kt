@@ -32,13 +32,6 @@ import java.util.UUID
             onUpdate = ForeignKey.CASCADE
         ),
         ForeignKey(
-            entity = Image::class,
-            parentColumns = ["id"],
-            childColumns = ["id_document"],
-            onDelete = ForeignKey.SET_NULL,
-            onUpdate = ForeignKey.CASCADE
-        ),
-        ForeignKey(
             entity = Category::class,
             parentColumns = ["id"],
             childColumns = ["id_category"],
@@ -51,7 +44,6 @@ import java.util.UUID
         Index(value = ["id_author"]),
         Index(value = ["id_account"]),
         Index(value = ["id_category"]),
-        Index(value = ["id_document"]),
         Index(value = ["date_of_expense"])
     ]
 )
@@ -124,6 +116,10 @@ data class Expense(
     var dateOfExpense: Date,
 
 
+    @ColumnInfo(name = "image_uri")
+    var imageUri: String? = null,
+
+
     //</editor-fold>
     //<editor-fold desc="SQLite relationships">
 
@@ -148,17 +144,6 @@ data class Expense(
         name = "id_account"
     )
     var idAccount: UUID,
-
-
-    /**
-     * SQLite Foreign Key relationship to [Image].
-     *
-     * @author ST10257002
-     */
-    @ColumnInfo(
-        name = "id_document"
-    )
-    var idDocument: UUID?,
 
 
     /**

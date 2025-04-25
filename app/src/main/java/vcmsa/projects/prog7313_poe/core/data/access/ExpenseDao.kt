@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import vcmsa.projects.prog7313_poe.core.models.Expense
-import vcmsa.projects.prog7313_poe.core.models.ExpenseWithImage
 import java.util.UUID
 
 /**
@@ -86,22 +85,6 @@ interface ExpenseDao : BaseDao<Expense> {
         """
     )
     suspend fun exists(targetId: UUID): Boolean
-
-
-    /**
-     * Fetches an [ExpenseWithImage] object.
-     *
-     * @param targetId The unique identifier ([UUID]) of the expense.
-     *
-     * @author ST10257002
-     */
-    @Query(
-        """
-            SELECT * FROM expense
-            WHERE id = :targetId
-        """
-    )
-    suspend fun fetchExpenseWithImage(targetId: UUID): ExpenseWithImage
 
 
     //</editor-fold>
