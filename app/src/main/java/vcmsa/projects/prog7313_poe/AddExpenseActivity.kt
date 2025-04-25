@@ -206,6 +206,7 @@ class AddExpenseActivity : AppCompatActivity() {
             imageView.setImageURI(imageUris.last())
         }
     }
+    
     /**
      * @author ST10326084
      */
@@ -227,7 +228,6 @@ class AddExpenseActivity : AppCompatActivity() {
             dateOfExpense = date,
             idAuthor = userId,
             idAccount = accountId,
-            idDocument = null,
             idCategory = null
         )
 
