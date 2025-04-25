@@ -23,7 +23,8 @@ class ImageRepository(
      * @author ST10257002
      */
     suspend fun updateImage(instance: Image) {
-        dao.updateAuditable(instance)
+        instance.touch()
+        dao.update(instance)
     }
 
 

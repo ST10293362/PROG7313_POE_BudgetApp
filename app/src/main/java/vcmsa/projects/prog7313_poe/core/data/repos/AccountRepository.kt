@@ -23,7 +23,8 @@ class AccountRepository(
      * @author ST10257002
      */
     suspend fun updateAccount(instance: Account) {
-        dao.updateAuditable(instance)
+        instance.touch()
+        dao.update(instance)
     }
 
 

@@ -25,7 +25,8 @@ class ExpenseRepository(
      * @author ST10257002
      */
     suspend fun updateExpense(instance: Expense) {
-        dao.updateAuditable(instance)
+        instance.touch()
+        dao.update(instance)
     }
 
 

@@ -2,6 +2,7 @@ package vcmsa.projects.prog7313_poe.core.data.repos
 
 import vcmsa.projects.prog7313_poe.core.data.access.UserDao
 import vcmsa.projects.prog7313_poe.core.models.User
+import vcmsa.projects.prog7313_poe.core.models.supers.AuditableEntity
 import java.util.UUID
 
 /**
@@ -23,7 +24,8 @@ class UserRepository(
      * @author ST10257002
      */
     suspend fun updateUser(instance: User) {
-        dao.updateAuditable(instance)
+        instance.touch()
+        dao.update(instance)
     }
 
 

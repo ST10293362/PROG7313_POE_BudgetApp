@@ -23,7 +23,8 @@ class CategoryRepository(
      * @author ST10257002
      */
     suspend fun updateCategory(instance: Category) {
-        dao.updateAuditable(instance)
+        instance.touch()
+        dao.update(instance)
     }
 
 
