@@ -10,8 +10,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import vcmsa.projects.prog7313_poe.R
+import vcmsa.projects.prog7313_poe.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
+    
+    private lateinit var binding: ActivityLoginBinding
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var loadingIndicator: ProgressBar
@@ -19,6 +22,9 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        setupBindings()
+        
         setContentView(R.layout.activity_login)
 
         emailEditText = findViewById(R.id.emailEditText)
@@ -63,4 +69,16 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, PasswordResetActivity::class.java))
         }
     }
+    
+    
+    // <editor-fold desc="Configuration">
+    
+    
+    private fun setupBindings() {
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+    }
+    
+    
+    // </editor-fold>
+    
 }
