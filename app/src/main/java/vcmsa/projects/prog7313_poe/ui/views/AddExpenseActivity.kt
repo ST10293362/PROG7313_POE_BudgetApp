@@ -166,7 +166,7 @@ class AddExpenseActivity : AppCompatActivity() {
 
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-            Intent.setType = "image/*"
+            intent.setType("image/*")
             putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         }
         getImageLauncher.launch(intent)
