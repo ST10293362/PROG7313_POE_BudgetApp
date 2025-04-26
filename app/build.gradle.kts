@@ -56,15 +56,15 @@ dependencies {
 
     // - Glide
     
-    implementation("com.github.bumptech.glide:glide:4.12.0")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.12.0") // For Java projects
-    kapt("com.github.bumptech.glide:compiler:4.12.0") // For Kotlin projects
+    implementation(libs.glide)
+    annotationProcessor(libs.glide.compiler) // Java
+    kapt(libs.glide.compiler) // Kotlin
 
     // - Firebase
     
-    implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-auth")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
     
     // - RoomDB
@@ -75,8 +75,8 @@ dependencies {
 
     // - Kotlin coroutines with lifecycle support
     
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.lifecycle.runtime.ktx)
 
     // - Testing
     
