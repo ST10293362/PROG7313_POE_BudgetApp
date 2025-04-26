@@ -7,6 +7,7 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import vcmsa.projects.prog7313_poe.R
@@ -15,37 +16,26 @@ import vcmsa.projects.prog7313_poe.databinding.ActivityLoginBinding
 class LoginActivity : AppCompatActivity() {
     
     private lateinit var binding: ActivityLoginBinding
-    private lateinit var emailEditText: EditText
-    private lateinit var passwordEditText: EditText
-    private lateinit var loadingIndicator: ProgressBar
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
         setupBindings()
+        setupLayoutUi()
         
-        setContentView(R.layout.activity_login)
-
-        emailEditText = findViewById(R.id.emailEditText)
-        passwordEditText = findViewById(R.id.passwordEditText)
-        loadingIndicator = findViewById(R.id.loadingIndicator)
-        val loginButton = findViewById<Button>(R.id.loginButton)
-        val registerTextView = findViewById<TextView>(R.id.registerTextView)
-        val forgotPasswordTextView = findViewById<TextView>(R.id.forgotPasswordTextView)
-
         auth = FirebaseAuth.getInstance()
 
-        loginButton.setOnClickListener {
-            val email = emailEditText.text.toString().trim()
-            val password = passwordEditText.text.toString().trim()
+        binding.loginButton.setOnClickListener {
+            val email = binding.emailEditText.text.toString().trim()
+            val password = binding.passwordEditText.text.toString().trim()
 
             if (email.isNotEmpty() && password.isNotEmpty()) {
-                loadingIndicator.visibility = ProgressBar.VISIBLE
+                binding.loadingIndicator.visibility = ProgressBar.VISIBLE
 
                 auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
-                        loadingIndicator.visibility = ProgressBar.GONE
+                        binding.loadingIndicator.visibility = ProgressBar.GONE
                         if (task.isSuccessful) {
                             startActivity(Intent(this, DashboardActivity::class.java))
                             finish()
@@ -53,7 +43,7 @@ class LoginActivity : AppCompatActivity() {
                             Toast.makeText(this, "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                         }
                     }.addOnFailureListener { e ->
-                        loadingIndicator.visibility = ProgressBar.GONE
+                        binding.loadingIndicator.visibility = ProgressBar.GONE
                         Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
             } else {
@@ -61,21 +51,33 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        registerTextView.setOnClickListener {
+        binding.registerTextView.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
 
-        forgotPasswordTextView.setOnClickListener {
+        binding.forgotPasswordTextView.setOnClickListener {
             startActivity(Intent(this, PasswordResetActivity::class.java))
         }
     }
     
     
     // <editor-fold desc="Configuration">
-    
-    
+
+
+    /**
+     * @author ST10257002
+     */
     private fun setupBindings() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
+    }
+
+
+    /**
+     * @author ST10257002
+     */
+    private fun setupLayoutUi() {
+        enableEdgeToEdge()
+        setContentView(binding.root)
     }
     
     
