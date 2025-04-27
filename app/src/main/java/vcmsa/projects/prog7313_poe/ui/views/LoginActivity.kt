@@ -28,10 +28,87 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
         setupBindings()
         setupLayoutUi()
-        
+
         setupOnClickListeners()
 
         auth = FirebaseAuth.getInstance()
+    }
+
+
+    // </editor-fold>
+    // <editor-fold desc="Functions">
+
+
+    /**
+     * Initiate the login process.
+     *
+     * @author ST10293362
+     * @author ST10257002
+     */
+    private fun tryLogin() {
+        val mail = binding.emailEditText.text.toString().trim()
+        val pass = binding.passwordEditText.text.toString().trim()
+
+        if (isValidCredentials(mail, pass)) {
+            binding.loadingIndicator.visibility = ProgressBar.VISIBLE
+
+            completeLogin(
+                email = mail, password = pass
+            )
+        }
+    }
+
+
+    /**
+     * Query firebase to log the user in with the given credentials.
+     *
+     * @author ST10293362
+     * @author ST10257002
+     */
+    private fun completeLogin(
+        email: String, password: String
+    ) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                binding.loadingIndicator.visibility = ProgressBar.GONE
+
+                if (task.isSuccessful) {
+                    Toast.makeText(
+                        this, "Login successful!", Toast.LENGTH_LONG
+                    ).show()
+
+                    val intent = Intent(this, DashboardActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                }
+            }
+            .addOnFailureListener { e ->
+                binding.loadingIndicator.visibility = ProgressBar.GONE
+
+                Toast.makeText(
+                    this, e.message, Toast.LENGTH_LONG
+                ).show()
+            }
+    }
+
+
+    /**
+     * Validates whether the given credentials are correctly formatted.
+     *
+     * @author ST10293362
+     * @author ST10257002
+     */
+    private fun isValidCredentials(
+        email: String, password: String
+    ): Boolean {
+        if (email.isNotBlank() && password.isNotBlank()) {
+            return true
+        }
+
+        Toast.makeText(
+            this, "Username and password are required.", Toast.LENGTH_SHORT
+        ).show()
+        return false
     }
 
 
@@ -50,35 +127,13 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             binding.registerTextView.id -> {
                 startActivity(Intent(this, RegisterActivity::class.java))
             }
-            
+
             binding.forgotPasswordTextView.id -> {
                 startActivity(Intent(this, PasswordResetActivity::class.java))
             }
-            
+
             binding.loginButton.id -> {
-                val mail = binding.emailEditText.text.toString().trim()
-                val pass = binding.passwordEditText.text.toString().trim()
-
-                if (mail.isNotEmpty() && pass.isNotEmpty()) {
-                    binding.loadingIndicator.visibility = ProgressBar.VISIBLE
-
-                    auth.signInWithEmailAndPassword(mail, pass).addOnCompleteListener { task ->
-                        binding.loadingIndicator.visibility = ProgressBar.GONE
-                        if (task.isSuccessful) {
-                            startActivity(Intent(this, DashboardActivity::class.java))
-                            finish()
-                        } else {
-                            Toast.makeText(
-                                this, "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }.addOnFailureListener { e ->
-                        binding.loadingIndicator.visibility = ProgressBar.GONE
-                        Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
-                }
+                tryLogin()
             }
         }
     }
