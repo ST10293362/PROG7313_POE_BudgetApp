@@ -5,19 +5,18 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Patterns
-import android.widget.Button
-import android.widget.EditText
 import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import android.graphics.Color // Import the correct Color class
 import androidx.activity.enableEdgeToEdge
 import com.google.firebase.auth.FirebaseAuth
-import vcmsa.projects.prog7313_poe.R
-import vcmsa.projects.prog7313_poe.databinding.ActivityLoginBinding
 import vcmsa.projects.prog7313_poe.databinding.ActivityRegisterBinding
 
+/**
+ * @author ST10293362
+ * @author ST10257002
+ */
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
@@ -31,8 +30,7 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         
         setupBindings()
-        
-        setContentView(binding.root)
+        setupLayoutUi()
 
         auth = FirebaseAuth.getInstance()
 
@@ -123,6 +121,15 @@ class RegisterActivity : AppCompatActivity() {
      */
     private fun setupBindings() {
         binding = ActivityRegisterBinding.inflate(layoutInflater)
+    }
+
+
+    /**
+     * @author ST10257002
+     */
+    private fun setupLayoutUi() {
+        enableEdgeToEdge()
+        setContentView(binding.root)
     }
     
 
