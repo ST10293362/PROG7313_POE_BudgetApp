@@ -30,6 +30,71 @@ class PasswordResetActivity : AppCompatActivity(), View.OnClickListener {
 
 
     // </editor-fold>
+    // <editor-fold desc="Functions">
+
+
+    /**
+     * Initiate the reset process.
+     *
+     * @author ST10293362
+     * @author ST10257002
+     */
+    private fun tryReset() {
+        val email = binding.emailEditText.text.toString().trim()
+
+        if (isValidCredentials(email)) {
+            completeReset(
+                email = email
+            )
+        }
+    }
+
+
+    /**
+     * Query firebase to send a password reset email to the given address.
+     *
+     * @author ST10293362
+     * @author ST10257002
+     */
+    private fun completeReset(
+        email: String
+    ) {
+        auth.sendPasswordResetEmail(email).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(
+                    this, "Done. Check your inbox for an email from us!", Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    this, task.exception?.message, Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+
+    /**
+     * Validates whether the given credentials are correctly formatted.
+     *
+     * @author ST10293362
+     * @author ST10257002
+     */
+    private fun isValidCredentials(
+        email: String
+    ): Boolean {
+        if (email.isNotBlank()) {
+            return true
+        }
+
+        Toast.makeText(
+            this, "Email cannot be empty.", Toast.LENGTH_SHORT
+        ).show()
+
+        return false
+    }
+
+
+    // </editor-fold>
     // <editor-fold desc="Event Handler">
 
 
@@ -42,20 +107,7 @@ class PasswordResetActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(view: View?) {
         when (view?.id) {
             binding.resetButton.id -> {
-                val email = binding.emailEditText.text.toString().trim()
-                if (email.isNotBlank()) {
-                    auth.sendPasswordResetEmail(email).addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Toast.makeText(this, "Reset email sent", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(
-                                this, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                } else {
-                    Toast.makeText(this, "Please enter your email", Toast.LENGTH_SHORT).show()
-                }
+                tryReset()
             }
         }
     }
