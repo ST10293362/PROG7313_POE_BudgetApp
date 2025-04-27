@@ -19,8 +19,7 @@ class PasswordResetActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         
         setupBindings()
-        
-        setContentView(binding.root)
+        setupLayoutUi()
         
         auth = FirebaseAuth.getInstance()
 
@@ -50,6 +49,15 @@ class PasswordResetActivity : AppCompatActivity() {
      */
     private fun setupBindings() {
         binding = ActivityPasswordResetBinding.inflate(layoutInflater)
+    }
+
+
+    /**
+     * @author ST10257002
+     */
+    private fun setupLayoutUi() {
+        enableEdgeToEdge()
+        setContentView(binding.root)
     }
     
 
