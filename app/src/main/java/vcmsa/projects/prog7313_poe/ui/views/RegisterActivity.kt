@@ -3,8 +3,6 @@ package vcmsa.projects.prog7313_poe.ui.views
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Patterns
 import android.view.View
 import android.widget.ProgressBar
@@ -12,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import vcmsa.projects.prog7313_poe.core.extensions.onTextChanged
 import vcmsa.projects.prog7313_poe.databinding.ActivityRegisterBinding
 
 /**
@@ -33,17 +32,9 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
         setupLayoutUi()
 
         setupOnClickListeners()
+        setupOnTextChangedListeners()
 
         auth = FirebaseAuth.getInstance()
-
-        binding.passwordEditText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                checkPasswordStrength(s.toString())
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
     }
 
     private fun checkPasswordStrength(password: String) {
@@ -140,6 +131,18 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
      */
     private fun setupOnClickListeners() {
         binding.registerButton.setOnClickListener(this)
+    }
+
+
+    /**
+     * @author ST10257002
+     */
+    private fun setupOnTextChangedListeners() {
+        with (binding) {
+            passwordEditText.onTextChanged { input ->
+                checkPasswordStrength(input)
+            }
+        }
     }
 
 
