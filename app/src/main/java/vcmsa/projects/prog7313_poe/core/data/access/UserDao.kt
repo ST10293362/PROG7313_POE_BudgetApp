@@ -69,6 +69,33 @@ interface UserDao : BaseDao<User> {
     suspend fun fetchOne(targetId: UUID): User?
 
 
+    /**
+     * @return The specific entity that was queried.
+     * @author ST10257002
+     */
+    @Query(
+        """
+        SELECT * FROM user
+        WHERE email_address = :email 
+            AND password = :password
+        """
+    )
+    suspend fun fetchOneByCredentials(email: String, password: String): User?
+
+
+    /**
+     * @return The specific entity that was queried.
+     * @author ST10257002
+     */
+    @Query(
+        """
+        SELECT * FROM user
+        WHERE username = :username
+        """
+    )
+    suspend fun fetchOneByUsername(username: String): User?
+
+
     //</editor-fold>
     //<editor-fold desc="Extensions">
 
