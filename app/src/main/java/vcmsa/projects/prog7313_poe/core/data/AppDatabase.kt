@@ -8,6 +8,7 @@ import androidx.room.TypeConverters
 import vcmsa.projects.prog7313_poe.core.data.access.AccountDao
 import vcmsa.projects.prog7313_poe.core.data.access.CategoryDao
 import vcmsa.projects.prog7313_poe.core.data.access.ExpenseDao
+import vcmsa.projects.prog7313_poe.core.data.access.SessionDao
 import vcmsa.projects.prog7313_poe.core.data.access.UserDao
 import vcmsa.projects.prog7313_poe.core.data.converters.DateConverter
 import vcmsa.projects.prog7313_poe.core.data.converters.UuidConverter
@@ -15,6 +16,7 @@ import vcmsa.projects.prog7313_poe.core.models.Account
 import vcmsa.projects.prog7313_poe.core.models.Category
 import vcmsa.projects.prog7313_poe.core.models.Expense
 import vcmsa.projects.prog7313_poe.core.models.User
+import vcmsa.projects.prog7313_poe.core.models.UserSession
 
 /**
  * Context class for the room database.
@@ -30,10 +32,11 @@ import vcmsa.projects.prog7313_poe.core.models.User
         Expense::class,
         Category::class,
         User::class,
+        UserSession::class,
     ]
 )
 @TypeConverters(
-    DateConverter::class, 
+    DateConverter::class,
     UuidConverter::class,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -60,9 +63,7 @@ abstract class AppDatabase : RoomDatabase() {
                 // Build the database anew or from existing contexts
                 val instance = Room.databaseBuilder(
                     context.applicationContext, AppDatabase::class.java, DATABASE_NAME
-                )
-                    .fallbackToDestructiveMigration(false)
-                    .build()
+                ).build()
 
                 INSTANCE = instance
                 instance
@@ -77,6 +78,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao
     abstract fun categoryDao(): CategoryDao
     abstract fun expenseDao(): ExpenseDao
+    abstract fun sessionDao(): SessionDao
     abstract fun userDao(): UserDao
 
 

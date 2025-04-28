@@ -7,18 +7,22 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
 import vcmsa.projects.prog7313_poe.databinding.ActivityLoginBinding
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import vcmsa.projects.prog7313_poe.core.services.AuthService
+
 
 /**
  * @author ST10293362
  * @author ST10257002
+ * @author ST10326084
  */
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
-
+    
     private lateinit var binding: ActivityLoginBinding
-    private lateinit var auth: FirebaseAuth
-
+    private lateinit var auth: AuthService
+    
 
     // <editor-fold desc="Lifecycle">
 
@@ -29,9 +33,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         setupBindings()
         setupLayoutUi()
 
-        setupOnClickListeners()
+        auth = AuthService(applicationContext)
 
-        auth = FirebaseAuth.getInstance()
+        setupOnClickListeners()
     }
 
 
@@ -44,16 +48,17 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
      *
      * @author ST10293362
      * @author ST10257002
+     * @author ST10326084
      */
     private fun tryLogin() {
-        val mail = binding.emailEditText.text.toString().trim()
-        val pass = binding.passwordEditText.text.toString().trim()
+        val username = binding.emailEditText.text.toString().trim()
+        val password = binding.passwordEditText.text.toString().trim()
 
-        if (isValidCredentials(mail, pass)) {
+        if (isValidCredentials(username, password)) {
             binding.loadingIndicator.visibility = ProgressBar.VISIBLE
 
             completeLogin(
-                email = mail, password = pass
+                username, password
             )
         }
     }
@@ -64,32 +69,34 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
      *
      * @author ST10293362
      * @author ST10257002
+     * @author ST10326084
      */
     private fun completeLogin(
-        email: String, password: String
+        username: String, password: String
     ) {
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                binding.loadingIndicator.visibility = ProgressBar.GONE
+        binding.loadingIndicator.visibility = ProgressBar.VISIBLE
 
-                if (task.isSuccessful) {
-                    Toast.makeText(
-                        this, "Login successful!", Toast.LENGTH_LONG
-                    ).show()
+        lifecycleScope.launch {
+            val result = auth.signIn(username, password)
 
-                    val intent = Intent(this, DashboardActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                }
-            }
-            .addOnFailureListener { e ->
-                binding.loadingIndicator.visibility = ProgressBar.GONE
+            binding.loadingIndicator.visibility = ProgressBar.GONE
 
+            if (result.isSuccess) {
                 Toast.makeText(
-                    this, e.message, Toast.LENGTH_LONG
+                    this@LoginActivity, "Login successful!", Toast.LENGTH_LONG
+                ).show()
+
+                val intent = Intent(this@LoginActivity, DashboardActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+            } else {
+                Toast.makeText(
+                    this@LoginActivity, result.exceptionOrNull()?.message ?: "Unknown error", Toast.LENGTH_LONG
                 ).show()
             }
+        }
     }
+
 
 
     /**
@@ -97,11 +104,12 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
      *
      * @author ST10293362
      * @author ST10257002
+     * @author ST10326084
      */
     private fun isValidCredentials(
-        email: String, password: String
+        username: String, password: String
     ): Boolean {
-        if (email.isNotBlank() && password.isNotBlank()) {
+        if (username.isNotBlank() && password.isNotBlank()) {
             return true
         }
 
@@ -121,6 +129,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
      *
      * @author ST10293362
      * @author ST10257002
+     * @author ST10326084
      */
     override fun onClick(view: View?) {
         when (view?.id) {
@@ -145,6 +154,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     /**
      * @author ST10257002
+     * @author ST10326084
      */
     private fun setupOnClickListeners() {
         binding.loginButton.setOnClickListener(this)
@@ -159,6 +169,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     /**
      * @author ST10257002
+     * @author ST10326084
      */
     private fun setupBindings() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -167,6 +178,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     /**
      * @author ST10257002
+     * @author ST10326084
      */
     private fun setupLayoutUi() {
         enableEdgeToEdge()

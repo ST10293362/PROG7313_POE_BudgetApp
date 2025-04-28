@@ -1,7 +1,6 @@
 package vcmsa.projects.prog7313_poe.ui.views
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
@@ -9,9 +8,13 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
 import vcmsa.projects.prog7313_poe.core.extensions.onTextChanged
 import vcmsa.projects.prog7313_poe.databinding.ActivityRegisterBinding
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import vcmsa.projects.prog7313_poe.core.models.CredentialStrength
+import vcmsa.projects.prog7313_poe.core.services.AuthService
+
 
 /**
  * @author ST10293362
@@ -20,7 +23,8 @@ import vcmsa.projects.prog7313_poe.databinding.ActivityRegisterBinding
 class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var binding: ActivityRegisterBinding
-    private lateinit var auth: FirebaseAuth
+    private lateinit var auth: AuthService
+
 
     // <editor-fold desc="Lifecycle">
 
@@ -31,10 +35,10 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
         setupBindings()
         setupLayoutUi()
 
+        auth = AuthService(applicationContext)
+
         setupOnClickListeners()
         setupOnTextChangedListeners()
-
-        auth = FirebaseAuth.getInstance()
     }
 
 
@@ -110,31 +114,33 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
     private fun completeRegister(
         email: String, password: String, firstName: String, lastName: String
     ) {
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                binding.loadingIndicator.visibility = ProgressBar.GONE
+        binding.loadingIndicator.visibility = ProgressBar.VISIBLE
 
-                if (task.isSuccessful) {
-                    Toast.makeText(
-                        this, "Success!", Toast.LENGTH_SHORT
-                    ).show()
+        lifecycleScope.launch {
+            val userName = binding.userNameEditText.text.toString().trim()
 
-                    // NAVIGATE TO DESTINATION
+            val result = auth.signUp(firstName, lastName, userName, password, email)
 
-                    val intent = Intent(this, CompleteProfileActivity::class.java)
-                    intent.putExtra("FIRST_NAME", firstName)
-                    intent.putExtra("LAST_NAME", lastName)
-                    startActivity(intent)
-                    finish()
-                }
-            }
-            .addOnFailureListener { e ->
-                binding.loadingIndicator.visibility = ProgressBar.GONE
+            binding.loadingIndicator.visibility = ProgressBar.GONE
+
+            if (result.isSuccess) {
                 Toast.makeText(
-                    this, e.message, Toast.LENGTH_SHORT
+                    this@RegisterActivity, "Registration successful!", Toast.LENGTH_SHORT
+                ).show()
+
+                val intent = Intent(this@RegisterActivity, CompleteProfileActivity::class.java)
+                intent.putExtra("FIRST_NAME", firstName)
+                intent.putExtra("LAST_NAME", lastName)
+                startActivity(intent)
+                finish()
+            } else {
+                Toast.makeText(
+                    this@RegisterActivity, result.exceptionOrNull()?.message ?: "Unknown error", Toast.LENGTH_SHORT
                 ).show()
             }
+        }
     }
+
 
 
     /**
@@ -182,29 +188,19 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
 
     /**
-     * Calculate the strength of the password.
+     * Updates the UI to reflect the strength of the password.
      * 
+     * @see [CredentialStrength]
      * @author ST10293362
      * @author ST10257002
      */
-    private fun getPasswordStrength(
+    private fun updateCredentialStrengthUi(
         password: String
-    ): String {
-        return when {
-            password.length < 6 -> {
-                binding.passwordStrengthTextView.setTextColor(Color.RED)
-                "Weak"
-            }
-
-            password.length < 10 -> {
-                binding.passwordStrengthTextView.setTextColor(Color.YELLOW)
-                "Medium"
-            }
-
-            else -> {
-                binding.passwordStrengthTextView.setTextColor(Color.GREEN)
-                "Strong"
-            }
+    ) {
+        val strength = CredentialStrength.getStrength(password)
+        binding.passwordStrengthTextView.apply { 
+            text = strength.displayText
+            setTextColor(strength.color)
         }
     }
 
@@ -244,7 +240,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
     private fun setupOnTextChangedListeners() {
         with(binding) {
             passwordEditText.onTextChanged { input ->
-                binding.passwordStrengthTextView.text = getPasswordStrength(input)
+                updateCredentialStrengthUi(input)
             }
         }
     }
@@ -272,4 +268,5 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
 
     // </editor-fold>
+    
 }
