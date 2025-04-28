@@ -1,7 +1,6 @@
 package vcmsa.projects.prog7313_poe.ui.views
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
@@ -13,6 +12,7 @@ import vcmsa.projects.prog7313_poe.core.extensions.onTextChanged
 import vcmsa.projects.prog7313_poe.databinding.ActivityRegisterBinding
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import vcmsa.projects.prog7313_poe.core.models.CredentialStrength
 import vcmsa.projects.prog7313_poe.core.services.AuthService
 
 
@@ -188,29 +188,19 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
 
     /**
-     * Calculate the strength of the password.
+     * Updates the UI to reflect the strength of the password.
      * 
+     * @see [CredentialStrength]
      * @author ST10293362
      * @author ST10257002
      */
-    private fun getPasswordStrength(
+    private fun updateCredentialStrengthUi(
         password: String
-    ): String {
-        return when {
-            password.length < 6 -> {
-                binding.passwordStrengthTextView.setTextColor(Color.RED)
-                "Weak"
-            }
-
-            password.length < 10 -> {
-                binding.passwordStrengthTextView.setTextColor(Color.YELLOW)
-                "Medium"
-            }
-
-            else -> {
-                binding.passwordStrengthTextView.setTextColor(Color.GREEN)
-                "Strong"
-            }
+    ) {
+        val strength = CredentialStrength.getStrength(password)
+        binding.passwordStrengthTextView.apply { 
+            text = strength.displayText
+            setTextColor(strength.color)
         }
     }
 
@@ -250,7 +240,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
     private fun setupOnTextChangedListeners() {
         with(binding) {
             passwordEditText.onTextChanged { input ->
-                binding.passwordStrengthTextView.text = getPasswordStrength(input)
+                updateCredentialStrengthUi(input)
             }
         }
     }
