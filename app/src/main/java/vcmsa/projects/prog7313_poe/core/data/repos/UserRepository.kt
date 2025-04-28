@@ -51,4 +51,12 @@ class UserRepository(
     suspend fun getAllUsers(): List<User> {
         return dao.fetchAll()
     }
+
+    /**
+     * Get a user by their ID
+     * @author ST10257002
+     */
+    suspend fun getUserById(id: UUID): User? {
+        return dao.fetchOne(id)
+    }
 }

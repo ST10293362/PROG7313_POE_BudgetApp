@@ -11,9 +11,13 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -21,10 +25,6 @@ import androidx.core.content.FileProvider
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-
-/**
- * @author ST10326084
- */
 import androidx.lifecycle.ViewModelProvider
 import vcmsa.projects.prog7313_poe.R
 import vcmsa.projects.prog7313_poe.core.data.AppDatabase
@@ -33,21 +33,75 @@ import vcmsa.projects.prog7313_poe.ui.viewmodels.ExpenseViewModel
 import vcmsa.projects.prog7313_poe.ui.viewmodels.ExpenseViewModelFactory
 import vcmsa.projects.prog7313_poe.core.models.Expense
 
+/**
+ * @author ST10326084
+ */
 class AddExpenseActivity : AppCompatActivity() {
-    private lateinit var dateEditText: EditText
-    private lateinit var timeEditText: EditText
     private lateinit var descriptionEditText: EditText
-    private lateinit var categoryEditText: EditText
+    private lateinit var amountEditText: EditText
+    private lateinit var startTimeEditText: EditText
+    private lateinit var endTimeEditText: EditText
+    private lateinit var categorySpinner: Spinner
+    private lateinit var addCategoryButton: Button
     private lateinit var addPhotoButton: Button
     private lateinit var capturePhotoButton: Button
     private lateinit var submitButton: Button
-    private lateinit var imageView: ImageView
+    private lateinit var photoListView: ListView
     private var imageUris: MutableList<Uri> = mutableListOf()
     private lateinit var getImageLauncher: ActivityResultLauncher<Intent>
     private lateinit var takePictureLauncher: ActivityResultLauncher<Intent>
     private lateinit var currentPhotoPath: String
+    private lateinit var photoAdapter: PhotoAdapter
+    private val categories = mutableListOf(
+        "Food & Dining",
+        "Transportation",
+        "Shopping",
+        "Entertainment",
+        "Bills & Utilities",
+        "Health & Medical",
+        "Travel",
+        "Education",
+        "Personal Care",
+        "Other"
+    )
 
     private val REQUEST_CODE_PERMISSIONS = 1001
+
+    inner class PhotoAdapter : BaseAdapter() {
+        private val photoNames = mutableListOf<String>()
+
+        fun addPhoto(name: String) {
+            photoNames.add(name)
+            notifyDataSetChanged()
+        }
+
+        fun removePhoto(position: Int) {
+            photoNames.removeAt(position)
+            imageUris.removeAt(position)
+            notifyDataSetChanged()
+        }
+
+        override fun getCount(): Int = photoNames.size
+
+        override fun getItem(position: Int): Any = photoNames[position]
+
+        override fun getItemId(position: Int): Long = position.toLong()
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+            val view = convertView ?: LayoutInflater.from(this@AddExpenseActivity)
+                .inflate(R.layout.item_photo, parent, false)
+
+            val photoNameTextView = view.findViewById<TextView>(R.id.photoNameTextView)
+            val removeButton = view.findViewById<ImageButton>(R.id.removePhotoButton)
+
+            photoNameTextView.text = photoNames[position]
+            removeButton.setOnClickListener {
+                removePhoto(position)
+            }
+
+            return view
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,19 +116,67 @@ class AddExpenseActivity : AppCompatActivity() {
         val factory = ExpenseViewModelFactory(repository)
         val expenseViewModel = ViewModelProvider(this, factory)[ExpenseViewModel::class.java]
 
-        dateEditText = findViewById(R.id.dateEditText)
-        timeEditText = findViewById(R.id.timeEditText)
+        // Initialize views
+        initializeViews()
+
+        // Set up category spinner
+        setupCategorySpinner()
+
+        // Set up time pickers
+        setupTimePickers()
+
+        // Set up image handling
+        setupImageHandling()
+
+        // Set up click listeners
+        setupClickListeners()
+
+        // Set up photo list
+        photoAdapter = PhotoAdapter()
+        photoListView.adapter = photoAdapter
+    }
+
+    private fun initializeViews() {
         descriptionEditText = findViewById(R.id.descriptionEditText)
-        categoryEditText = findViewById(R.id.categoryEditText)
+        amountEditText = findViewById(R.id.amountEditText)
+        startTimeEditText = findViewById(R.id.startTimeEditText)
+        endTimeEditText = findViewById(R.id.endTimeEditText)
+        categorySpinner = findViewById(R.id.categorySpinner)
+        addCategoryButton = findViewById(R.id.addCategoryButton)
         addPhotoButton = findViewById(R.id.addPhotoButton)
         capturePhotoButton = findViewById(R.id.capturePhotoButton)
         submitButton = findViewById(R.id.submitButton)
-        imageView = findViewById(R.id.imageView)
+        photoListView = findViewById(R.id.photoListView)
+    }
 
+    private fun setupCategorySpinner() {
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        categorySpinner.adapter = adapter
+    }
+
+    private fun setupTimePickers() {
         val calendar = Calendar.getInstance()
-        dateEditText.setText(String.format("%02d/%02d/%04d", calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.YEAR)))
-        timeEditText.setText(String.format("%02d:%02d", calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE)))
+        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
+        startTimeEditText.setOnClickListener {
+            TimePickerDialog(this, { _, hour, minute ->
+                calendar.set(Calendar.HOUR_OF_DAY, hour)
+                calendar.set(Calendar.MINUTE, minute)
+                startTimeEditText.setText(timeFormat.format(calendar.time))
+            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
+        }
+
+        endTimeEditText.setOnClickListener {
+            TimePickerDialog(this, { _, hour, minute ->
+                calendar.set(Calendar.HOUR_OF_DAY, hour)
+                calendar.set(Calendar.MINUTE, minute)
+                endTimeEditText.setText(timeFormat.format(calendar.time))
+            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
+        }
+    }
+
+    private fun setupImageHandling() {
         getImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 val data = result.data
@@ -84,12 +186,15 @@ class AddExpenseActivity : AppCompatActivity() {
                         for (i in 0 until clipData.itemCount) {
                             val imageUri: Uri = clipData.getItemAt(i).uri
                             imageUris.add(imageUri)
+                            photoAdapter.addPhoto("Photo ${imageUris.size}")
                         }
                     } else {
                         val imageUri: Uri? = it.data
-                        imageUri?.let { uri -> imageUris.add(uri) }
+                        imageUri?.let { uri -> 
+                            imageUris.add(uri)
+                            photoAdapter.addPhoto("Photo ${imageUris.size}")
+                        }
                     }
-                    updateImageView()
                 }
             }
         }
@@ -99,16 +204,14 @@ class AddExpenseActivity : AppCompatActivity() {
                 val imageFile = File(currentPhotoPath)
                 val imageUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", imageFile)
                 imageUris.add(imageUri)
-                updateImageView()
+                photoAdapter.addPhoto("Photo ${imageUris.size}")
             }
         }
+    }
 
-        dateEditText.setOnClickListener {
-            showDatePicker()
-        }
-
-        timeEditText.setOnClickListener {
-            showTimePicker(true)
+    private fun setupClickListeners() {
+        addCategoryButton.setOnClickListener {
+            showAddCategoryDialog()
         }
 
         addPhotoButton.setOnClickListener {
@@ -122,6 +225,22 @@ class AddExpenseActivity : AppCompatActivity() {
         submitButton.setOnClickListener {
             submitExpense()
         }
+    }
+
+    private fun showAddCategoryDialog() {
+        val input = EditText(this)
+        AlertDialog.Builder(this)
+            .setTitle("Add New Category")
+            .setView(input)
+            .setPositiveButton("Add") { _, _ ->
+                val newCategory = input.text.toString().trim()
+                if (newCategory.isNotEmpty()) {
+                    categories.add(newCategory)
+                    (categorySpinner.adapter as ArrayAdapter<String>).notifyDataSetChanged()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun checkPermissions() {
@@ -143,30 +262,9 @@ class AddExpenseActivity : AppCompatActivity() {
         }
     }
 
-    private fun showDatePicker() {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-        DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
-            dateEditText.setText("$selectedDay/${selectedMonth + 1}/$selectedYear")
-        }, year, month, day).show()
-    }
-
-    private fun showTimePicker(isStartTime: Boolean) {
-        val calendar = Calendar.getInstance()
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        val minute = calendar.get(Calendar.MINUTE)
-
-        TimePickerDialog(this, { _, selectedHour, selectedMinute ->
-            timeEditText.setText(String.format("%02d:%02d", selectedHour, selectedMinute))
-        }, hour, minute, true).show()
-    }
-
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-            intent.setType("image/*")
+            type = "image/*"
             putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         }
         getImageLauncher.launch(intent)
@@ -203,46 +301,51 @@ class AddExpenseActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateImageView() {
-        if (imageUris.isNotEmpty()) {
-            imageView.setImageURI(imageUris.last())
-        }
-    }
-    
     /**
      * @author ST10326084
      */
     private fun submitExpense() {
-        val description = descriptionEditText.text.toString().trim()
-        val category = categoryEditText.text.toString().trim()
-        val amount = 0.0 // You can replace this with a field later
-        val vendor = "Unknown Vendor" // Replace if you add vendor input
-        val date = Date()
+        try {
+            val description = descriptionEditText.text.toString().trim()
+            val amount = amountEditText.text.toString().toDoubleOrNull()
+            val category = categorySpinner.selectedItem.toString()
+            val startTime = startTimeEditText.text.toString()
+            val endTime = endTimeEditText.text.toString()
+            
+            if (description.isEmpty() || amount == null || startTime.isEmpty() || endTime.isEmpty()) {
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                return
+            }
 
-        // TODO: Replace with actual user/account/category IDs
-        val userId = UUID.randomUUID()
-        val accountId = UUID.randomUUID()
+            // TODO: Replace with actual user/account IDs from session
+            val userId = UUID.randomUUID()
+            val accountId = UUID.randomUUID()
 
-        val expense = Expense(
-            detail = description,
-            vendor = vendor,
-            amount = amount,
-            dateOfExpense = date,
-            idAuthor = userId,
-            idAccount = accountId,
-            idCategory = null
-        )
+            val expense = Expense(
+                detail = description,
+                vendor = category,
+                amount = amount,
+                dateOfExpense = Date(),
+                idAuthor = userId,
+                idAccount = accountId,
+                idCategory = null,
+                imageUri = imageUris.joinToString(",") { it.toString() }
+            )
 
-        // Save to DB using ViewModel
-        val db = AppDatabase.getDatabase(applicationContext)
-        val viewModel = ViewModelProvider(
-            this,
-            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao()))
-        )[ExpenseViewModel::class.java]
+            // Save to DB using ViewModel
+            val db = AppDatabase.getDatabase(applicationContext)
+            val viewModel = ViewModelProvider(
+                this,
+                ExpenseViewModelFactory(ExpenseRepository(db.expenseDao()))
+            )[ExpenseViewModel::class.java]
 
-        viewModel.addExpense(expense)
+            viewModel.addExpense(expense)
 
-        Toast.makeText(this, "Expense saved to database!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Expense saved successfully!", Toast.LENGTH_SHORT).show()
+            finish()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error saving expense: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
 
 }

@@ -54,7 +54,7 @@ class CompleteProfileActivity : AppCompatActivity() {
 
         saveButton.setOnClickListener {
             // Logic to save user profile details including card information
-            startActivity(Intent(this, ManageCategoriesActivity::class.java))
+            startActivity(Intent(this, DashboardActivity::class.java))
             finish()
         }
     }

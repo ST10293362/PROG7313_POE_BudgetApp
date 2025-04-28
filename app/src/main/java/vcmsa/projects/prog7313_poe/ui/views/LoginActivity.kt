@@ -132,6 +132,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 startActivity(Intent(this, PasswordResetActivity::class.java))
             }
 
+            binding.bypassLogin.id -> {
+                startActivity(Intent(this, DashboardActivity::class.java))
+            }
+
             binding.loginButton.id -> {
                 tryLogin()
             }
