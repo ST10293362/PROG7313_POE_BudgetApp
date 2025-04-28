@@ -75,7 +75,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
             valid = false
         }
-        
+
         if (!isValidEmail(email)) {
             Toast.makeText(
                 this, "Invalid email format", Toast.LENGTH_SHORT
@@ -145,7 +145,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
     /**
      * Validate whether the given credentials are correctly formatted.
-     * 
+     *
      * @author ST10257002
      */
     private fun isValidInput(
@@ -163,7 +163,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
     /**
      * Validate whether the email is correctly formatted.
-     * 
+     *
      * @author ST10293362
      * @author ST10257002
      */
@@ -176,7 +176,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
     /**
      * Validate whether the password matches the confirmation field.
-     * 
+     *
      * @author ST10293362
      * @author ST10257002
      */
@@ -189,7 +189,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
     /**
      * Updates the UI to reflect the strength of the password.
-     * 
+     *
      * @see [CredentialStrength]
      * @author ST10293362
      * @author ST10257002
@@ -198,10 +198,10 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
         password: String
     ) {
         val strength = CredentialStrength.getStrength(password)
-        binding.passwordStrengthTextView.apply { 
-            text = strength.displayText
-            setTextColor(strength.color)
-        }
+//        binding.passwordStrengthTextView.apply {
+//            text = strength.displayText
+//            setTextColor(strength.color)
+//        }
     }
 
 
@@ -268,5 +268,5 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
 
     // </editor-fold>
-    
+
 }
