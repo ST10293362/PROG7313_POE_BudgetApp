@@ -9,12 +9,11 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
 import vcmsa.projects.prog7313_poe.core.extensions.onTextChanged
 import vcmsa.projects.prog7313_poe.databinding.ActivityRegisterBinding
-
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import vcmsa.projects.prog7313_poe.core.services.AuthService
 
 
 /**
@@ -24,9 +23,7 @@ import kotlinx.coroutines.launch
 class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var binding: ActivityRegisterBinding
-    private lateinit var auth: FirebaseAuth
-
-    private lateinit var authService: AuthService
+    private lateinit var auth: AuthService
 
 
     // <editor-fold desc="Lifecycle">
@@ -38,14 +35,10 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
         setupBindings()
         setupLayoutUi()
 
-        //room
-        authService = AuthService(applicationContext)
+        auth = AuthService(applicationContext)
 
         setupOnClickListeners()
         setupOnTextChangedListeners()
-
-        // dont need firebase currently
-        // auth = FirebaseAuth.getInstance()
     }
 
 
@@ -118,18 +111,22 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
      * @author ST10293362
      * @author ST10257002
      */
-    private fun completeRegister(email: String, password: String, firstName: String, lastName: String) {
+    private fun completeRegister(
+        email: String, password: String, firstName: String, lastName: String
+    ) {
         binding.loadingIndicator.visibility = ProgressBar.VISIBLE
 
         lifecycleScope.launch {
             val userName = binding.userNameEditText.text.toString().trim()
 
-            val result = authService.signUp(firstName, lastName, userName, password, email)
+            val result = auth.signUp(firstName, lastName, userName, password, email)
 
             binding.loadingIndicator.visibility = ProgressBar.GONE
 
             if (result.isSuccess) {
-                Toast.makeText(this@RegisterActivity, "Registration successful!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@RegisterActivity, "Registration successful!", Toast.LENGTH_SHORT
+                ).show()
 
                 val intent = Intent(this@RegisterActivity, CompleteProfileActivity::class.java)
                 intent.putExtra("FIRST_NAME", firstName)
@@ -137,7 +134,9 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
                 startActivity(intent)
                 finish()
             } else {
-                Toast.makeText(this@RegisterActivity, result.exceptionOrNull()?.message ?: "Unknown error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@RegisterActivity, result.exceptionOrNull()?.message ?: "Unknown error", Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -279,4 +278,5 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
 
     // </editor-fold>
+    
 }
