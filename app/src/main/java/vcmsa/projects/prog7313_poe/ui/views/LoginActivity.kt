@@ -10,14 +10,24 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import vcmsa.projects.prog7313_poe.databinding.ActivityLoginBinding
 
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+
+
 /**
  * @author ST10293362
  * @author ST10257002
+ * @author ST10326084
  */
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
+    // firebase
     private lateinit var binding: ActivityLoginBinding
     private lateinit var auth: FirebaseAuth
+
+    //Room
+    private lateinit var authService: AuthService
+
 
 
     // <editor-fold desc="Lifecycle">
@@ -29,9 +39,13 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         setupBindings()
         setupLayoutUi()
 
+        // room
+        authService = AuthService(applicationContext)
+
         setupOnClickListeners()
 
-        auth = FirebaseAuth.getInstance()
+        // firebase is not currently needed
+        // auth = FirebaseAuth.getInstance()
     }
 
 
@@ -44,6 +58,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
      *
      * @author ST10293362
      * @author ST10257002
+     * @author ST10326084
      */
     private fun tryLogin() {
         val mail = binding.emailEditText.text.toString().trim()
@@ -64,32 +79,29 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
      *
      * @author ST10293362
      * @author ST10257002
+     * @author ST10326084
      */
-    private fun completeLogin(
-        email: String, password: String
-    ) {
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                binding.loadingIndicator.visibility = ProgressBar.GONE
 
-                if (task.isSuccessful) {
-                    Toast.makeText(
-                        this, "Login successful!", Toast.LENGTH_LONG
-                    ).show()
+    private fun completeLogin(email: String, password: String) {
+        binding.loadingIndicator.visibility = ProgressBar.VISIBLE
 
-                    val intent = Intent(this, DashboardActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                }
+        lifecycleScope.launch {
+            val result = authService.signIn(email, password)
+
+            binding.loadingIndicator.visibility = ProgressBar.GONE
+
+            if (result.isSuccess) {
+                Toast.makeText(this@LoginActivity, "Login successful!", Toast.LENGTH_LONG).show()
+
+                val intent = Intent(this@LoginActivity, DashboardActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+            } else {
+                Toast.makeText(this@LoginActivity, result.exceptionOrNull()?.message ?: "Unknown error", Toast.LENGTH_LONG).show()
             }
-            .addOnFailureListener { e ->
-                binding.loadingIndicator.visibility = ProgressBar.GONE
-
-                Toast.makeText(
-                    this, e.message, Toast.LENGTH_LONG
-                ).show()
-            }
+        }
     }
+
 
 
     /**
@@ -97,6 +109,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
      *
      * @author ST10293362
      * @author ST10257002
+     * @author ST10326084
      */
     private fun isValidCredentials(
         email: String, password: String
@@ -121,6 +134,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
      *
      * @author ST10293362
      * @author ST10257002
+     * @author ST10326084
      */
     override fun onClick(view: View?) {
         when (view?.id) {
@@ -141,6 +155,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     /**
      * @author ST10257002
+     * @author ST10326084
      */
     private fun setupOnClickListeners() {
         binding.loginButton.setOnClickListener(this)
@@ -155,6 +170,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     /**
      * @author ST10257002
+     * @author ST10326084
      */
     private fun setupBindings() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -163,6 +179,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     /**
      * @author ST10257002
+     * @author ST10326084
      */
     private fun setupLayoutUi() {
         enableEdgeToEdge()

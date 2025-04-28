@@ -13,6 +13,10 @@ import com.google.firebase.auth.FirebaseAuth
 import vcmsa.projects.prog7313_poe.core.extensions.onTextChanged
 import vcmsa.projects.prog7313_poe.databinding.ActivityRegisterBinding
 
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+
+
 /**
  * @author ST10293362
  * @author ST10257002
@@ -21,6 +25,9 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var auth: FirebaseAuth
+
+    private lateinit var authService: AuthService
+
 
     // <editor-fold desc="Lifecycle">
 
@@ -31,10 +38,14 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
         setupBindings()
         setupLayoutUi()
 
+        //room
+        authService = AuthService(applicationContext)
+
         setupOnClickListeners()
         setupOnTextChangedListeners()
 
-        auth = FirebaseAuth.getInstance()
+        // dont need firebase currently
+        // auth = FirebaseAuth.getInstance()
     }
 
 
@@ -107,34 +118,30 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
      * @author ST10293362
      * @author ST10257002
      */
-    private fun completeRegister(
-        email: String, password: String, firstName: String, lastName: String
-    ) {
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                binding.loadingIndicator.visibility = ProgressBar.GONE
+    private fun completeRegister(email: String, password: String, firstName: String, lastName: String) {
+        binding.loadingIndicator.visibility = ProgressBar.VISIBLE
 
-                if (task.isSuccessful) {
-                    Toast.makeText(
-                        this, "Success!", Toast.LENGTH_SHORT
-                    ).show()
+        lifecycleScope.launch {
+            val userName = binding.userNameEditText.text.toString().trim()
 
-                    // NAVIGATE TO DESTINATION
+            val result = authService.signUp(firstName, lastName, userName, password, email)
 
-                    val intent = Intent(this, CompleteProfileActivity::class.java)
-                    intent.putExtra("FIRST_NAME", firstName)
-                    intent.putExtra("LAST_NAME", lastName)
-                    startActivity(intent)
-                    finish()
-                }
+            binding.loadingIndicator.visibility = ProgressBar.GONE
+
+            if (result.isSuccess) {
+                Toast.makeText(this@RegisterActivity, "Registration successful!", Toast.LENGTH_SHORT).show()
+
+                val intent = Intent(this@RegisterActivity, CompleteProfileActivity::class.java)
+                intent.putExtra("FIRST_NAME", firstName)
+                intent.putExtra("LAST_NAME", lastName)
+                startActivity(intent)
+                finish()
+            } else {
+                Toast.makeText(this@RegisterActivity, result.exceptionOrNull()?.message ?: "Unknown error", Toast.LENGTH_SHORT).show()
             }
-            .addOnFailureListener { e ->
-                binding.loadingIndicator.visibility = ProgressBar.GONE
-                Toast.makeText(
-                    this, e.message, Toast.LENGTH_SHORT
-                ).show()
-            }
+        }
     }
+
 
 
     /**
