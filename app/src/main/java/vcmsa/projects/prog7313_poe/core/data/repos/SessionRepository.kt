@@ -62,10 +62,10 @@ class SessionRepository(
      * @author ST10257002
      */
     suspend fun signIn(
-        email: String, password: String
+        username: String, password: String
     ): Result<User> {
         return try {
-            val user = userDao.fetchOneByCredentials(email, password)
+            val user = userDao.fetchOneByCredentials(username, password)
 
             if (user == null) {
                 return Result.failure(

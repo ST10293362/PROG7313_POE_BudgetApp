@@ -76,11 +76,11 @@ interface UserDao : BaseDao<User> {
     @Query(
         """
         SELECT * FROM user
-        WHERE email_address = :email 
+        WHERE   username = :username 
             AND password = :password
         """
     )
-    suspend fun fetchOneByCredentials(email: String, password: String): User?
+    suspend fun fetchOneByCredentials(username: String, password: String): User?
 
 
     /**

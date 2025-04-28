@@ -51,14 +51,14 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
      * @author ST10326084
      */
     private fun tryLogin() {
-        val mail = binding.emailEditText.text.toString().trim()
-        val pass = binding.passwordEditText.text.toString().trim()
+        val username = binding.emailEditText.text.toString().trim()
+        val password = binding.passwordEditText.text.toString().trim()
 
-        if (isValidCredentials(mail, pass)) {
+        if (isValidCredentials(username, password)) {
             binding.loadingIndicator.visibility = ProgressBar.VISIBLE
 
             completeLogin(
-                email = mail, password = pass
+                username, password
             )
         }
     }
@@ -72,12 +72,12 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
      * @author ST10326084
      */
     private fun completeLogin(
-        email: String, password: String
+        username: String, password: String
     ) {
         binding.loadingIndicator.visibility = ProgressBar.VISIBLE
 
         lifecycleScope.launch {
-            val result = auth.signIn(email, password)
+            val result = auth.signIn(username, password)
 
             binding.loadingIndicator.visibility = ProgressBar.GONE
 
@@ -107,9 +107,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
      * @author ST10326084
      */
     private fun isValidCredentials(
-        email: String, password: String
+        username: String, password: String
     ): Boolean {
-        if (email.isNotBlank() && password.isNotBlank()) {
+        if (username.isNotBlank() && password.isNotBlank()) {
             return true
         }
 
