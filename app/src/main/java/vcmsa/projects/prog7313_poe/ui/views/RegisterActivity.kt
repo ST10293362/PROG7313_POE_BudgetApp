@@ -37,29 +37,175 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
         auth = FirebaseAuth.getInstance()
     }
 
-    private fun checkPasswordStrength(password: String) {
-        val strength = when {
+
+    // </editor-fold>
+    // <editor-fold desc="Functions">
+
+
+    /**
+     * Initiate the registration process.
+     *
+     * @author ST10293362
+     * @author ST10257002
+     */
+    private fun tryRegister() {
+        val firstName = binding.firstNameEditText.text.toString().trim()
+        val lastName = binding.lastNameEditText.text.toString().trim()
+        val userName = binding.userNameEditText.text.toString().trim()
+        val email = binding.emailEditText.text.toString().trim()
+        val password = binding.passwordEditText.text.toString().trim()
+        val confirmPassword = binding.confirmPasswordEditText.text.toString().trim()
+
+        // VALIDATION
+
+        var valid = true
+
+        if (
+            !isValidInput(
+                firstName, lastName, userName, email, password, confirmPassword
+            )
+        ) {
+            Toast.makeText(
+                this, "Fields cannot be empty or whitespace", Toast.LENGTH_SHORT
+            ).show()
+
+            valid = false
+        }
+        
+        if (!isValidEmail(email)) {
+            Toast.makeText(
+                this, "Invalid email format", Toast.LENGTH_SHORT
+            ).show()
+
+            valid = false
+        }
+
+        if (
+            !isMatchingPasswords(password = password, confirmPassword = confirmPassword)
+        ) {
+            Toast.makeText(
+                this, "The password must match the confirmation field", Toast.LENGTH_SHORT
+            ).show()
+
+            valid = false
+        }
+
+        // NAVIGATION
+
+        if (valid) {
+            binding.loadingIndicator.visibility = ProgressBar.VISIBLE
+            completeRegister(
+                email = email, password = password, firstName = firstName, lastName = lastName
+            )
+        }
+    }
+
+
+    /**
+     * Query firebase to register the user with the given credentials.
+     *
+     * @author ST10293362
+     * @author ST10257002
+     */
+    private fun completeRegister(
+        email: String, password: String, firstName: String, lastName: String
+    ) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                binding.loadingIndicator.visibility = ProgressBar.GONE
+
+                if (task.isSuccessful) {
+                    Toast.makeText(
+                        this, "Success!", Toast.LENGTH_SHORT
+                    ).show()
+
+                    // NAVIGATE TO DESTINATION
+
+                    val intent = Intent(this, CompleteProfileActivity::class.java)
+                    intent.putExtra("FIRST_NAME", firstName)
+                    intent.putExtra("LAST_NAME", lastName)
+                    startActivity(intent)
+                    finish()
+                }
+            }
+            .addOnFailureListener { e ->
+                binding.loadingIndicator.visibility = ProgressBar.GONE
+                Toast.makeText(
+                    this, e.message, Toast.LENGTH_SHORT
+                ).show()
+            }
+    }
+
+
+    /**
+     * Validate whether the given credentials are correctly formatted.
+     * 
+     * @author ST10257002
+     */
+    private fun isValidInput(
+        vararg fields: String
+    ): Boolean {
+        for (field in fields) {
+            if (field.isBlank()) {
+                return false
+            }
+        }
+
+        return true
+    }
+
+
+    /**
+     * Validate whether the email is correctly formatted.
+     * 
+     * @author ST10293362
+     * @author ST10257002
+     */
+    private fun isValidEmail(
+        email: String
+    ): Boolean {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+
+    /**
+     * Validate whether the password matches the confirmation field.
+     * 
+     * @author ST10293362
+     * @author ST10257002
+     */
+    private fun isMatchingPasswords(
+        password: String, confirmPassword: String
+    ): Boolean {
+        return (password == confirmPassword)
+    }
+
+
+    /**
+     * Calculate the strength of the password.
+     * 
+     * @author ST10293362
+     * @author ST10257002
+     */
+    private fun getPasswordStrength(
+        password: String
+    ): String {
+        return when {
             password.length < 6 -> {
-                binding.passwordStrengthTextView.setTextColor(Color.RED) // Use Color.RED from android.graphics.Color
+                binding.passwordStrengthTextView.setTextColor(Color.RED)
                 "Weak"
             }
 
             password.length < 10 -> {
-                binding.passwordStrengthTextView.setTextColor(Color.YELLOW) // Use Color.YELLOW from android.graphics.Color
+                binding.passwordStrengthTextView.setTextColor(Color.YELLOW)
                 "Medium"
             }
 
             else -> {
-                binding.passwordStrengthTextView.setTextColor(Color.GREEN) // Use Color.GREEN from android.graphics.Color
+                binding.passwordStrengthTextView.setTextColor(Color.GREEN)
                 "Strong"
             }
         }
-
-        binding.passwordStrengthTextView.text = "Password Strength: $strength"
-    }
-
-    private fun isValidEmail(email: String): Boolean {
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
 
@@ -76,51 +222,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(view: View?) {
         when (view?.id) {
             binding.registerButton.id -> {
-                val firstName = binding.firstNameEditText.text.toString().trim()
-                val lastName = binding.lastNameEditText.text.toString().trim()
-                val userName = binding.userNameEditText.text.toString().trim()
-                val email = binding.emailEditText.text.toString().trim()
-                val password = binding.passwordEditText.text.toString().trim()
-                val confirmPassword = binding.confirmPasswordEditText.text.toString().trim()
-
-                if (firstName.isNotEmpty() && lastName.isNotEmpty() && userName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty()) {
-                    if (!isValidEmail(email)) {
-                        Toast.makeText(this, "Invalid email format", Toast.LENGTH_SHORT).show()
-                        return
-                    }
-
-                    if (password != confirmPassword) {
-                        Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
-                        return
-                    }
-
-                    binding.loadingIndicator.visibility = ProgressBar.VISIBLE
-
-                    auth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener { task ->
-                            binding.loadingIndicator.visibility = ProgressBar.GONE
-                            if (task.isSuccessful) {
-                                Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT)
-                                    .show()
-                                val intent = Intent(this, CompleteProfileActivity::class.java)
-                                intent.putExtra("FIRST_NAME", firstName)
-                                intent.putExtra("LAST_NAME", lastName)
-                                startActivity(intent)
-                                finish()
-                            } else {
-                                Toast.makeText(
-                                    this,
-                                    "Registration failed: ${task.exception?.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }.addOnFailureListener { e ->
-                            binding.loadingIndicator.visibility = ProgressBar.GONE
-                            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                        }
-                } else {
-                    Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
-                }
+                tryRegister()
             }
         }
     }
@@ -135,12 +237,14 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
 
     /**
+     * Catch and handle on-text-changed events from the view.
+     *
      * @author ST10257002
      */
     private fun setupOnTextChangedListeners() {
-        with (binding) {
+        with(binding) {
             passwordEditText.onTextChanged { input ->
-                checkPasswordStrength(input)
+                binding.passwordStrengthTextView.text = getPasswordStrength(input)
             }
         }
     }
