@@ -1,5 +1,6 @@
 package vcmsa.projects.prog7313_poe.core.data.repos
 
+import androidx.lifecycle.LiveData
 import vcmsa.projects.prog7313_poe.core.data.access.ExpenseDao
 import vcmsa.projects.prog7313_poe.core.models.Expense
 import java.util.UUID
@@ -50,7 +51,7 @@ class ExpenseRepository(
      * @author ST10326084
      * @author ST10257002
      */
-    suspend fun getAllExpenses(): List<Expense> {
+    fun getAllExpenses(): LiveData<List<Expense>> {
         return dao.fetchAll()
     }
 }

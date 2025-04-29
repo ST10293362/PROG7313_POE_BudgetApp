@@ -1,5 +1,6 @@
 package vcmsa.projects.prog7313_poe.core.data.access
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
@@ -38,7 +39,7 @@ interface ExpenseDao : BaseDao<Expense> {
     /**
      * Fetches the contents of the database table.
      *
-     * @return [List] collection containing every entity in the database.
+     * @return [LiveData] containing every entity in the database.
      * @author ST10257002
      */
     @Query(
@@ -46,7 +47,7 @@ interface ExpenseDao : BaseDao<Expense> {
         SELECT * FROM expense
         """
     )
-    suspend fun fetchAll(): List<Expense>
+    fun fetchAll(): LiveData<List<Expense>>
 
 
     /**
@@ -88,5 +89,4 @@ interface ExpenseDao : BaseDao<Expense> {
 
 
     //</editor-fold>
-
 }

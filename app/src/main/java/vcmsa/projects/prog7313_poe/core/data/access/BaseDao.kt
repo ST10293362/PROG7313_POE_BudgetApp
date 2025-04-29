@@ -3,7 +3,6 @@ package vcmsa.projects.prog7313_poe.core.data.access
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
-import androidx.room.Transaction
 import androidx.room.Update
 import vcmsa.projects.prog7313_poe.core.models.supers.AuditableEntity
 import vcmsa.projects.prog7313_poe.core.models.supers.KeyedEntity
@@ -85,4 +84,30 @@ interface BaseDao<T> where T : KeyedEntity, T : AuditableEntity {
     @Delete
     suspend fun deleteAll(instanceCollection: List<T>)
 
+    /**
+     * Inserts an entity within a transaction.
+     *
+     * @param instance The entity to insert.
+     */
+    suspend fun insertWithTransaction(instance: T) {
+        insert(instance)
+    }
+
+    /**
+     * Updates an entity within a transaction.
+     *
+     * @param instance The entity to update.
+     */
+    suspend fun updateWithTransaction(instance: T) {
+        update(instance)
+    }
+
+    /**
+     * Deletes an entity within a transaction.
+     *
+     * @param instance The entity to delete.
+     */
+    suspend fun deleteWithTransaction(instance: T) {
+        delete(instance)
+    }
 }

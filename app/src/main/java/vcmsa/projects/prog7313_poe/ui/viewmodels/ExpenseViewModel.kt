@@ -1,5 +1,6 @@
 package vcmsa.projects.prog7313_poe.ui.viewmodels
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +14,8 @@ import vcmsa.projects.prog7313_poe.core.models.Expense
 class ExpenseViewModel(
     private val repository: ExpenseRepository
 ) : ViewModel() {
+
+    val allExpenses: LiveData<List<Expense>> = repository.getAllExpenses()
 
     /**
      * @author ST10326084

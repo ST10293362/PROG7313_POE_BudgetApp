@@ -4,6 +4,7 @@ import vcmsa.projects.prog7313_poe.core.data.access.SessionDao
 import vcmsa.projects.prog7313_poe.core.data.access.UserDao
 import vcmsa.projects.prog7313_poe.core.models.User
 import vcmsa.projects.prog7313_poe.core.models.UserSession
+import java.util.UUID
 
 /**
  * @author ST10257002
@@ -23,7 +24,7 @@ class SessionRepository(
      * @author ST10257002
      */
     suspend fun signUp(
-        firstName: String, finalName: String, username: String, password: String, email: String
+        firstName: String, finalName: String, username: String, hashedPassword: String, email: String, passwordSalt: String
     ): Result<User> {
         return try {
             val takenUsernameUser = userDao.fetchOneByUsername(username)
@@ -35,7 +36,8 @@ class SessionRepository(
                 name = firstName,
                 surname = finalName,
                 username = username,
-                password = password,
+                password = hashedPassword,
+                passwordSalt = passwordSalt,
                 emailAddress = email,
                 maxGoal = null,
                 minGoal = null,
@@ -44,7 +46,7 @@ class SessionRepository(
             )
 
             userDao.insert(user)
-            sessionDao.create(UserSession(userId = user.id))
+            createSession(user.id)
 
             Result.success(user)
 
@@ -62,18 +64,18 @@ class SessionRepository(
      * @author ST10257002
      */
     suspend fun signIn(
-        username: String, password: String
+        email: String,
+        hashedPassword: String
     ): Result<User> {
         return try {
-            val user = userDao.fetchOneByCredentials(username, password)
-
-            if (user == null) {
-                return Result.failure(
-                    Exception("User not found with the given credentials")
-                )
+            val user = userDao.fetchOneByEmail(email)
+                ?: return Result.failure(Exception("User not found"))
+            
+            if (user.password != hashedPassword) {
+                return Result.failure(Exception("Invalid password"))
             }
-
-            sessionDao.create(UserSession(userId = user.id))
+            
+            createSession(user.id)
             Result.success(user)
 
         } catch (e: Exception) {
@@ -129,5 +131,9 @@ class SessionRepository(
 
 
     //</editor-fold>
+
+    private suspend fun createSession(userId: UUID) {
+        sessionDao.create(UserSession(userId = userId))
+    }
 
 }

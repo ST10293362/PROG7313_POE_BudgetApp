@@ -19,7 +19,6 @@ interface AccountDao : BaseDao<Account> {
 
     //<editor-fold desc="CRUD Operations">
 
-
     /**
      * Deletes a specific entity from the database using its unique ID.
      *
@@ -35,7 +34,6 @@ interface AccountDao : BaseDao<Account> {
     )
     suspend fun delete(targetId: UUID)
 
-
     /**
      * Fetches the contents of the database table.
      *
@@ -48,7 +46,6 @@ interface AccountDao : BaseDao<Account> {
         """
     )
     suspend fun fetchAll(): List<Account>
-
 
     /**
      * Fetches a specific entity by its primary key identity.
@@ -66,10 +63,8 @@ interface AccountDao : BaseDao<Account> {
     )
     suspend fun fetchOne(targetId: UUID): Account?
 
-
     //</editor-fold>
     //<editor-fold desc="Extensions">
-
 
     /**
      * Checks whether an entity with the given ID exists in the database.
@@ -87,7 +82,6 @@ interface AccountDao : BaseDao<Account> {
     )
     suspend fun exists(targetId: UUID): Boolean
 
-
     /**
      * Fetches an [AccountWithExpenses] object.
      *
@@ -95,6 +89,7 @@ interface AccountDao : BaseDao<Account> {
      *
      * @author ST10257002
      */
+    @Transaction
     @Query(
         """
             SELECT * FROM account
@@ -103,7 +98,5 @@ interface AccountDao : BaseDao<Account> {
     )
     suspend fun fetchAccountWithExpenses(targetId: UUID): AccountWithExpenses
 
-
     //</editor-fold>
-
 }

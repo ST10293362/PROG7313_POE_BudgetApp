@@ -96,6 +96,18 @@ interface UserDao : BaseDao<User> {
     suspend fun fetchOneByUsername(username: String): User?
 
 
+    /**
+     * Fetches a user by their email address.
+     */
+    @Query(
+        """
+        SELECT * FROM user
+        WHERE email_address = :email
+        """
+    )
+    suspend fun fetchOneByEmail(email: String): User?
+
+
     //</editor-fold>
     //<editor-fold desc="Extensions">
 
@@ -124,6 +136,7 @@ interface UserDao : BaseDao<User> {
      *
      * @author ST10257002
      */
+    @Transaction
     @Query(
         """
             SELECT * FROM user
@@ -140,6 +153,7 @@ interface UserDao : BaseDao<User> {
      *
      * @author ST10257002
      */
+    @Transaction
     @Query(
         """
             SELECT * FROM user
@@ -156,6 +170,7 @@ interface UserDao : BaseDao<User> {
      *
      * @author ST10257002
      */
+    @Transaction
     @Query(
         """
             SELECT * FROM user
@@ -166,5 +181,4 @@ interface UserDao : BaseDao<User> {
 
 
     //</editor-fold>
-
 }

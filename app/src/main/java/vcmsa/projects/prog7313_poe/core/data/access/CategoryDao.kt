@@ -97,6 +97,7 @@ interface CategoryDao : BaseDao<Category> {
      *
      * @author ST10257002
      */
+    @Transaction
     @Query(
         """
             SELECT * FROM category
@@ -107,5 +108,4 @@ interface CategoryDao : BaseDao<Category> {
 
 
     //</editor-fold>
-
 }

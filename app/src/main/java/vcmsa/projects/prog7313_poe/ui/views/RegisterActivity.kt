@@ -2,7 +2,6 @@ package vcmsa.projects.prog7313_poe.ui.views
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Patterns
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -14,7 +13,8 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import vcmsa.projects.prog7313_poe.core.models.CredentialStrength
 import vcmsa.projects.prog7313_poe.core.services.AuthService
-
+import vcmsa.projects.prog7313_poe.core.utils.ValidationUtils
+import vcmsa.projects.prog7313_poe.R
 
 /**
  * @author ST10293362
@@ -25,9 +25,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var auth: AuthService
 
-
     // <editor-fold desc="Lifecycle">
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,10 +39,8 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
         setupOnTextChangedListeners()
     }
 
-
     // </editor-fold>
     // <editor-fold desc="Functions">
-
 
     /**
      * Initiate the registration process.
@@ -60,50 +56,49 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
         val password = binding.passwordEditText.text.toString().trim()
         val confirmPassword = binding.confirmPasswordEditText.text.toString().trim()
 
-        // VALIDATION
+        // Validate inputs using ValidationUtils
+        val validationErrors = ValidationUtils.validateInputs(
+            "name" to firstName,
+            "name" to lastName,
+            "email" to email,
+            "password" to password
+        )
 
-        var valid = true
-
-        if (
-            !isValidInput(
-                firstName, lastName, userName, email, password, confirmPassword
-            )
-        ) {
-            Toast.makeText(
-                this, "Fields cannot be empty or whitespace", Toast.LENGTH_SHORT
-            ).show()
-
-            valid = false
+        if (validationErrors.isNotEmpty()) {
+            validationErrors.forEach { (field, error) ->
+                when (field) {
+                    "name" -> {
+                        if (firstName.isBlank()) {
+                            binding.firstNameLayout.error = getString(R.string.error_required)
+                        }
+                        if (lastName.isBlank()) {
+                            binding.lastNameLayout.error = getString(R.string.error_required)
+                        }
+                    }
+                    "email" -> binding.emailLayout.error = error
+                    "password" -> binding.passwordLayout.error = error
+                }
+            }
+            return
         }
 
-        if (!isValidEmail(email)) {
-            Toast.makeText(
-                this, "Invalid email format", Toast.LENGTH_SHORT
-            ).show()
-
-            valid = false
+        if (userName.isBlank()) {
+            binding.usernameLayout.error = getString(R.string.error_required)
+            return
         }
 
-        if (
-            !isMatchingPasswords(password = password, confirmPassword = confirmPassword)
-        ) {
-            Toast.makeText(
-                this, "The password must match the confirmation field", Toast.LENGTH_SHORT
-            ).show()
-
-            valid = false
+        if (!isMatchingPasswords(password, confirmPassword)) {
+            binding.confirmPasswordLayout.error = getString(R.string.error_passwords_dont_match)
+            return
         }
 
-        // NAVIGATION
+        // Clear any previous errors
+        clearErrors()
 
-        if (valid) {
-            binding.loadingIndicator.visibility = ProgressBar.VISIBLE
-            completeRegister(
-                email = email, password = password, firstName = firstName, lastName = lastName
-            )
-        }
+        // Show loading indicator and proceed with registration
+        binding.loadingIndicator.visibility = ProgressBar.VISIBLE
+        completeRegister(firstName, lastName, userName, email, password)
     }
-
 
     /**
      * Query firebase to register the user with the given credentials.
@@ -112,80 +107,59 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
      * @author ST10257002
      */
     private fun completeRegister(
-        email: String, password: String, firstName: String, lastName: String
+        firstName: String,
+        lastName: String,
+        userName: String,
+        email: String,
+        password: String
     ) {
-        binding.loadingIndicator.visibility = ProgressBar.VISIBLE
-
         lifecycleScope.launch {
-            val userName = binding.userNameEditText.text.toString().trim()
+            try {
+                val result = auth.signUp(firstName, lastName, userName, password, email)
 
-            val result = auth.signUp(firstName, lastName, userName, password, email)
-
-            binding.loadingIndicator.visibility = ProgressBar.GONE
-
-            if (result.isSuccess) {
-                Toast.makeText(
-                    this@RegisterActivity, "Registration successful!", Toast.LENGTH_SHORT
-                ).show()
-
-                val intent = Intent(this@RegisterActivity, CompleteProfileActivity::class.java)
-                intent.putExtra("FIRST_NAME", firstName)
-                intent.putExtra("LAST_NAME", lastName)
-                startActivity(intent)
-                finish()
-            } else {
-                Toast.makeText(
-                    this@RegisterActivity, result.exceptionOrNull()?.message ?: "Unknown error", Toast.LENGTH_SHORT
-                ).show()
+                if (result.isSuccess) {
+                    showSuccess(getString(R.string.success_registration))
+                    navigateToCompleteProfile(firstName, lastName)
+                } else {
+                    showError(result.exceptionOrNull()?.message ?: getString(R.string.error_generic))
+                }
+            } catch (e: Exception) {
+                showError(e.message ?: getString(R.string.error_database))
+            } finally {
+                binding.loadingIndicator.visibility = ProgressBar.GONE
             }
         }
     }
 
+    private fun clearErrors() {
+        binding.firstNameLayout.error = null
+        binding.lastNameLayout.error = null
+        binding.usernameLayout.error = null
+        binding.emailLayout.error = null
+        binding.passwordLayout.error = null
+        binding.confirmPasswordLayout.error = null
+    }
 
+    private fun showError(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
 
-    /**
-     * Validate whether the given credentials are correctly formatted.
-     *
-     * @author ST10257002
-     */
-    private fun isValidInput(
-        vararg fields: String
-    ): Boolean {
-        for (field in fields) {
-            if (field.isBlank()) {
-                return false
-            }
+    private fun showSuccess(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun navigateToCompleteProfile(firstName: String, lastName: String) {
+        val intent = Intent(this, CompleteProfileActivity::class.java).apply {
+            putExtra("FIRST_NAME", firstName)
+            putExtra("LAST_NAME", lastName)
         }
-
-        return true
+        startActivity(intent)
+        finish()
     }
 
-
-    /**
-     * Validate whether the email is correctly formatted.
-     *
-     * @author ST10293362
-     * @author ST10257002
-     */
-    private fun isValidEmail(
-        email: String
-    ): Boolean {
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    private fun isMatchingPasswords(password: String, confirmPassword: String): Boolean {
+        return password == confirmPassword
     }
-
-
-    /**
-     * Validate whether the password matches the confirmation field.
-     *
-     * @author ST10293362
-     * @author ST10257002
-     */
-    private fun isMatchingPasswords(
-        password: String, confirmPassword: String
-    ): Boolean {
-        return (password == confirmPassword)
-    }
-
 
     /**
      * Updates the UI to reflect the strength of the password.
@@ -194,20 +168,12 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
      * @author ST10293362
      * @author ST10257002
      */
-    private fun updateCredentialStrengthUi(
-        password: String
-    ) {
-        val strength = CredentialStrength.getStrength(password)
-//        binding.passwordStrengthTextView.apply {
-//            text = strength.displayText
-//            setTextColor(strength.color)
-//        }
+    private fun updateCredentialStrengthUi(password: String) {
+        binding.passwordStrengthView.updatePasswordStrength(password)
     }
-
 
     // </editor-fold>
     // <editor-fold desc="Event Handler">
-
 
     /**
      * Catch and handle on-click events from the view.
@@ -217,12 +183,9 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
      */
     override fun onClick(view: View?) {
         when (view?.id) {
-            binding.registerButton.id -> {
-                tryRegister()
-            }
+            binding.registerButton.id -> tryRegister()
         }
     }
-
 
     /**
      * @author ST10257002
@@ -231,24 +194,19 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
         binding.registerButton.setOnClickListener(this)
     }
 
-
     /**
      * Catch and handle on-text-changed events from the view.
      *
      * @author ST10257002
      */
     private fun setupOnTextChangedListeners() {
-        with(binding) {
-            passwordEditText.onTextChanged { input ->
-                updateCredentialStrengthUi(input)
-            }
+        binding.passwordEditText.onTextChanged { text ->
+            updateCredentialStrengthUi(text.toString())
         }
     }
 
-
     // </editor-fold>
     // <editor-fold desc="Configuration">
-
 
     /**
      * @author ST10257002
@@ -257,7 +215,6 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
         binding = ActivityRegisterBinding.inflate(layoutInflater)
     }
 
-
     /**
      * @author ST10257002
      */
@@ -265,7 +222,6 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
         enableEdgeToEdge()
         setContentView(binding.root)
     }
-
 
     // </editor-fold>
 

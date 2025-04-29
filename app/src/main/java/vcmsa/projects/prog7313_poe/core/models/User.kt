@@ -65,6 +65,12 @@ data class User(
     var password: String,
 
 
+    @ColumnInfo(
+        name = "password_salt"
+    )
+    var passwordSalt: String,
+
+
     /**
      * @author ST10257002
      */

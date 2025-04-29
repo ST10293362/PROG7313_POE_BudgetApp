@@ -54,7 +54,7 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         transactionsButton.setOnClickListener {
-            startActivity(Intent(this, TransactionsActivity::class.java))
+            startActivity(Intent(this, ViewExpensesActivity::class.java))
             finish()
         }
 

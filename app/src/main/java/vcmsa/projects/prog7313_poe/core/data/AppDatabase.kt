@@ -5,6 +5,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import vcmsa.projects.prog7313_poe.core.data.access.AccountDao
 import vcmsa.projects.prog7313_poe.core.data.access.CategoryDao
 import vcmsa.projects.prog7313_poe.core.data.access.ExpenseDao
@@ -33,7 +35,8 @@ import vcmsa.projects.prog7313_poe.core.models.UserSession
         Category::class,
         User::class,
         UserSession::class,
-    ]
+    ],
+    exportSchema = true
 )
 @TypeConverters(
     DateConverter::class,
@@ -50,6 +53,9 @@ abstract class AppDatabase : RoomDatabase() {
 
         private const val DATABASE_NAME = "expense_database.db"
 
+        // Add migrations here as the database schema evolves
+        private val MIGRATIONS = arrayOf<Migration>()
+
         /**
          * Fetch the singleton database instance.
          *
@@ -63,10 +69,25 @@ abstract class AppDatabase : RoomDatabase() {
                 // Build the database anew or from existing contexts
                 val instance = Room.databaseBuilder(
                     context.applicationContext, AppDatabase::class.java, DATABASE_NAME
-                ).build()
+                )
+                    .addMigrations(*MIGRATIONS)
+                    .addCallback(DatabaseCallback)
+                    .build()
 
                 INSTANCE = instance
                 instance
+            }
+        }
+
+        private val DatabaseCallback = object : RoomDatabase.Callback() {
+            override fun onCreate(db: SupportSQLiteDatabase) {
+                super.onCreate(db)
+                // Add any initial data setup here
+            }
+
+            override fun onOpen(db: SupportSQLiteDatabase) {
+                super.onOpen(db)
+                // Add any database open operations here
             }
         }
     }
