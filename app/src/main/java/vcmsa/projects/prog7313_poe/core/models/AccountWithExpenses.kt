@@ -9,13 +9,12 @@ import androidx.room.Relation
  * @author ST10257002
  */
 data class AccountWithExpenses(
-
-    @Embedded val account: Account,
+    @Embedded
+    val account: Account,
 
     @Relation(
         parentColumn = "id",
-        entityColumn = "id_account"
+        entityColumn = "account_id"  // Changed to match Expense entity column name
     )
-    val expenses: List<Expense>
-
+    val expenses: List<Expense> = emptyList()
 )

@@ -182,6 +182,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
+                android:layout_marginBottom="16dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
                 android:backgroundTint="#E6F0FA">
@@ -214,7 +215,7 @@
                         android:id="@+id/savingsGoalLabel" />
                     <ProgressBar
                         style="@android:style/Widget.ProgressBar.Horizontal"
-                        android:id="@+id/savingsProgressBar"
+                        android:id="@+id/savingsProgress"
                         android:layout_width="match_parent"
                         android:layout_height="12dp"
                         android:layout_below="@id/savingsGoalLabel"
@@ -225,6 +226,28 @@
                         android:progressDrawable="@drawable/progress_bar_savings" />
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
+
+            <!-- Categories Section Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Categories"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="#000"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Categories Grid -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/categoriesRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:contentDescription="@string/app_name"
+                android:padding="8dp"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="2"
+                tools:listitem="@layout/item_category" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

@@ -51,7 +51,7 @@ class ExpenseRepository(
      * @author ST10326084
      * @author ST10257002
      */
-    fun getAllExpenses(): LiveData<List<Expense>> {
-        return dao.fetchAll()
+    suspend fun getAllExpenses(): List<Expense> {
+        return dao.getAllExpenses()
     }
 }

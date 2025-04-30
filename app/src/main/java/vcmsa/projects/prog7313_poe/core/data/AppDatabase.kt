@@ -26,9 +26,8 @@ import vcmsa.projects.prog7313_poe.core.models.UserSession
  * @see [androidx.room.RoomDatabase]
  * @see [androidx.room.Database]
  * @author ST10257002
- */
-@Database(
-    version = 1,
+ */@Database(
+    version = 2, // Increment version number
     entities = [
         Account::class,
         Expense::class,
@@ -43,32 +42,27 @@ import vcmsa.projects.prog7313_poe.core.models.UserSession
     UuidConverter::class,
 )
 abstract class AppDatabase : RoomDatabase() {
-
-    // Initialise the database as a singleton instance
-    // Companion objects are static by nature
     companion object {
-
         @Volatile
         private var INSTANCE: AppDatabase? = null
-
         private const val DATABASE_NAME = "expense_database.db"
 
-        // Add migrations here as the database schema evolves
-        private val MIGRATIONS = arrayOf<Migration>()
+        // Define the migration from version 1 to 2
+        private val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE user ADD COLUMN goals_set INTEGER NOT NULL DEFAULT 0")
+            }
+        }
 
-        /**
-         * Fetch the singleton database instance.
-         *
-         * @author ST10257002
-         */
-        fun getDatabase(
-            context: Context
-        ): AppDatabase {
+        // Add migration to the array
+        private val MIGRATIONS = arrayOf(MIGRATION_1_2)
+
+        fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
-
-                // Build the database anew or from existing contexts
                 val instance = Room.databaseBuilder(
-                    context.applicationContext, AppDatabase::class.java, DATABASE_NAME
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    DATABASE_NAME
                 )
                     .addMigrations(*MIGRATIONS)
                     .addCallback(DatabaseCallback)
@@ -82,27 +76,17 @@ abstract class AppDatabase : RoomDatabase() {
         private val DatabaseCallback = object : RoomDatabase.Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
-                // Add any initial data setup here
             }
 
             override fun onOpen(db: SupportSQLiteDatabase) {
                 super.onOpen(db)
-                // Add any database open operations here
             }
         }
     }
-
-
-    //<editor-dold desc="DAO Registrations">
-
 
     abstract fun accountDao(): AccountDao
     abstract fun categoryDao(): CategoryDao
     abstract fun expenseDao(): ExpenseDao
     abstract fun sessionDao(): SessionDao
     abstract fun userDao(): UserDao
-
-
-    //</editor-fold>
-
 }

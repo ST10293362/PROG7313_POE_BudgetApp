@@ -128,6 +128,9 @@ interface UserDao : BaseDao<User> {
     )
     suspend fun exists(targetId: UUID): Boolean
 
+    // In UserDao.kt
+    @Query("UPDATE user SET min_goal = :minGoal, max_goal = :maxGoal, goals_set = :goalsSet WHERE id = :userId")
+    suspend fun updateUserGoals(userId: UUID, minGoal: Double, maxGoal: Double, goalsSet: Boolean)
 
     /**
      * Fetches an [UserWithAccounts] object.
@@ -180,5 +183,44 @@ interface UserDao : BaseDao<User> {
     suspend fun fetchUserWithExpenses(targetId: UUID): UserWithExpenses
 
 
+    @Query("UPDATE user SET goals_set = :goalsSet WHERE id = :userId")
+    suspend fun updateGoalsSet(userId: UUID, goalsSet: Boolean)
     //</editor-fold>
+
+    @Query("""
+        UPDATE user 
+        SET min_goal = :minGoal,
+            max_goal = :maxGoal,
+            monthly_budget = :monthlyBudget,
+            current_budget = :monthlyBudget,
+            budget_last_reset = :currentDate,
+            goals_set = :goalsSet 
+        WHERE id = :userId
+    """)
+    suspend fun updateUserGoalsAndBudget(
+        userId: UUID,
+        minGoal: Double,
+        maxGoal: Double,
+        monthlyBudget: Double,
+        goalsSet: Boolean,
+        currentDate: Long = System.currentTimeMillis()
+    )
+
+    @Query("""
+        UPDATE user 
+        SET current_budget = current_budget - :amount 
+        WHERE id = :userId
+    """)
+    suspend fun updateCurrentBudget(userId: UUID, amount: Double)
+
+    @Query("""
+        UPDATE user 
+        SET current_budget = monthly_budget,
+            budget_last_reset = :currentDate 
+        WHERE id = :userId
+    """)
+    suspend fun resetMonthlyBudget(userId: UUID, currentDate: Long = System.currentTimeMillis())
+
+    @Query("UPDATE user SET profile_completed = :isCompleted WHERE id = :userId")
+    suspend fun updateProfileCompletion(userId: UUID, isCompleted: Boolean)
 }

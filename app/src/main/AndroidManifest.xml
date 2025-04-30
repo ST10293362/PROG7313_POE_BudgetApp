@@ -29,7 +29,7 @@
             android:name=".ui.views.CompleteProfileActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.views.ManageCategoriesActivity"
+            android:name=".ui.views.GoalSettingActivity"
             android:exported="true" />
         <activity
             android:name=".ui.views.ViewExpensesActivity"

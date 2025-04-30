@@ -9,13 +9,12 @@ import androidx.room.Relation
  * @author ST10257002
  */
 data class UserWithCategories(
-    
-    @Embedded val user: User,
-    
+    @Embedded
+    val user: User,
+
     @Relation(
         parentColumn = "id",
-        entityColumn = "id_author"
+        entityColumn = "user_id"  // Changed from id_author to match Category entity
     )
-    val categories: List<Category>
-    
+    val categories: List<Category> = emptyList()
 )

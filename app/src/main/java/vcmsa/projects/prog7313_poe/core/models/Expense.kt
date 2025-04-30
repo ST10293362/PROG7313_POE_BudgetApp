@@ -8,7 +8,6 @@ import androidx.room.PrimaryKey
 import vcmsa.projects.prog7313_poe.core.models.supers.AuditableEntity
 import vcmsa.projects.prog7313_poe.core.models.supers.KeyedEntity
 import java.time.Instant
-import java.util.Date
 import java.util.UUID
 
 /**
@@ -16,151 +15,67 @@ import java.util.UUID
  */
 @Entity(
     tableName = "expense",
+    indices = [
+        Index(value = ["id"], unique = true),
+        Index(value = ["user_id"]),
+        Index(value = ["category_id"]),
+        Index(value = ["account_id"])
+
+    ],
     foreignKeys = [
         ForeignKey(
             entity = User::class,
             parentColumns = ["id"],
-            childColumns = ["id_author"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = Account::class,
-            parentColumns = ["id"],
-            childColumns = ["id_account"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.CASCADE
+            childColumns = ["user_id"],
+            onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = Category::class,
             parentColumns = ["id"],
-            childColumns = ["id_category"],
-            onDelete = ForeignKey.SET_NULL,
-            onUpdate = ForeignKey.CASCADE
+            childColumns = ["category_id"],
+            onDelete = ForeignKey.CASCADE
         ),
-    ],
-    indices = [
-        Index(value = ["id"], unique = true),
-        Index(value = ["id_author"]),
-        Index(value = ["id_account"]),
-        Index(value = ["id_category"]),
-        Index(value = ["date_of_expense"])
+        ForeignKey(
+            entity = Account::class,
+            parentColumns = ["id"],
+            childColumns = ["account_id"],
+        )
     ]
 )
 data class Expense(
-
-    //<editor-fold desc="Inherited members">
-
-
     @PrimaryKey
     override val id: UUID = UUID.randomUUID(),
 
-
-    @ColumnInfo(
-        name = "created_at"
-    )
+    @ColumnInfo(name = "created_at")
     override val createdAt: Instant = Instant.now(),
 
-
-    @ColumnInfo(
-        name = "updated_at"
-    )
+    @ColumnInfo(name = "updated_at")
     override var updatedAt: Instant = Instant.now(),
 
+    @ColumnInfo(name = "amount")
+    val amount: Double,
 
-    //</editor-fold>
-    //<editor-fold desc="Entity attributes">
+    @ColumnInfo(name = "description")
+    val description: String,
 
+    @ColumnInfo(name = "start_date")
+    val startDate: Instant,
 
-    /**
-     * The receipt number or descriptive alias of the transaction.
-     *
-     * @author ST10257002
-     */
-    @ColumnInfo(
-        name = "detail"
-    )
-    var detail: String,
+    @ColumnInfo(name = "end_date")
+    val endDate: Instant? = null,
 
+    @ColumnInfo(name = "user_id")
+    val userId: UUID,
 
-    /**
-     * The vendor that the transaction was made to to.
-     *
-     * @author ST10257002
-     */
-    @ColumnInfo(
-        name = "vendor"
-    )
-    var vendor: String,
+    @ColumnInfo(name = "account_id")
+    val accountId: UUID,
 
-
-    /**
-     * The total monetary value of the transaction.
-     *
-     * @author ST10257002
-     */
-    @ColumnInfo(
-        name = "amount"
-    )
-    var amount: Double,
-
-
-    /**
-     * The [Date] that the transaction occurred.
-     *
-     * @author ST10257002
-     */
-    @ColumnInfo(
-        name = "date_of_expense"
-    )
-    var dateOfExpense: Date,
-
-
-    @ColumnInfo(name = "image_uri")
-    var imageUri: String? = null,
-
-
-    //</editor-fold>
-    //<editor-fold desc="SQLite relationships">
-
-
-    /**
-     * SQLite Foreign Key relationship to [User].
-     *
-     * @author ST10257002
-     */
-    @ColumnInfo(
-        name = "id_author"
-    )
-    var idAuthor: UUID,
-
-
-    /**
-     * SQLite Foreign Key relationship to [Account].
-     *
-     * @author ST10257002
-     */
-    @ColumnInfo(
-        name = "id_account"
-    )
-    var idAccount: UUID,
-
-
-    /**
-     * SQLite Foreign Key relationship to [Category].
-     *
-     * @author ST10257002
-     */
-    @ColumnInfo(
-        name = "id_category"
-    )
-    var idCategory: UUID?,
-
-
-    //</editor-fold>
-
-) : KeyedEntity, AuditableEntity {
+    @ColumnInfo(name = "category_id")
+    val categoryId: UUID
+) : AuditableEntity, KeyedEntity {
     companion object {
         const val TABLE_NAME = "expense"
     }
+
+
 }

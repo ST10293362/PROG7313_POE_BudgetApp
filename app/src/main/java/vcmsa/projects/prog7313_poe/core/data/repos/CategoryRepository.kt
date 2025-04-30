@@ -50,4 +50,9 @@ class CategoryRepository(
     suspend fun getAllCategories(): List<Category> {
         return dao.fetchAll()
     }
-}
+
+        suspend fun getCategoriesByUserId(userId: UUID): List<Category> {
+            return dao.getCategoriesByUserId(userId) ?: emptyList()
+
+        }
+    }

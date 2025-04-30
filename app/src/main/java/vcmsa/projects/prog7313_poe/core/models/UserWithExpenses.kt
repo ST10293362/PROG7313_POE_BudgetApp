@@ -5,17 +5,16 @@ import androidx.room.Relation
 
 /**
  * Database relationship DTO class that links [User] to [Expense].
- * 
+ *
  * @author ST10257002
  */
 data class UserWithExpenses(
-
-    @Embedded val user: User,
+    @Embedded
+    val user: User,
 
     @Relation(
         parentColumn = "id",
-        entityColumn = "id_author"
+        entityColumn = "user_id"  // Changed from id_author to match Expense entity
     )
-    val expenses: List<Expense>
-    
+    val expenses: List<Expense> = emptyList()
 )

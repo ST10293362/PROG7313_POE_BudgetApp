@@ -160,6 +160,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         binding.loginButton.setOnClickListener(this)
         binding.forgotPasswordTextView.setOnClickListener(this)
         binding.registerTextView.setOnClickListener(this)
+        binding.bypassLogin.setOnClickListener(this)
     }
 
 

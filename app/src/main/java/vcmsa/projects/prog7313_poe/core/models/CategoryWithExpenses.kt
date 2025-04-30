@@ -3,19 +3,16 @@ package vcmsa.projects.prog7313_poe.core.models
 import androidx.room.Embedded
 import androidx.room.Relation
 
-/**
- * Database relationship DTO class that links [Category] to [Expense].
- *
- * @author ST10257002
- */
 data class CategoryWithExpenses(
-    
-    @Embedded val category: Category,
-    
+    @Embedded
+    val category: Category,
+
     @Relation(
         parentColumn = "id",
-        entityColumn = "id_category"
+        entityColumn = "category_id" // Changed from id_category to match Expense column name
     )
     val expenses: List<Expense>
-    
-)
+) {
+    // Add no-args constructor for Room
+    constructor() : this(Category(), emptyList())
+}

@@ -15,85 +15,50 @@ import java.util.UUID
  */
 @Entity(
     tableName = "category",
+    indices = [
+        Index(value = ["id"], unique = true),
+        Index(value = ["name"], unique = true),
+        Index(value = ["user_id"])
+    ],
     foreignKeys = [
         ForeignKey(
             entity = User::class,
             parentColumns = ["id"],
-            childColumns = ["id_author"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.CASCADE
+            childColumns = ["user_id"],
+            onDelete = ForeignKey.CASCADE
         )
-    ],
-    indices = [
-        Index(value = ["id"], unique = true),
-        Index(value = ["name", "id_author"], unique = true),
-        Index(value = ["id_author"])
     ]
 )
+
 data class Category(
-
-    //<editor-fold desc="Inherited members">
-
-
     @PrimaryKey
     override val id: UUID = UUID.randomUUID(),
 
-
-    @ColumnInfo(
-        name = "created_at"
-    )
+    @ColumnInfo(name = "created_at")
     override val createdAt: Instant = Instant.now(),
 
-
-    @ColumnInfo(
-        name = "updated_at"
-    )
+    @ColumnInfo(name = "updated_at")
     override var updatedAt: Instant = Instant.now(),
 
+    @ColumnInfo(name = "name")
+    val name: String = "",
 
-    //</editor-fold>
-    //<editor-fold desc="Entity attributes">
+    @ColumnInfo(name = "user_id")
+    val userId: UUID = UUID.randomUUID(),
 
+    @ColumnInfo(name = "is_default")
+    val isDefault: Boolean = false,
 
-    /**
-     * The alias of the category.
-     *
-     * @author ST10257002
-     */
-    @ColumnInfo(
-        name = "name"
-    )
-    var name: String,
-
-
-    /**
-     * The user-set spending goal for expenses within this category.
-     *
-     * @author ST10257002
-     */
-    @ColumnInfo(
-        name = "goal"
-    )
-    var goal: Double,
-
-
-    //</editor-fold>
-    //<editor-fold desc="SQLite relationships">
-
-
-    /**
-     * SQLite Foreign Key relationship to [User].
-     *
-     * @author ST10257002
-     */
-    @ColumnInfo(name = "id_author")
-    var idAuthor: UUID,
-
-
-    //</editor-fold>
-
-) : KeyedEntity, AuditableEntity {
+    @ColumnInfo(name = "total_amount")
+    var totalAmount: Double = 0.0
+) : AuditableEntity, KeyedEntity {
     companion object {
         const val TABLE_NAME = "category"
     }
+
+    // Add no-args constructor for Room
+    constructor() : this(
+        name = "",
+        userId = UUID.randomUUID()
+    )
 }

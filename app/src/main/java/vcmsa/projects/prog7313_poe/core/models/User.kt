@@ -144,6 +144,24 @@ data class User(
     var imageUri: String? = null,
 
 
+    /**
+     * Indicates whether the user has set their spending goals
+     */
+    @ColumnInfo(name = "goals_set")
+    var goalsSet: Boolean = false,
+
+    @ColumnInfo(name = "profile_completed")
+    var profileCompleted: Boolean = false,
+
+    @ColumnInfo(name = "monthly_budget")
+    var monthlyBudget: Double = 0.0,
+
+    @ColumnInfo(name = "current_budget")
+    var currentBudget: Double = 0.0,
+
+    @ColumnInfo(name = "budget_last_reset")
+    var budgetLastReset: Long = System.currentTimeMillis(),
+
     //</editor-fold>
 
 ) : KeyedEntity, AuditableEntity {
