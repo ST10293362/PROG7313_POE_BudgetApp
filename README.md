@@ -1,4 +1,4 @@
-# 💸 Personal Finance Tracker App
+# 💸 Bank Boosta Personal Finance Tracker App
 
 An Android app for managing expenses, setting savings goals, and viewing financial data — built with Kotlin and RoomDB.
 
