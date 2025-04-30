@@ -7,24 +7,45 @@ import vcmsa.projects.prog7313_poe.core.models.UserSession
 import java.util.UUID
 
 /**
+ * Handles authentication and session management using RoomDB.
+ *
+ * This repository is responsible for signing up new users, signing in existing users,
+ * managing active sessions, and accessing the currently logged-in user.
+ *
+ * All operations return Kotlin's [Result] wrapper to propagate exceptions safely.
+ *
+ * Passwords should be pre-hashed with salt **before** being passed in.
+ *
  * @author ST10257002
+ * @author ST10326084
  */
+
 class SessionRepository(
-    private val userDao: UserDao, private val sessionDao: SessionDao
+    private val userDao: UserDao,
+    private val sessionDao: SessionDao
 ) {
 
-    //<editor-fold desc="Functions">
-
+    //<editor-fold desc="Authentication">
 
     /**
-     * Try to register a user with the given credentials.
+     * Registers a new user and creates a session upon success.
      *
-     * @see [Result]
-     * @return Success result containing the user if successful.
-     * @author ST10257002
+     * @param firstName First name of the user
+     * @param finalName Last name of the user
+     * @param username Desired username (must be unique)
+     * @param hashedPassword Hashed password string
+     * @param email Email address
+     * @param passwordSalt Salt used for hashing (should be stored for verification)
+     *
+     * @return [Result.success] containing the new [User] on success, or [Result.failure] on error
      */
     suspend fun signUp(
-        firstName: String, finalName: String, username: String, hashedPassword: String, email: String, passwordSalt: String
+        firstName: String,
+        finalName: String,
+        username: String,
+        hashedPassword: String,
+        email: String,
+        passwordSalt: String
     ): Result<User> {
         return try {
             val takenUsernameUser = userDao.fetchOneByUsername(username)
@@ -49,50 +70,40 @@ class SessionRepository(
             createSession(user.id)
 
             Result.success(user)
-
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-
     /**
-     * Try to authenticate a user with the given credentials.
+     * Attempts to log in a user using email and hashed password.
      *
-     * @see [Result]
-     * @return Success result containing the user if successful.
-     * @author ST10257002
+     * @param email Email address
+     * @param hashedPassword The hashed version of the user’s password
+     * @return [Result.success] with the authenticated user, or [Result.failure] on invalid login
      */
-    suspend fun signIn(
-        email: String,
-        hashedPassword: String
-    ): Result<User> {
+    suspend fun signIn(email: String, hashedPassword: String): Result<User> {
         return try {
             val user = userDao.fetchOneByEmail(email)
                 ?: return Result.failure(Exception("User not found"))
-            
+
             if (user.password != hashedPassword) {
                 return Result.failure(Exception("Invalid password"))
             }
-            
+
             createSession(user.id)
             Result.success(user)
-
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-
     /**
-     * Clear any currently active users from the session manager.
+     * Logs out the currently authenticated user by clearing all active sessions.
      *
-     * This method is safe to call even if the session manager does not
-     * currently contain any authenticated users.
+     * Safe to call even if no session is currently active.
      *
-     * @see [Result]
-     * @return [Boolean] result confirming a successful operation.
-     * @author ST10257002
+     * @return [Result.success] with `true` on success
      */
     suspend fun logout(): Result<Boolean> {
         return try {
@@ -103,17 +114,14 @@ class SessionRepository(
         }
     }
 
-
     //</editor-fold>
-    //<editor-fold desc="Accessory">
 
+    //<editor-fold desc="Session Access">
 
     /**
-     * Query the session manager for the currently authenticated user.
+     * Retrieves the currently authenticated user, if a session exists.
      *
-     * @see [Result]
-     * @return The active user or null if none are available.
-     * @author ST10257002
+     * @return [Result.success] with the active [User], or null if no session is active
      */
     suspend fun getCurrentUser(): Result<User?> {
         return try {
@@ -129,11 +137,14 @@ class SessionRepository(
         }
     }
 
-
     //</editor-fold>
 
+    /**
+     * Internal helper to create a new user session.
+     *
+     * @param userId UUID of the user to assign to the session.
+     */
     private suspend fun createSession(userId: UUID) {
         sessionDao.create(UserSession(userId = userId))
     }
-
 }
