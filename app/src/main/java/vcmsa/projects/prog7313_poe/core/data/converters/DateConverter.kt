@@ -6,60 +6,62 @@ import java.util.Date
 import java.util.UUID
 
 /**
- * Type converter for DateTime types.
- * 
- * Since room is an abstraction over SQLite, it cannot handle the complex data 
- * types of the Kotlin compiler. Type convertor classes allow complex data types
- * to be stored as primitive types, and then converted back to the original type
- * when retrieved from the database at runtime.
+ * Type converter for [Date] and [Instant] objects to and from [Long],
+ * enabling Room to persist time-related fields as primitives.
  *
- * @see [androidx.room.TypeConverter]
- * @see [androidx.room.RoomDatabase]
+ * SQLite (used by Room) does not support Java/Kotlin date/time types directly,
+ * so Room requires these conversions to store timestamps in `INTEGER` format.
+ *
+ * Registered in the Room database via `@TypeConverters(...)`.
+ *
+ * @see androidx.room.TypeConverter
+ * @see androidx.room.RoomDatabase
+ *
  * @author ST10257002
+ * @author ST10326084
+ *
+ * @References: https://developer.android.com/reference/androidx/room/TypeConverter
  */
 class DateConverter {
 
     /**
-     * Convert from [Long] to [Instant]
+     * Converts a [Long] timestamp into a [Instant] object.
      *
-     * @see [androidx.room.TypeConverter]
-     * @author ST10257002
+     * @param data A millisecond-based Unix timestamp.
+     * @return A corresponding [Instant] object.
      */
     @TypeConverter
     fun toInstant(data: Long): Instant {
         return Instant.ofEpochMilli(data)
     }
 
-
     /**
-     * Convert from [Long] to [Date]
+     * Converts a [Long] timestamp into a [Date] object.
      *
-     * @see [androidx.room.TypeConverter]
-     * @author ST10257002
+     * @param data A millisecond-based Unix timestamp.
+     * @return A corresponding [Date] object.
      */
     @TypeConverter
     fun toDate(data: Long): Date {
         return Date(data)
     }
-    
-    
+
     /**
-     * Convert from [Instant] to [Long]
+     * Converts an [Instant] object to a [Long] timestamp.
      *
-     * @see [androidx.room.TypeConverter]
-     * @author ST10257002
+     * @param data The [Instant] to convert.
+     * @return The number of milliseconds since the Unix epoch.
      */
     @TypeConverter
     fun toLong(data: Instant): Long {
         return data.toEpochMilli()
     }
 
-    
     /**
-     * Convert from [Date] to [Long]
+     * Converts a [Date] object to a [Long] timestamp.
      *
-     * @see [androidx.room.TypeConverter]
-     * @author ST10257002
+     * @param data The [Date] to convert.
+     * @return The number of milliseconds since the Unix epoch.
      */
     @TypeConverter
     fun toLong(data: Date): Long {
