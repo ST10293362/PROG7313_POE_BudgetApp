@@ -6,8 +6,12 @@ An Android app for managing expenses, setting savings goals, and viewing financi
 
 - User Registration & Login (using RoomDB)
 - Local Session Management
-- Expense Creation (with image support)
+- Create Custom Categories that expenses belong to
+- Cretae Expenses, with date, start and end times, description, and category (with image support)
 - Goal Setting for Savings
+- Minimum and Maxiumum spending goal
+- View all expenses during a user-selectable period
+- View total amount spent on each category for a period of time
 - Dynamic Dashboard
 - Profile Management
 - View Expenses
