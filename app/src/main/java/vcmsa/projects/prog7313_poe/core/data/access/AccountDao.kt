@@ -8,23 +8,31 @@ import vcmsa.projects.prog7313_poe.core.models.AccountWithExpenses
 import java.util.UUID
 
 /**
- * Interface definition for direct database operations.
+ * DAO (Data Access Object) for managing [Account] entities using Room.
+ * Provides CRUD operations and additional queries involving account relationships.
  *
- * @see [vcmsa.projects.prog7313_poe.core.models.Account]
- * @see [androidx.room.Dao]
+ * @see BaseDao - Generic base interface for common insert/update/delete
+ * @see androidx.room.Dao - Room's DAO interface marker
+ *
  * @author ST10257002
+ * @author ST10326084
+ *
+ * @reference https://developer.android.com/training/data-storage/room
  */
+
 @Dao
 interface AccountDao : BaseDao<Account> {
 
     //<editor-fold desc="CRUD Operations">
 
     /**
-     * Deletes a specific entity from the database using its unique ID.
+     * Deletes an account from the database by its UUID.
      *
-     * @param targetId The unique identifier ([java.util.UUID]) of the entity to delete.
-     *
+     * @param targetId The UUID of the account to be deleted.
      * @author ST10257002
+     * @author ST10326084
+     *
+     * @reference https://developer.android.com/reference/androidx/room/Query
      */
     @Query(
         """
@@ -35,43 +43,37 @@ interface AccountDao : BaseDao<Account> {
     suspend fun delete(targetId: UUID)
 
     /**
-     * Fetches the contents of the database table.
+     * Retrieves all accounts from the database.
      *
-     * @return [List] collection containing every entity in the database.
+     * @return A list of all stored [Account] entities.
      * @author ST10257002
+     * @author ST10326084
      */
-    @Query(
-        """
-        SELECT * FROM account
-        """
-    )
+    @Query("SELECT * FROM account")
     suspend fun fetchAll(): List<Account>
 
     /**
-     * Fetches a specific entity by its primary key identity.
+     * Retrieves a specific account by its ID.
      *
-     * @param targetId The unique identifier ([UUID]) of the entity to query.
-     *
-     * @return The specific entity that was queried.
+     * @param targetId UUID of the account to retrieve.
+     * @return The account with the specified ID, or null if not found.
      * @author ST10257002
+     * @author ST10326084
      */
-    @Query(
-        """
-        SELECT * FROM account
-        WHERE id = :targetId
-        """
-    )
+    @Query("SELECT * FROM account WHERE id = :targetId")
     suspend fun fetchOne(targetId: UUID): Account?
 
     //</editor-fold>
+
     //<editor-fold desc="Extensions">
 
     /**
-     * Checks whether an entity with the given ID exists in the database.
+     * Checks whether an account exists for the given ID.
      *
-     * @param targetId The unique identifier ([UUID]) of the entity to query.
-     *
+     * @param targetId UUID of the account to check.
+     * @return True if the account exists, false otherwise.
      * @author ST10257002
+     * @author ST10326084
      */
     @Query(
         """
@@ -83,19 +85,21 @@ interface AccountDao : BaseDao<Account> {
     suspend fun exists(targetId: UUID): Boolean
 
     /**
-     * Fetches an [AccountWithExpenses] object.
+     * Retrieves an [AccountWithExpenses] object — a composite object representing
+     * an account and all of its associated expenses.
      *
-     * @param targetId The unique identifier ([UUID]) of the account.
+     * This uses Room's `@Transaction` annotation to ensure data consistency when
+     * fetching relations.
      *
+     * @param targetId UUID of the account.
+     * @return The composite [AccountWithExpenses] object.
+     *
+     * @reference https://developer.android.com/reference/androidx/room/Transaction
      * @author ST10257002
+     * @author ST10326084
      */
     @Transaction
-    @Query(
-        """
-            SELECT * FROM account
-            WHERE id = :targetId
-        """
-    )
+    @Query("SELECT * FROM account WHERE id = :targetId")
     suspend fun fetchAccountWithExpenses(targetId: UUID): AccountWithExpenses
 
     //</editor-fold>

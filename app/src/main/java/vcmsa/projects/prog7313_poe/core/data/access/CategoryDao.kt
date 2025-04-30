@@ -108,26 +108,4 @@ interface CategoryDao : BaseDao<Category> {
 
 
     //</editor-fold>
-
-    @Query("SELECT * FROM category WHERE user_id = :userId")
-    suspend fun getCategoriesByUserId(userId: UUID): List<Category>
-
-    @Query("SELECT * FROM category WHERE user_id = :userId AND is_default = 1")
-    suspend fun getDefaultCategories(userId: UUID): List<Category>
-
-    @Query("SELECT * FROM category WHERE user_id = :userId AND is_default = 0")
-    suspend fun getUserCategories(userId: UUID): List<Category>
-
-    @Query("UPDATE category SET total_amount = total_amount + :amount WHERE id = :categoryId")
-    suspend fun updateCategoryTotal(categoryId: UUID, amount: Double)
-
-    @Transaction
-    suspend fun createDefaultCategories(userId: UUID) {
-        val defaultCategories = listOf(
-            Category(name = "Savings", userId = userId, isDefault = true),
-            Category(name = "Utilities", userId = userId, isDefault = true),
-            Category(name = "Investments", userId = userId, isDefault = true)
-        )
-        defaultCategories.forEach { insert(it) }
-    }
 }
