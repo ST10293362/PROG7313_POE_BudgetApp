@@ -51,7 +51,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
      * @author ST10326084
      */
     private fun tryLogin() {
-        val username = binding.emailEditText.text.toString().trim()
+        val username = binding.userNameEditText.text.toString().trim()
         val password = binding.passwordEditText.text.toString().trim()
 
         if (isValidCredentials(username, password)) {
