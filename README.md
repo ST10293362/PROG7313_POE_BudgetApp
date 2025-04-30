@@ -4,14 +4,14 @@ An Android app for managing expenses, setting savings goals, and viewing financi
 
 ## 📱 Features
 
-- User Registration & Login (using Room)
+- User Registration & Login (using RoomDB)
 - Local Session Management
 - Expense Creation (with image support)
 - Goal Setting for Savings
-- Dynamic Dashboard (WIP)
+- Dynamic Dashboard
 - Profile Management
-- View Expenses (WIP)
-- Password Reset (currently Firebase, being phased out)
+- View Expenses
+- Password Reset 
 
 ## 🗂 Tech Stack
 
@@ -38,6 +38,5 @@ An Android app for managing expenses, setting savings goals, and viewing financi
 
 ## 🚧 Known Issues / TODO
 
-- Dashboard is currently mock data  
-- Password Reset uses Firebase temporarily  
-- Expense viewing still in progress  
+- Dashboard is currently not working
+
