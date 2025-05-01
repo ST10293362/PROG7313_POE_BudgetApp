@@ -49,20 +49,20 @@ class AuthService(
     /**
      * Authenticates a user using the provided email and password.
      *
-     * @param email The user's email address.
+     * @param username The username of the user.
      * @param password The raw password to verify.
      * @return A [Result] containing the [User] if successful, or a failure otherwise.
      */
     suspend fun signIn(
-        email: String, password: String
+        username: String, password: String
     ): Result<User> {
-        val user = userDao.fetchOneByEmail(email) ?: return Result.failure(Exception("User not found"))
+        val user = userDao.fetchOneByUsername(username) ?: return Result.failure(Exception("User not found"))
 
         if (!SecurityUtils.verifyPassword(password, user.password, user.passwordSalt)) {
             return Result.failure(Exception("Invalid password"))
         }
 
-        return session.signIn(email, user.password)
+        return session.signIn(username, user.password)
     }
 
     /**
