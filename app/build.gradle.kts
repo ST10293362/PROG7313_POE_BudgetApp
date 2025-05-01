@@ -102,4 +102,28 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-}
+
+    // JUnit 5 (optional, but recommended for modern Kotlin tests)
+    testImplementation(libs.junit.jupiter)
+
+    // Coroutine test support
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+
+    // MockK for mocking classes/interfaces
+    testImplementation("io.mockk:mockk:1.13.10")
+
+    // Android Instrumentation tests
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation(libs.androidx.espresso.core)
+
+    // JUnit 4 for unit testing
+    testImplementation(libs.junit)
+
+    // MockK for mocking classes and functions
+    testImplementation("io.mockk:mockk:1.13.10")
+
+    // Kotlin Coroutines Test library for testing coroutines
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+
+    }
