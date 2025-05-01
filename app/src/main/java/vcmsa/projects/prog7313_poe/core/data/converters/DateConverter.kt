@@ -30,8 +30,12 @@ class DateConverter {
      * @return A corresponding [Instant] object.
      */
     @TypeConverter
-    fun toInstant(data: Long): Instant {
-        return Instant.ofEpochMilli(data)
+    fun toInstant(data: Long?): Instant? {
+        if (data != null) {
+            return Instant.ofEpochMilli(data)
+        }
+
+        return null
     }
 
     /**
@@ -41,8 +45,12 @@ class DateConverter {
      * @return A corresponding [Date] object.
      */
     @TypeConverter
-    fun toDate(data: Long): Date {
-        return Date(data)
+    fun toDate(data: Long?): Date? {
+        if (data != null) {
+            return Date(data)
+        }
+
+        return null
     }
 
     /**
@@ -52,7 +60,7 @@ class DateConverter {
      * @return The number of milliseconds since the Unix epoch.
      */
     @TypeConverter
-    fun toLong(data: Instant?): Long? {
+    fun toNullableLong(data: Instant?): Long? {
         return data?.toEpochMilli()
     }
 
@@ -63,7 +71,7 @@ class DateConverter {
      * @return The number of milliseconds since the Unix epoch.
      */
     @TypeConverter
-    fun toLong(data: Date?): Long? {
+    fun toNullableLong(data: Date?): Long? {
         return data?.time
     }
 }
