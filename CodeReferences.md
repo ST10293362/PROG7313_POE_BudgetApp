@@ -1,6 +1,6 @@
 # Code References
 
-This document compiles all `@reference` comments extracted from the provided code.
+This document contains a compilation of '@reference` from the project. 
 
 ## BaseDao.kt
 - https://developer.android.com/reference/androidx/room/Dao
