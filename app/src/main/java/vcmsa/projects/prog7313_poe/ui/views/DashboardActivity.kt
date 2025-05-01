@@ -17,6 +17,8 @@ import vcmsa.projects.prog7313_poe.ui.adapters.CategoryAdapter
 import vcmsa.projects.prog7313_poe.ui.viewmodels.*
 import java.text.NumberFormat
 import java.util.*
+import vcmsa.projects.prog7313_poe.core.models.User
+
 
 class DashboardActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDashboardBinding
@@ -42,6 +44,13 @@ class DashboardActivity : AppCompatActivity() {
             setContentView(binding.root)
 
             initializeViewModels()
+
+            // This guarantees user is inserted before loading data
+            lifecycleScope.launch {
+                insertGuestUserIfNeeded()    // suspend block
+                loadUserData()               // run only after insert finishes
+            }
+
             setupBottomNavigation()
             setupCategoriesRecyclerView()
             loadUserData()
@@ -51,6 +60,39 @@ class DashboardActivity : AppCompatActivity() {
             finish()
         }
     }
+
+    private suspend fun insertGuestUserIfNeeded() {
+        val isGuest = intent.getBooleanExtra("IS_GUEST", false)
+
+        if (isGuest && userId != null) {
+            val existing = userViewModel.getUserById(userId!!)
+            if (existing == null) {
+                val guest = User(
+                    id = userId!!,
+                    username = "guest",
+                    password = "",
+                    passwordSalt = "",
+                    name = "Guest",
+                    surname = "",
+                    dateOfBirth = null,
+                    cellNumber = null,
+                    emailAddress = "guest-${userId}@demo.com",
+                    minGoal = 500.0,
+                    maxGoal = 8000.0,
+                    imageUri = null,
+                    goalsSet = true,
+                    profileCompleted = true,
+                    monthlyBudget = 3000.0,
+                    currentBudget = 3000.0,
+                    budgetLastReset = System.currentTimeMillis()
+                )
+                userViewModel.insertUser(guest)
+            }
+        }
+    }
+
+
+
 
     private fun initializeViewModels() {
         val db = AppDatabase.getDatabase(applicationContext)
