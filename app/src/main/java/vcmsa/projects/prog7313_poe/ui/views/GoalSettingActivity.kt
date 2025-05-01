@@ -2,33 +2,28 @@ package vcmsa.projects.prog7313_poe.ui.views
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
-import androidx.lifecycle.LiveData
-import kotlinx.coroutines.Dispatchers
-import vcmsa.projects.prog7313_poe.core.models.User
-
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import vcmsa.projects.prog7313_poe.R
 import vcmsa.projects.prog7313_poe.core.data.AppDatabase
 import vcmsa.projects.prog7313_poe.core.data.repos.UserRepository
+import vcmsa.projects.prog7313_poe.databinding.ActivityGoalSettingBinding
 import vcmsa.projects.prog7313_poe.ui.viewmodels.UserViewModel
 import vcmsa.projects.prog7313_poe.ui.viewmodels.UserViewModelFactory
 import java.util.UUID
 
 class GoalSettingActivity : AppCompatActivity() {
-    private lateinit var minGoalEditText: EditText
-    private lateinit var maxGoalEditText: EditText
-    private lateinit var budgetEditText: EditText
-    private lateinit var saveButton: Button
+    private lateinit var binding: ActivityGoalSettingBinding
     private lateinit var userViewModel: UserViewModel
     private var userId: UUID? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_goal_setting)
+        binding = ActivityGoalSettingBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         userId = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             intent.getSerializableExtra("USER_ID", UUID::class.java)
@@ -43,12 +38,6 @@ class GoalSettingActivity : AppCompatActivity() {
             return
         }
 
-        // Initialize views
-        minGoalEditText = findViewById(R.id.minGoalEditText)
-        maxGoalEditText = findViewById(R.id.maxGoalEditText)
-        budgetEditText = findViewById(R.id.budgetEditText)
-        saveButton = findViewById(R.id.saveButton)
-
         // Set up ViewModel
         val db = AppDatabase.getDatabase(applicationContext)
         val repository = UserRepository(db.userDao())
@@ -58,27 +47,35 @@ class GoalSettingActivity : AppCompatActivity() {
         // Load existing values
         loadExistingValues()
 
-        saveButton.setOnClickListener {
-            saveGoals()
+        binding.saveButton.setOnClickListener {
+            lifecycleScope.launch {
+                saveGoals()
+            }
         }
     }
 
     private fun loadExistingValues() {
         userId?.let { id ->
-            userViewModel.getUserById(id).observe(this) { user ->
-                minGoalEditText.setText(user.minGoal?.toString() ?: "0.0")
-                maxGoalEditText.setText(user.maxGoal?.toString() ?: "0.0")
-                budgetEditText.setText(user.monthlyBudget.toString())
+            lifecycleScope.launch {
+                try {
+                    val user = userViewModel.getUserById(id)
+                    user?.let {
+                        binding.minGoalEditText.setText(it.minGoal?.toString() ?: "0.0")
+                        binding.maxGoalEditText.setText(it.maxGoal?.toString() ?: "0.0")
+                        binding.budgetEditText.setText(it.monthlyBudget.toString())
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(this@GoalSettingActivity, "Error loading user data: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
 
-
-    private fun saveGoals() {
+    private suspend fun saveGoals() {
         try {
-            val minGoal = minGoalEditText.text.toString().toDoubleOrNull()
-            val maxGoal = maxGoalEditText.text.toString().toDoubleOrNull()
-            val monthlyBudget = budgetEditText.text.toString().toDoubleOrNull()
+            val minGoal = binding.minGoalEditText.text.toString().toDoubleOrNull()
+            val maxGoal = binding.maxGoalEditText.text.toString().toDoubleOrNull()
+            val monthlyBudget = binding.budgetEditText.text.toString().toDoubleOrNull()
 
             if (minGoal == null || maxGoal == null || monthlyBudget == null) {
                 Toast.makeText(this, "Please enter valid numbers", Toast.LENGTH_SHORT).show()
@@ -95,7 +92,7 @@ class GoalSettingActivity : AppCompatActivity() {
                 return
             }
 
-            // Update goals, budget and goals_set status
+            // Update goals, budget, and goals_set status
             userViewModel.updateUserGoalsAndBudget(
                 userId = userId!!,
                 minGoal = minGoal,

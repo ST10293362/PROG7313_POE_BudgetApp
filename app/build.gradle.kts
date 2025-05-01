@@ -8,6 +8,11 @@ plugins {
 android {
     namespace = "vcmsa.projects.prog7313_poe"
     compileSdk = 35
+    packaging {
+        resources {
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+        }
+    }
 
     defaultConfig {
         applicationId = "vcmsa.projects.prog7313_poe"

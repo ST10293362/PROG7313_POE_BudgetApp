@@ -12,8 +12,10 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import kotlinx.coroutines.launch
 import vcmsa.projects.prog7313_poe.R
 import vcmsa.projects.prog7313_poe.core.data.AppDatabase
 import vcmsa.projects.prog7313_poe.core.data.repos.UserRepository
@@ -73,7 +75,9 @@ class CompleteProfileActivity : AppCompatActivity() {
 
         // Set up click listeners
         saveButton.setOnClickListener {
-            saveProfile()
+            lifecycleScope.launch {
+                saveProfile()
+            }
         }
 
         addProfilePicButton.setOnClickListener {
@@ -81,7 +85,7 @@ class CompleteProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveProfile() {
+    private suspend fun saveProfile() {
         try {
             // Validate inputs
             if (accountEditText.text.isEmpty() || phoneNumberEditText.text.isEmpty() ||
