@@ -2,14 +2,16 @@ package vcmsa.projects.prog7313_poe.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import vcmsa.projects.prog7313_poe.core.data.repos.UserRepository
-import java.util.UUID
+import vcmsa.projects.prog7313_poe.core.data.repos.CategoryRepository
 
-class UserViewModelFactory(private val repository: UserRepository) : ViewModelProvider.Factory {
+class CategoryViewModelFactory(
+    private val repository: CategoryRepository
+) : ViewModelProvider.Factory {
+
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(UserViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(CategoryViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return UserViewModel(repository) as T
+            return CategoryViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

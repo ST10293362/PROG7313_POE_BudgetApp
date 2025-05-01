@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import java.time.Instant
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
@@ -177,36 +178,39 @@ class AddExpenseActivity : AppCompatActivity() {
     }
 
     private fun setupImageHandling() {
-        getImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val data = result.data
-                data?.let {
-                    val clipData = it.clipData
-                    if (clipData != null) {
-                        for (i in 0 until clipData.itemCount) {
-                            val imageUri: Uri = clipData.getItemAt(i).uri
-                            imageUris.add(imageUri)
-                            photoAdapter.addPhoto("Photo ${imageUris.size}")
-                        }
-                    } else {
-                        val imageUri: Uri? = it.data
-                        imageUri?.let { uri -> 
-                            imageUris.add(uri)
-                            photoAdapter.addPhoto("Photo ${imageUris.size}")
+        getImageLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == RESULT_OK) {
+                    val data = result.data
+                    data?.let {
+                        val clipData = it.clipData
+                        if (clipData != null) {
+                            for (i in 0 until clipData.itemCount) {
+                                val imageUri: Uri = clipData.getItemAt(i).uri
+                                imageUris.add(imageUri)
+                                photoAdapter.addPhoto("Photo ${imageUris.size}")
+                            }
+                        } else {
+                            val imageUri: Uri? = it.data
+                            imageUri?.let { uri ->
+                                imageUris.add(uri)
+                                photoAdapter.addPhoto("Photo ${imageUris.size}")
+                            }
                         }
                     }
                 }
             }
-        }
 
-        takePictureLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val imageFile = File(currentPhotoPath)
-                val imageUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", imageFile)
-                imageUris.add(imageUri)
-                photoAdapter.addPhoto("Photo ${imageUris.size}")
+        takePictureLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == RESULT_OK) {
+                    val imageFile = File(currentPhotoPath)
+                    val imageUri =
+                        FileProvider.getUriForFile(this, "${packageName}.fileprovider", imageFile)
+                    imageUris.add(imageUri)
+                    photoAdapter.addPhoto("Photo ${imageUris.size}")
+                }
             }
-        }
     }
 
     private fun setupClickListeners() {
@@ -244,20 +248,36 @@ class AddExpenseActivity : AppCompatActivity() {
     }
 
     private fun checkPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_CODE_PERMISSIONS)
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                REQUEST_CODE_PERMISSIONS
+            )
         } else {
             capturePhoto()
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 capturePhoto()
             } else {
-                Toast.makeText(this, "Camera permission is required to capture photos", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Camera permission is required to capture photos",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -277,7 +297,8 @@ class AddExpenseActivity : AppCompatActivity() {
             val photoFile: File? = createImageFile()
             if (photoFile != null) {
                 currentPhotoPath = photoFile.absolutePath
-                val photoURI: Uri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", photoFile)
+                val photoURI: Uri =
+                    FileProvider.getUriForFile(this, "${packageName}.fileprovider", photoFile)
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                 takePictureLauncher.launch(intent)
             } else {
@@ -311,7 +332,7 @@ class AddExpenseActivity : AppCompatActivity() {
             val category = categorySpinner.selectedItem.toString()
             val startTime = startTimeEditText.text.toString()
             val endTime = endTimeEditText.text.toString()
-            
+
             if (description.isEmpty() || amount == null || startTime.isEmpty() || endTime.isEmpty()) {
                 Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
                 return
@@ -320,16 +341,17 @@ class AddExpenseActivity : AppCompatActivity() {
             // TODO: Replace with actual user/account IDs from session
             val userId = UUID.randomUUID()
             val accountId = UUID.randomUUID()
+            val categoryId = UUID.randomUUID() // or null if category is not required
 
+            val now = Instant.now()
             val expense = Expense(
-                detail = description,
-                vendor = category,
+                description = description,
                 amount = amount,
-                dateOfExpense = Date(),
-                idAuthor = userId,
-                idAccount = accountId,
-                idCategory = null,
-                imageUri = imageUris.joinToString(",") { it.toString() }
+                startDate = now, // Using current instant for start
+                endDate = now,   // Using current instant for end
+                userId = userId,
+                accountId = accountId,
+                categoryId = categoryId
             )
 
             // Save to DB using ViewModel
@@ -346,6 +368,6 @@ class AddExpenseActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Toast.makeText(this, "Error saving expense: ${e.message}", Toast.LENGTH_SHORT).show()
         }
-    }
 
+    }
 }

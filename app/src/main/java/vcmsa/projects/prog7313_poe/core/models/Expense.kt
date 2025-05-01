@@ -8,159 +8,117 @@ import androidx.room.PrimaryKey
 import vcmsa.projects.prog7313_poe.core.models.supers.AuditableEntity
 import vcmsa.projects.prog7313_poe.core.models.supers.KeyedEntity
 import java.time.Instant
-import java.util.Date
 import java.util.UUID
 
 /**
+ * Represents an individual financial expense entry linked to a user, category, and account.
+ *
+ * The [Expense] entity includes timestamp metadata (via [AuditableEntity]), the amount spent,
+ * a descriptive field, a date range (start and optional end), and foreign keys to related entities.
+ *
+ * It is used with Room for persistence and includes indexing for optimized queries.
+ *
  * @author ST10257002
+ * @author ST13026084
+ *
+ * @reference https://developer.android.com/training/data-storage/room/defining-data
+ * @reference https://developer.android.com/reference/androidx/room/Entity
+ * @reference https://developer.android.com/reference/kotlin/java/time/Instant
  */
 @Entity(
     tableName = "expense",
+    indices = [
+        Index(value = ["id"], unique = true),
+        Index(value = ["user_id"]),
+        Index(value = ["category_id"]),
+        Index(value = ["account_id"])
+    ],
     foreignKeys = [
         ForeignKey(
             entity = User::class,
             parentColumns = ["id"],
-            childColumns = ["id_author"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = Account::class,
-            parentColumns = ["id"],
-            childColumns = ["id_account"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.CASCADE
+            childColumns = ["user_id"],
+            onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = Category::class,
             parentColumns = ["id"],
-            childColumns = ["id_category"],
-            onDelete = ForeignKey.SET_NULL,
-            onUpdate = ForeignKey.CASCADE
+            childColumns = ["category_id"],
+            onDelete = ForeignKey.CASCADE
         ),
-    ],
-    indices = [
-        Index(value = ["id"], unique = true),
-        Index(value = ["id_author"]),
-        Index(value = ["id_account"]),
-        Index(value = ["id_category"]),
-        Index(value = ["date_of_expense"])
+        ForeignKey(
+            entity = Account::class,
+            parentColumns = ["id"],
+            childColumns = ["account_id"]
+        )
     ]
 )
 data class Expense(
 
-    //<editor-fold desc="Inherited members">
-
-
+    /**
+     * Primary key unique identifier for the expense.
+     */
     @PrimaryKey
     override val id: UUID = UUID.randomUUID(),
 
-
-    @ColumnInfo(
-        name = "created_at"
-    )
+    /**
+     * Timestamp of when the expense was created.
+     */
+    @ColumnInfo(name = "created_at")
     override val createdAt: Instant = Instant.now(),
 
-
-    @ColumnInfo(
-        name = "updated_at"
-    )
+    /**
+     * Timestamp of the last time this record was updated.
+     */
+    @ColumnInfo(name = "updated_at")
     override var updatedAt: Instant = Instant.now(),
 
-
-    //</editor-fold>
-    //<editor-fold desc="Entity attributes">
-
+    /**
+     * The amount spent in this expense entry.
+     */
+    @ColumnInfo(name = "amount")
+    val amount: Double,
 
     /**
-     * The receipt number or descriptive alias of the transaction.
-     *
-     * @author ST10257002
+     * Optional textual description of the expense.
      */
-    @ColumnInfo(
-        name = "detail"
-    )
-    var detail: String,
-
+    @ColumnInfo(name = "description")
+    val description: String,
 
     /**
-     * The vendor that the transaction was made to to.
-     *
-     * @author ST10257002
+     * The start date of the expense period.
      */
-    @ColumnInfo(
-        name = "vendor"
-    )
-    var vendor: String,
-
+    @ColumnInfo(name = "start_date")
+    val startDate: Instant,
 
     /**
-     * The total monetary value of the transaction.
-     *
-     * @author ST10257002
+     * The optional end date of the expense period.
      */
-    @ColumnInfo(
-        name = "amount"
-    )
-    var amount: Double,
-
+    @ColumnInfo(name = "end_date")
+    val endDate: Instant? = null,
 
     /**
-     * The [Date] that the transaction occurred.
-     *
-     * @author ST10257002
+     * Foreign key reference to the user who recorded this expense.
      */
-    @ColumnInfo(
-        name = "date_of_expense"
-    )
-    var dateOfExpense: Date,
-
-
-    @ColumnInfo(name = "image_uri")
-    var imageUri: String? = null,
-
-
-    //</editor-fold>
-    //<editor-fold desc="SQLite relationships">
-
+    @ColumnInfo(name = "user_id")
+    val userId: UUID,
 
     /**
-     * SQLite Foreign Key relationship to [User].
-     *
-     * @author ST10257002
+     * Foreign key reference to the account used for the expense.
      */
-    @ColumnInfo(
-        name = "id_author"
-    )
-    var idAuthor: UUID,
-
+    @ColumnInfo(name = "account_id")
+    val accountId: UUID,
 
     /**
-     * SQLite Foreign Key relationship to [Account].
-     *
-     * @author ST10257002
+     * Foreign key reference to the category associated with this expense.
      */
-    @ColumnInfo(
-        name = "id_account"
-    )
-    var idAccount: UUID,
+    @ColumnInfo(name = "category_id")
+    val categoryId: UUID
 
+) : AuditableEntity, KeyedEntity {
 
-    /**
-     * SQLite Foreign Key relationship to [Category].
-     *
-     * @author ST10257002
-     */
-    @ColumnInfo(
-        name = "id_category"
-    )
-    var idCategory: UUID?,
-
-
-    //</editor-fold>
-
-) : KeyedEntity, AuditableEntity {
     companion object {
+        /** Constant for Room table name. */
         const val TABLE_NAME = "expense"
     }
 }

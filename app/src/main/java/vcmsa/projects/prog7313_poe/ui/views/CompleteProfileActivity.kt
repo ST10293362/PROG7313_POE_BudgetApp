@@ -9,10 +9,19 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import kotlinx.coroutines.launch
 import vcmsa.projects.prog7313_poe.R
+import vcmsa.projects.prog7313_poe.core.data.AppDatabase
+import vcmsa.projects.prog7313_poe.core.data.repos.UserRepository
+import vcmsa.projects.prog7313_poe.ui.viewmodels.UserViewModel
+import vcmsa.projects.prog7313_poe.ui.viewmodels.UserViewModelFactory
+import java.util.UUID
 
 class CompleteProfileActivity : AppCompatActivity() {
     private lateinit var accountEditText: EditText
@@ -24,13 +33,29 @@ class CompleteProfileActivity : AppCompatActivity() {
     private lateinit var saveButton: Button
     private lateinit var profileImageView: ImageView
     private lateinit var addProfilePicButton: Button
+    private lateinit var userViewModel: UserViewModel
 
     private val PICK_IMAGE_REQUEST = 1
     private var imageUri: Uri? = null
+    private var userId: UUID? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_complete_profile)
+
+        // Get userId from intent
+        userId = intent.getSerializableExtra("USER_ID") as? UUID
+        if (userId == null) {
+            Toast.makeText(this, "Error: User ID not found", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        // Initialize ViewModel
+        val db = AppDatabase.getDatabase(applicationContext)
+        val repository = UserRepository(db.userDao())
+        val factory = UserViewModelFactory(repository)
+        userViewModel = ViewModelProvider(this, factory)[UserViewModel::class.java]
 
         accountEditText = findViewById(R.id.accountEditText)
         phoneNumberEditText = findViewById(R.id.phoneNumberEditText)
@@ -48,18 +73,42 @@ class CompleteProfileActivity : AppCompatActivity() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         cardTypeSpinner.adapter = adapter
 
-        addProfilePicButton.setOnClickListener {
-            openGallery()
+        // Set up click listeners
+        saveButton.setOnClickListener {
+            lifecycleScope.launch {
+                saveProfile()
+            }
         }
 
-        saveButton.setOnClickListener {
-            // Logic to save user profile details including card information
-            startActivity(Intent(this, DashboardActivity::class.java))
-            finish()
+        addProfilePicButton.setOnClickListener {
+            openImagePicker()
         }
     }
 
-    private fun openGallery() {
+    private suspend fun saveProfile() {
+        try {
+            // Validate inputs
+            if (accountEditText.text.isEmpty() || phoneNumberEditText.text.isEmpty() ||
+                cardNumberEditText.text.isEmpty() || cvcEditText.text.isEmpty() ||
+                expiryEditText.text.isEmpty()) {
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+            // Update user profile completion status
+            userViewModel.updateProfileCompletion(userId!!, true)
+
+            // Navigate to GoalSettingActivity
+            val intent = Intent(this, GoalSettingActivity::class.java)
+            intent.putExtra("USER_ID", userId)
+            startActivity(intent)
+            finish()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error saving profile: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun openImagePicker() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(intent, PICK_IMAGE_REQUEST)
     }
@@ -68,11 +117,12 @@ class CompleteProfileActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
             imageUri = data.data
-            // Use Glide to load the image and apply a circular crop transformation
-            Glide.with(this)
-                .load(imageUri)
-                .transform(CircleCrop()) // This will make the image circular
-                .into(profileImageView)
+            imageUri?.let {
+                Glide.with(this)
+                    .load(it)
+                    .transform(CircleCrop())
+                    .into(profileImageView)
+            }
         }
     }
 }

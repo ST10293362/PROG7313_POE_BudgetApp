@@ -10,175 +10,182 @@ import vcmsa.projects.prog7313_poe.core.models.UserWithExpenses
 import java.util.UUID
 
 /**
- * Interface definition for direct database operations.
+ * Data Access Object (DAO) for interacting with [User] entities in the database.
  *
- * @see [vcmsa.projects.prog7313_poe.core.models.User]
- * @see [androidx.room.Dao]
+ * This interface includes CRUD operations, goal/budget updates, login queries,
+ * and `@Transaction`-based relational queries for linked tables like expenses,
+ * categories, and accounts.
+ *
+ * @see androidx.room.Dao
+ * @see vcmsa.projects.prog7313_poe.core.models.User
+ * @see https://developer.android.com/training/data-storage/room/accessing-data
+ *
  * @author ST10257002
+ * @author ST10326084
+ * @since 2024
  */
 @Dao
 interface UserDao : BaseDao<User> {
 
     //<editor-fold desc="CRUD Operations">
 
-
     /**
-     * Deletes a specific entity from the database using its unique ID.
+     * Deletes a user by their UUID.
      *
-     * @param targetId The unique identifier ([java.util.UUID]) of the entity to delete.
-     *
-     * @author ST10257002
+     * @param targetId The UUID of the user to delete.
      */
-    @Query(
-        """
-        DELETE FROM user 
-        WHERE id = :targetId
-        """
-    )
+    @Query("DELETE FROM user WHERE id = :targetId")
     suspend fun delete(targetId: UUID)
 
-
     /**
-     * Fetches the contents of the database table.
+     * Returns all users in the database.
      *
-     * @return [List] collection containing every entity in the database.
-     * @author ST10257002
+     * @return A list of all [User] entities.
      */
-    @Query(
-        """
-        SELECT * FROM user
-        """
-    )
+    @Query("SELECT * FROM user")
     suspend fun fetchAll(): List<User>
 
-
     /**
-     * Fetches a specific entity by its primary key identity.
+     * Retrieves a user by their ID.
      *
-     * @param targetId The unique identifier ([UUID]) of the entity to query.
-     *
-     * @return The specific entity that was queried.
-     * @author ST10257002
+     * @param targetId UUID of the user to retrieve.
+     * @return The [User] if found, else null.
      */
-    @Query(
-        """
-        SELECT * FROM user
-        WHERE id = :targetId
-        """
-    )
+    @Query("SELECT * FROM user WHERE id = :targetId")
     suspend fun fetchOne(targetId: UUID): User?
 
-
     /**
-     * @return The specific entity that was queried.
-     * @author ST10257002
+     * Retrieves a user by both username and password (for login).
+     *
+     * @param username The user's username.
+     * @param password The raw or hashed password.
+     * @return The matching [User], or null.
      */
-    @Query(
-        """
-        SELECT * FROM user
-        WHERE   username = :username 
-            AND password = :password
-        """
-    )
+    @Query("SELECT * FROM user WHERE username = :username AND password = :password")
     suspend fun fetchOneByCredentials(username: String, password: String): User?
 
-
     /**
-     * @return The specific entity that was queried.
-     * @author ST10257002
+     * Retrieves a user by username.
+     *
+     * @param username The username to look for.
+     * @return The [User] if found, else null.
      */
-    @Query(
-        """
-        SELECT * FROM user
-        WHERE username = :username
-        """
-    )
+    @Query("SELECT * FROM user WHERE username = :username")
     suspend fun fetchOneByUsername(username: String): User?
 
-
     /**
-     * Fetches a user by their email address.
+     * Retrieves a user by email address.
+     *
+     * @param email The email to search.
+     * @return The [User] if found, else null.
      */
-    @Query(
-        """
-        SELECT * FROM user
-        WHERE email_address = :email
-        """
-    )
+    @Query("SELECT * FROM user WHERE email_address = :email")
     suspend fun fetchOneByEmail(email: String): User?
 
-
     //</editor-fold>
-    //<editor-fold desc="Extensions">
 
+    //<editor-fold desc="Existence & Updates">
 
     /**
-     * Checks whether an entity with the given ID exists in the database.
+     * Checks whether a user with the given ID exists.
      *
-     * @param targetId The unique identifier ([UUID]) of the entity to query.
-     *
-     * @author ST10257002
+     * @param targetId UUID of the user.
+     * @return True if user exists, false otherwise.
      */
-    @Query(
-        """
-        SELECT EXISTS(
-            SELECT * FROM user WHERE id = :targetId
-        )
-        """
-    )
+    @Query("SELECT EXISTS(SELECT * FROM user WHERE id = :targetId)")
     suspend fun exists(targetId: UUID): Boolean
 
+    /**
+     * Updates a user's goals and goal status.
+     */
+    @Query("UPDATE user SET min_goal = :minGoal, max_goal = :maxGoal, goals_set = :goalsSet WHERE id = :userId")
+    suspend fun updateUserGoals(userId: UUID, minGoal: Double, maxGoal: Double, goalsSet: Boolean)
 
     /**
-     * Fetches an [UserWithAccounts] object.
+     * Updates whether the user has completed their goal setup.
+     */
+    @Query("UPDATE user SET goals_set = :goalsSet WHERE id = :userId")
+    suspend fun updateGoalsSet(userId: UUID, goalsSet: Boolean)
+
+    /**
+     * Updates a user's goals along with their monthly budget.
+     * Resets current budget to monthly budget.
+     */
+    @Query("""
+        UPDATE user 
+        SET min_goal = :minGoal,
+            max_goal = :maxGoal,
+            monthly_budget = :monthlyBudget,
+            current_budget = :monthlyBudget,
+            budget_last_reset = :currentDate,
+            goals_set = :goalsSet 
+        WHERE id = :userId
+    """)
+    suspend fun updateUserGoalsAndBudget(
+        userId: UUID,
+        minGoal: Double,
+        maxGoal: Double,
+        monthlyBudget: Double,
+        goalsSet: Boolean,
+        currentDate: Long = System.currentTimeMillis()
+    )
+
+    /**
+     * Subtracts from the user's current budget.
      *
-     * @param targetId The unique identifier ([UUID]) of the user.
+     * @param userId The user's UUID.
+     * @param amount The amount to subtract.
+     */
+    @Query("UPDATE user SET current_budget = current_budget - :amount WHERE id = :userId")
+    suspend fun updateCurrentBudget(userId: UUID, amount: Double)
+
+    /**
+     * Resets the user's budget for a new month.
      *
-     * @author ST10257002
+     * @param userId The user's UUID.
+     * @param currentDate Optional: timestamp of reset.
+     */
+    @Query("""
+        UPDATE user 
+        SET current_budget = monthly_budget,
+            budget_last_reset = :currentDate 
+        WHERE id = :userId
+    """)
+    suspend fun resetMonthlyBudget(userId: UUID, currentDate: Long = System.currentTimeMillis())
+
+    /**
+     * Marks whether the user's profile setup is complete.
+     *
+     * @param isCompleted True if profile is fully filled out.
+     */
+    @Query("UPDATE user SET profile_completed = :isCompleted WHERE id = :userId")
+    suspend fun updateProfileCompletion(userId: UUID, isCompleted: Boolean)
+
+    //</editor-fold>
+
+    //<editor-fold desc="Relational Queries (@Transaction)">
+
+    /**
+     * Fetches a user along with their linked [Account]s.
+     * Requires a valid Room @Relation in [UserWithAccounts].
      */
     @Transaction
-    @Query(
-        """
-            SELECT * FROM user
-            WHERE id = :targetId
-        """
-    )
+    @Query("SELECT * FROM user WHERE id = :targetId")
     suspend fun fetchUserWithAccounts(targetId: UUID): UserWithAccounts
 
-
     /**
-     * Fetches an [UserWithCategories] object.
-     *
-     * @param targetId The unique identifier ([UUID]) of the user.
-     *
-     * @author ST10257002
+     * Fetches a user along with their [Category] data.
      */
     @Transaction
-    @Query(
-        """
-            SELECT * FROM user
-            WHERE id = :targetId
-        """
-    )
+    @Query("SELECT * FROM user WHERE id = :targetId")
     suspend fun fetchUserWithCategories(targetId: UUID): UserWithCategories
 
-
     /**
-     * Fetches an [UserWithExpenses] object.
-     *
-     * @param targetId The unique identifier ([UUID]) of the user.
-     *
-     * @author ST10257002
+     * Fetches a user along with their [Expense]s.
      */
     @Transaction
-    @Query(
-        """
-            SELECT * FROM user
-            WHERE id = :targetId
-        """
-    )
+    @Query("SELECT * FROM user WHERE id = :targetId")
     suspend fun fetchUserWithExpenses(targetId: UUID): UserWithExpenses
-
 
     //</editor-fold>
 }

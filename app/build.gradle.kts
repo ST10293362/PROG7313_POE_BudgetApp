@@ -8,6 +8,11 @@ plugins {
 android {
     namespace = "vcmsa.projects.prog7313_poe"
     compileSdk = 35
+    packaging {
+        resources {
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+        }
+    }
 
     defaultConfig {
         applicationId = "vcmsa.projects.prog7313_poe"
@@ -60,6 +65,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation ("androidx.recyclerview:recyclerview:1.3.2")
 
     // - Material Design
     
@@ -69,6 +75,7 @@ dependencies {
     // - Glide
     
     implementation(libs.glide)
+    implementation(libs.identity.jvm)
     annotationProcessor(libs.glide.compiler) // Java
     kapt(libs.glide.compiler) // Kotlin
 

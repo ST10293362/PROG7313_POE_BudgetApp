@@ -4,31 +4,43 @@ import androidx.room.TypeConverter
 import java.util.UUID
 
 /**
- * Type convertor for UUID.
+ * Type converter for [UUID] values used with Room.
  *
- * @see [androidx.room.TypeConverter]
- * @see [androidx.room.RoomDatabase]
+ * SQLite does not support UUID natively, so Room uses this class to convert UUIDs
+ * to [String] when storing in the database, and back to [UUID] when retrieving.
+ *
+ * Registered globally via `@TypeConverters(...)` on the Room database class.
+ *
+ * @see androidx.room.TypeConverter
+ * @see androidx.room.RoomDatabase
+ *
  * @author ST10257002
+ * @author ST10326084
+ *
+ * @reference https://developer.android.com/reference/androidx/room/TypeConverter
  */
 class UuidConverter {
 
     /**
-     * Convert from [String] to [UUID]
+     * Converts a [String] into a [UUID].
      *
-     * @see [androidx.room.TypeConverter]
-     * @author ST10257002
+     * Used by Room when reading from the database.
+     *
+     * @param data A valid UUID string representation.
+     * @return A [UUID] object.
      */
     @TypeConverter
     fun toUuid(data: String): UUID {
         return UUID.fromString(data)
     }
 
-
     /**
-     * Convert from [UUID] to [String]
+     * Converts a [UUID] into a [String].
      *
-     * @see [androidx.room.TypeConverter]
-     * @author ST10257002
+     * Used by Room when saving to the database.
+     *
+     * @param data The UUID object.
+     * @return The string representation of the UUID.
      */
     @TypeConverter
     fun toString(data: UUID): String {

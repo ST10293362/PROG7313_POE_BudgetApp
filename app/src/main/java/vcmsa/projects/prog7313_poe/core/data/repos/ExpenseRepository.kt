@@ -63,7 +63,7 @@ class ExpenseRepository(
      *
      * @return [LiveData] stream of the full expense list.
      */
-    fun getAllExpenses(): LiveData<List<Expense>> {
-        return dao.fetchAll()
+    suspend fun getAllExpenses(): List<Expense> {
+        return dao.getAllExpenses()
     }
 }

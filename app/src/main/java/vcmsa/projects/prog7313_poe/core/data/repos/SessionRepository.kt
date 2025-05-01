@@ -78,13 +78,13 @@ class SessionRepository(
     /**
      * Attempts to log in a user using email and hashed password.
      *
-     * @param email Email address
+     * @param username The username of the user.
      * @param hashedPassword The hashed version of the user’s password
      * @return [Result.success] with the authenticated user, or [Result.failure] on invalid login
      */
-    suspend fun signIn(email: String, hashedPassword: String): Result<User> {
+    suspend fun signIn(username: String, hashedPassword: String): Result<User> {
         return try {
-            val user = userDao.fetchOneByEmail(email)
+            val user = userDao.fetchOneByUsername(username)
                 ?: return Result.failure(Exception("User not found"))
 
             if (user.password != hashedPassword) {
