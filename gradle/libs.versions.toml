@@ -21,6 +21,7 @@ uiGraphicsAndroid = "1.8.0"
 roomCompiler = "2.7.1"
 roomCommon = "2.7.1"
 roomKtx = "2.7.1"
+identityJvm = "202411.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -43,6 +44,7 @@ androidx-ui-graphics-android = { group = "androidx.compose.ui", name = "ui-graph
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCompiler" }
 androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
+identity-jvm = { group = "com.android.identity", name = "identity-jvm", version.ref = "identityJvm" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

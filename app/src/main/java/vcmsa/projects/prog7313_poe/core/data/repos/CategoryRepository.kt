@@ -27,6 +27,9 @@ class CategoryRepository(
         dao.update(instance)
     }
 
+    suspend fun getCategoriesByUserId(userId: UUID): List<Category> {
+        return dao.getCategoriesByUserId(userId)
+    }
 
     /**
      * @author ST10257002
@@ -50,4 +53,5 @@ class CategoryRepository(
     suspend fun getAllCategories(): List<Category> {
         return dao.fetchAll()
     }
+
 }

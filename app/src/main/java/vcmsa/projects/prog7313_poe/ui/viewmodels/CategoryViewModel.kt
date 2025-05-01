@@ -12,12 +12,43 @@ class CategoryViewModel(
     private val repository: CategoryRepository
 ) : ViewModel() {
 
-    fun getCategoriesByUserId(userId: UUID): LiveData<List<Category>> = liveData(Dispatchers.IO) {
+    val categories: LiveData<List<Category>> = liveData(Dispatchers.IO) {
         try {
-            val categories = repository.getCategoriesByUserId(userId)
-            emit(categories ?: emptyList())
+            val result = repository.getAllCategories()
+            emit(result)
         } catch (e: Exception) {
             emit(emptyList())
         }
+    }
+
+    fun addCategory(category: Category) = liveData(Dispatchers.IO) {
+        try {
+            repository.createCategory(category)
+            emit(true)
+        } catch (e: Exception) {
+            emit(false)
+        }
+    }
+
+    fun deleteCategory(category: Category) = liveData(Dispatchers.IO) {
+        try {
+            repository.deleteCategory(category)
+            emit(true)
+        } catch (e: Exception) {
+            emit(false)
+        }
+    }
+
+    fun updateCategory(category: Category) = liveData(Dispatchers.IO) {
+        try {
+            repository.updateCategory(category)
+            emit(true)
+        } catch (e: Exception) {
+            emit(false)
+        }
+    }
+
+    suspend fun getCategoriesByUserId(userId: UUID): List<Category> {
+        return repository.getCategoriesByUserId(userId)
     }
 }

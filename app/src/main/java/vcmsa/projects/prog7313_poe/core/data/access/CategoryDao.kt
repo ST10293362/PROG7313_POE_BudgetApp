@@ -88,7 +88,8 @@ interface CategoryDao : BaseDao<Category> {
     )
     suspend fun exists(targetId: UUID): Boolean
 
-
+    @Query("SELECT * FROM category WHERE user_id = :userId")
+    suspend fun getCategoriesByUserId(userId: UUID): List<Category>
 
     /**
      * Fetches an [CategoryWithExpenses] object.

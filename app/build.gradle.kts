@@ -70,6 +70,7 @@ dependencies {
     // - Glide
     
     implementation(libs.glide)
+    implementation(libs.identity.jvm)
     annotationProcessor(libs.glide.compiler) // Java
     kapt(libs.glide.compiler) // Kotlin
 

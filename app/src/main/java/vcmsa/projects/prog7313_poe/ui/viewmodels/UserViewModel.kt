@@ -1,44 +1,23 @@
+// UserViewModel.kt
 package vcmsa.projects.prog7313_poe.ui.viewmodels
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import vcmsa.projects.prog7313_poe.core.data.repos.UserRepository
 import vcmsa.projects.prog7313_poe.core.models.User
 import java.util.UUID
 
 class UserViewModel(private val repository: UserRepository) : ViewModel() {
 
-    fun getUserById(userId: UUID): LiveData<User> = liveData(Dispatchers.IO) {
-        val user = repository.getUserById(userId)
-        emit(user ?: User(
-            id = UUID.randomUUID(),
-            username = "",
-            password = "",
-            passwordSalt = "",
-            name = "",
-            surname = "",
-            dateOfBirth = null,
-            cellNumber = "",
-            emailAddress = "",
-            minGoal = 0.0,
-            maxGoal = 0.0,
-            monthlyBudget = 0.0,
-            currentBudget = 0.0,
-            budgetLastReset = System.currentTimeMillis(),
-            goalsSet = false
-        ))
+    suspend fun getUserById(userId: UUID): User? = withContext(Dispatchers.IO) {
+        repository.getUserById(userId)
     }
 
-    fun updateUserGoals(userId: UUID, minGoal: Double, maxGoal: Double, goalsSet: Boolean = true) {
-        viewModelScope.launch(Dispatchers.IO) {
+    suspend fun updateUserGoals(userId: UUID, minGoal: Double, maxGoal: Double, goalsSet: Boolean = true) {
+        if (minGoal <= 0 || maxGoal <= 0) return
+        withContext(Dispatchers.IO) {
             try {
-                if (minGoal <= 0 || maxGoal <= 0) {
-                    return@launch
-                }
                 repository.updateUserGoals(userId, minGoal, maxGoal, goalsSet)
             } catch (e: Exception) {
                 // Handle database errors
@@ -46,14 +25,14 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
         }
     }
 
-    fun updateUserGoalsAndBudget(
+    suspend fun updateUserGoalsAndBudget(
         userId: UUID,
         minGoal: Double,
         maxGoal: Double,
         monthlyBudget: Double,
         goalsSet: Boolean
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
+        withContext(Dispatchers.IO) {
             try {
                 repository.updateUserGoalsAndBudget(
                     userId = userId,
@@ -68,8 +47,8 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
         }
     }
 
-    fun updateProfileCompletion(userId: UUID, isCompleted: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
+    suspend fun updateProfileCompletion(userId: UUID, isCompleted: Boolean) {
+        withContext(Dispatchers.IO) {
             repository.updateProfileCompletion(userId, isCompleted)
         }
     }

@@ -23,7 +23,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.views.DashboardActivity"
+            android:name=".ui.views.CategoryDetailsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.views.ProfileActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.views.StatsActivity"
             android:exported="true" />
         <activity
             android:name=".ui.views.CompleteProfileActivity"

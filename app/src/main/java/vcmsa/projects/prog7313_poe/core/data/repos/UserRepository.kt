@@ -2,61 +2,68 @@ package vcmsa.projects.prog7313_poe.core.data.repos
 
 import vcmsa.projects.prog7313_poe.core.data.access.UserDao
 import vcmsa.projects.prog7313_poe.core.models.User
-import vcmsa.projects.prog7313_poe.core.models.supers.AuditableEntity
 import java.util.UUID
 
-/**
- * @author ST10257002
- */
 class UserRepository(
     private val dao: UserDao
 ) {
-
-    /**
-     * @author ST10257002
-     */
     suspend fun createUser(instance: User) {
         dao.insert(instance)
     }
 
-
-    /**
-     * @author ST10257002
-     */
     suspend fun updateUser(instance: User) {
         instance.touch()
         dao.update(instance)
     }
 
-
-    /**
-     * @author ST10257002
-     */
     suspend fun deleteUser(instance: User) {
         dao.delete(instance)
     }
 
-
-    /**
-     * @author ST10257002
-     */
     suspend fun deleteUserById(id: UUID) {
         dao.delete(id)
     }
 
-
-    /**
-     * @author ST10257002
-     */
     suspend fun getAllUsers(): List<User> {
         return dao.fetchAll()
     }
 
-    /**
-     * Get a user by their ID
-     * @author ST10257002
-     */
     suspend fun getUserById(id: UUID): User? {
         return dao.fetchOne(id)
+    }
+
+    suspend fun updateUserGoals(userId: UUID, minGoal: Double, maxGoal: Double, goalsSet: Boolean) {
+        val user = getUserById(userId) ?: return
+        user.apply {
+            this.minGoal = minGoal
+            this.maxGoal = maxGoal
+            this.goalsSet = goalsSet
+        }
+        updateUser(user)
+    }
+
+    suspend fun updateUserGoalsAndBudget(
+        userId: UUID,
+        minGoal: Double,
+        maxGoal: Double,
+        monthlyBudget: Double,
+        goalsSet: Boolean
+    ) {
+        val user = getUserById(userId) ?: return
+        user.apply {
+            this.minGoal = minGoal
+            this.maxGoal = maxGoal
+            this.monthlyBudget = monthlyBudget
+            this.currentBudget = monthlyBudget
+            this.goalsSet = goalsSet
+            this.budgetLastReset = System.currentTimeMillis()
+        }
+        updateUser(user)
+    }
+
+    suspend fun updateProfileCompletion(userId: UUID, isCompleted: Boolean) {
+        val user = getUserById(userId) ?: return
+        user.profileCompleted = isCompleted
+        updateUser(user)
     }
 }
