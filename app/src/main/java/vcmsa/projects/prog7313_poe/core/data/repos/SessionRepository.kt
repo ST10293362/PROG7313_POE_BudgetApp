@@ -79,7 +79,7 @@ class SessionRepository(
      * Attempts to log in a user using email and hashed password.
      *
      * @param email Email address
-     * @param hashedPassword The hashed version of the user’s password
+     * @param hashedPassword The hashed version of the user's password
      * @return [Result.success] with the authenticated user, or [Result.failure] on invalid login
      */
     suspend fun signIn(email: String, hashedPassword: String): Result<User> {
@@ -91,7 +91,18 @@ class SessionRepository(
                 return Result.failure(Exception("Invalid password"))
             }
 
+            // Clear any existing sessions
+            sessionDao.clearAll()
+            
+            // Create new session
             createSession(user.id)
+            
+            // Verify session was created
+            val session = sessionDao.getCurrent()
+            if (session == null || session.userId != user.id) {
+                return Result.failure(Exception("Failed to create session"))
+            }
+
             Result.success(user)
         } catch (e: Exception) {
             Result.failure(e)
