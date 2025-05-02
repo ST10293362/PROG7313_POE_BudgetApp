@@ -12,8 +12,6 @@ import java.util.Base64
  * @reference https://docs.oracle.com/javase/8/docs/api/java/security/MessageDigest.html
  * @reference https://developer.android.com/topic/security/best-practices#store-credentials
  *
- * @author ST10257002
- * @author ST13026084
  */
 object SecurityUtils {
 

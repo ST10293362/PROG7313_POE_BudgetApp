@@ -14,8 +14,6 @@ import java.util.UUID
  * @see androidx.room.TypeConverter
  * @see androidx.room.RoomDatabase
  *
- * @author ST10257002
- * @author ST10326084
  *
  * @reference https://developer.android.com/reference/androidx/room/TypeConverter
  */

@@ -14,8 +14,6 @@ import java.util.UUID
  * @see BaseDao - Generic base interface for common insert/update/delete
  * @see androidx.room.Dao - Room's DAO interface marker
  *
- * @author ST10257002
- * @author ST10326084
  *
  * @reference https://developer.android.com/training/data-storage/room
  */
@@ -29,8 +27,6 @@ interface AccountDao : BaseDao<Account> {
      * Deletes an account from the database by its UUID.
      *
      * @param targetId The UUID of the account to be deleted.
-     * @author ST10257002
-     * @author ST10326084
      *
      * @reference https://developer.android.com/reference/androidx/room/Query
      */
@@ -46,8 +42,6 @@ interface AccountDao : BaseDao<Account> {
      * Retrieves all accounts from the database.
      *
      * @return A list of all stored [Account] entities.
-     * @author ST10257002
-     * @author ST10326084
      */
     @Query("SELECT * FROM account")
     suspend fun fetchAll(): List<Account>
@@ -57,8 +51,6 @@ interface AccountDao : BaseDao<Account> {
      *
      * @param targetId UUID of the account to retrieve.
      * @return The account with the specified ID, or null if not found.
-     * @author ST10257002
-     * @author ST10326084
      */
     @Query("SELECT * FROM account WHERE id = :targetId")
     suspend fun fetchOne(targetId: UUID): Account?
@@ -72,8 +64,6 @@ interface AccountDao : BaseDao<Account> {
      *
      * @param targetId UUID of the account to check.
      * @return True if the account exists, false otherwise.
-     * @author ST10257002
-     * @author ST10326084
      */
     @Query(
         """
@@ -95,8 +85,6 @@ interface AccountDao : BaseDao<Account> {
      * @return The composite [AccountWithExpenses] object.
      *
      * @reference https://developer.android.com/reference/androidx/room/Transaction
-     * @author ST10257002
-     * @author ST10326084
      */
     @Transaction
     @Query("SELECT * FROM account WHERE id = :targetId")

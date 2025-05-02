@@ -16,8 +16,6 @@ import java.util.UUID
  *
  * Passwords should be pre-hashed with salt **before** being passed in.
  *
- * @author ST10257002
- * @author ST10326084
  */
 
 class SessionRepository(

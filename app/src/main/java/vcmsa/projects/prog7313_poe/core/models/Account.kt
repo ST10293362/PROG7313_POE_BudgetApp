@@ -18,8 +18,6 @@ import java.util.UUID
  *
  * Implements [KeyedEntity] to provide a UUID identifier and [AuditableEntity] for tracking creation and update times.
  *
- * @author ST10257002
- * @author ST13026084
  *
  * @reference https://developer.android.com/training/data-storage/room/defining-data
  * @reference https://developer.android.com/reference/androidx/room/Entity

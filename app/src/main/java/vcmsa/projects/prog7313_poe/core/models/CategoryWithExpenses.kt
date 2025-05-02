@@ -11,8 +11,6 @@ import androidx.room.Relation
  *
  * The default constructor is included for Room compatibility when using query results.
  *
- * @author ST10257002
- * @author ST13026084
  *
  * @reference https://developer.android.com/training/data-storage/room/relationships
  * @reference https://developer.android.com/reference/androidx/room/Relation

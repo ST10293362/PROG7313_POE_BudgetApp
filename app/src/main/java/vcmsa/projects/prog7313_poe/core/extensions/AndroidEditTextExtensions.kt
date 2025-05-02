@@ -8,8 +8,6 @@ import android.widget.EditText
 
 /**
  * Hijack the onTextChanged event from an EditText.
- *
- * @author ST10257002
  */
 fun EditText.onTextChanged(afterTextChanged: (String) -> Unit) {
     this.addTextChangedListener(object : TextWatcher {

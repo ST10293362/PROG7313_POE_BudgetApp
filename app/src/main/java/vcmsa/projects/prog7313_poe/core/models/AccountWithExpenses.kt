@@ -11,8 +11,6 @@ import androidx.room.Relation
  *
  * The [account] field is the parent entity, and [expenses] is the list of child entities connected via foreign key.
  *
- * @author ST10257002
- * @author ST13026084
  *
  * @reference https://developer.android.com/reference/androidx/room/Relation
  * @reference https://developer.android.com/training/data-storage/room/relationships

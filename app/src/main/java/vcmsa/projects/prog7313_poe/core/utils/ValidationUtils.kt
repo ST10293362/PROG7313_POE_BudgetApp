@@ -14,7 +14,6 @@ import java.util.regex.Pattern
  * @reference https://owasp.org/www-community/OWASP_Validation_Regex_Repository
  * @reference https://developer.android.com/guide/topics/ui/notifiers/toasts#java
  *
- * @author ST13026084
  */
 object ValidationUtils {
 

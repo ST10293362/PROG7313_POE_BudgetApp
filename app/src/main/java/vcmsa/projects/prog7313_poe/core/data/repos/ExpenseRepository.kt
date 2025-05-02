@@ -13,8 +13,6 @@ import java.time.Instant
  *
  * Acts as the data abstraction layer for view models.
  *
- * @author ST10326084
- * @author ST10257002
  */
 
 class ExpenseRepository(

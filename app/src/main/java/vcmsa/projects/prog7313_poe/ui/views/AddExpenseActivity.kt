@@ -36,9 +36,7 @@ import vcmsa.projects.prog7313_poe.core.models.Expense
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
-/**
- * @author ST10326084
- */
+
 class AddExpenseActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddExpenseBinding
     private lateinit var expenseViewModel: ExpenseViewModel

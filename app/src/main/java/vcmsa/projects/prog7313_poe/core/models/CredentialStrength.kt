@@ -13,8 +13,6 @@ import android.graphics.Color
  * - [MEDIUM]: Between 6 and 9 characters.
  * - [STRONG]: 10 or more characters.
  *
- * @author ST10257002
- * @author ST13026084
  *
  * @reference https://developer.android.com/reference/kotlin/android/graphics/Color
  * @reference https://kotlinlang.org/docs/enum-classes.html

@@ -6,9 +6,7 @@ import vcmsa.projects.prog7313_poe.core.data.repos.CategoryRepository
 import vcmsa.projects.prog7313_poe.core.data.repos.ExpenseRepository
 import vcmsa.projects.prog7313_poe.core.services.AuthService
 
-/**
- * @author ST10326084
- */
+
 class ExpenseViewModelFactory(
     private val expenseRepository: ExpenseRepository
 ) : ViewModelProvider.Factory {
