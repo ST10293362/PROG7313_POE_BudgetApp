@@ -2,9 +2,9 @@ name: Build and Test Android App
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, rollback-working ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, rollback-working  ]
   workflow_dispatch:
 jobs:
   build:
