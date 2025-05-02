@@ -55,6 +55,9 @@
         <activity
             android:name=".ui.views.AddExpenseActivity"
             android:exported="true" />
+        <activity
+            android:name=".ui.views.TransactionDetailsActivity"
+            android:exported="true" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

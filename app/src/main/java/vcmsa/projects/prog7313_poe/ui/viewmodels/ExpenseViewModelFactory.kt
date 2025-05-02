@@ -2,13 +2,17 @@ package vcmsa.projects.prog7313_poe.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import vcmsa.projects.prog7313_poe.core.data.repos.CategoryRepository
 import vcmsa.projects.prog7313_poe.core.data.repos.ExpenseRepository
+import vcmsa.projects.prog7313_poe.core.services.AuthService
 
 /**
  * @author ST10326084
  */
 class ExpenseViewModelFactory(
-    private val repository: ExpenseRepository
+    private val expenseRepository: ExpenseRepository,
+    private val categoryRepository: CategoryRepository,
+    private val authService: AuthService
 ) : ViewModelProvider.Factory {
 
     /**
@@ -17,11 +21,9 @@ class ExpenseViewModelFactory(
     override fun <T : ViewModel> create(
         modelClass: Class<T>
     ): T {
-        if (modelClass.isAssignableFrom(ExpenseViewModel::class.java) == false) {
-            throw IllegalArgumentException("Unknown ViewModel class")
+        if (modelClass.isAssignableFrom(ExpenseViewModel::class.java)) {
+            return ExpenseViewModel(expenseRepository, categoryRepository, authService) as T
         }
-
-        @Suppress("UNCHECKED_CAST") 
-        return ExpenseViewModel(repository) as T
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

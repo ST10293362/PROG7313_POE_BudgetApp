@@ -2,6 +2,7 @@ package vcmsa.projects.prog7313_poe.ui.views
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -19,11 +20,9 @@ import java.text.NumberFormat
 import java.util.*
 import vcmsa.projects.prog7313_poe.core.models.User
 
-
 class DashboardActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDashboardBinding
-    private lateinit var userViewModel: UserViewModel
-    private lateinit var categoryViewModel: CategoryViewModel
+    private lateinit var viewModel: DashboardViewModel
     private lateinit var categoryAdapter: CategoryAdapter
     private var userId: UUID? = null
     private var currentSavings: Double = 5000.0
@@ -43,88 +42,83 @@ class DashboardActivity : AppCompatActivity() {
             binding = ActivityDashboardBinding.inflate(layoutInflater)
             setContentView(binding.root)
 
-            initializeViewModels()
-
-            // This guarantees user is inserted before loading data
-            lifecycleScope.launch {
-                insertGuestUserIfNeeded()    // suspend block
-                loadUserData()               // run only after insert finishes
-            }
-
-            setupBottomNavigation()
-            setupCategoriesRecyclerView()
+            viewModel = ViewModelProvider(this)[DashboardViewModel::class.java]
+            setupUI()
+            setupObservers()
             loadUserData()
-            setupClickListeners()
         } catch (e: Exception) {
             showToast("Error initializing dashboard: ${e.message}")
             finish()
         }
     }
 
-    private suspend fun insertGuestUserIfNeeded() {
-        val isGuest = intent.getBooleanExtra("IS_GUEST", false)
-
-        if (isGuest && userId != null) {
-            val existing = userViewModel.getUserById(userId!!)
-            if (existing == null) {
-                val guest = User(
-                    id = userId!!,
-                    username = "guest",
-                    password = "",
-                    passwordSalt = "",
-                    name = "Guest",
-                    surname = "",
-                    dateOfBirth = null,
-                    cellNumber = null,
-                    emailAddress = "guest-${userId}@demo.com",
-                    minGoal = 500.0,
-                    maxGoal = 8000.0,
-                    imageUri = null,
-                    goalsSet = true,
-                    profileCompleted = true,
-                    monthlyBudget = 3000.0,
-                    currentBudget = 3000.0,
-                    budgetLastReset = System.currentTimeMillis()
-                )
-                userViewModel.insertUser(guest)
+    private fun setupUI() {
+        // Setup bottom navigation
+        binding.bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_dashboard -> {
+                    // Already on dashboard
+                    true
+                }
+                R.id.navigation_expenses -> {
+                    startActivity(Intent(this, ViewExpensesActivity::class.java))
+                    true
+                }
+                R.id.navigation_add -> {
+                    startActivity(Intent(this, AddExpenseActivity::class.java))
+                    true
+                }
+                R.id.navigation_profile -> {
+                    startActivity(Intent(this, ProfileActivity::class.java))
+                    true
+                }
+                else -> false
             }
         }
-    }
 
-
-
-
-    private fun initializeViewModels() {
-        val db = AppDatabase.getDatabase(applicationContext)
-        userViewModel = ViewModelProvider(this, UserViewModelFactory(UserRepository(db.userDao())))[UserViewModel::class.java]
-        categoryViewModel = ViewModelProvider(this, CategoryViewModelFactory(CategoryRepository(db.categoryDao())))[CategoryViewModel::class.java]
-    }
-
-    private fun setupCategoriesRecyclerView() {
+        // Setup categories RecyclerView
         categoryAdapter = CategoryAdapter { category ->
             startActivity(Intent(this, CategoryDetailsActivity::class.java).apply {
                 putExtra("CATEGORY_ID", category.id)
                 putExtra("USER_ID", userId)
             })
         }
-
         binding.categoriesRecyclerView.apply {
             layoutManager = GridLayoutManager(this@DashboardActivity, 2)
             adapter = categoryAdapter
         }
 
-        loadCategories()
+        // Setup search button
+        binding.searchButton.setOnClickListener {
+            // TODO: Implement search functionality
+            Toast.makeText(this, "Search functionality coming soon", Toast.LENGTH_SHORT).show()
+        }
+
+        // Setup profile image
+        binding.profileImage.setOnClickListener {
+            startActivity(Intent(this, CompleteProfileActivity::class.java).apply {
+                putExtra("USER_ID", userId)
+            })
+        }
     }
 
-    private fun loadCategories() {
-        userId?.let { id ->
-            lifecycleScope.launch {
-                try {
-                    val categories = categoryViewModel.getCategoriesByUserId(id)
-                    categoryAdapter.submitList(categories)
-                } catch (e: Exception) {
-                    showToast("Error loading categories: ${e.message}")
-                }
+    private fun setupObservers() {
+        viewModel.userData.observe(this) { user ->
+            if (user != null) {
+                currentSavings = user.monthlyBudget ?: 0.0
+                savingsGoal = user.maxGoal ?: 10000.0
+                setInitialValues()
+                loadCategories()
+            }
+        }
+
+        viewModel.categories.observe(this) { categories ->
+            categoryAdapter.submitList(categories)
+        }
+
+        viewModel.error.observe(this) { error ->
+            error?.let {
+                showToast(it)
             }
         }
     }
@@ -133,15 +127,7 @@ class DashboardActivity : AppCompatActivity() {
         userId?.let { id ->
             lifecycleScope.launch {
                 try {
-                    val user = userViewModel.getUserById(id)
-                    user?.let {
-                        currentSavings = it.monthlyBudget ?: 0.0
-                        savingsGoal = it.maxGoal ?: 10000.0
-                        setInitialValues()
-                    } ?: run {
-                        showToast("User data not found")
-                        finish()
-                    }
+                    viewModel.loadUserData()
                 } catch (e: Exception) {
                     showToast("Error loading user data: ${e.message}")
                 }
@@ -149,66 +135,24 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupClickListeners() {
-        with(binding) {
-            searchButton.setOnClickListener { showToast("Search functionality coming soon") }
-            profileImage.setOnClickListener { navigateToProfile() }
-            addNewCard.setOnClickListener { showToast("Add new card functionality coming soon") }
-            availableBalanceValue.setOnClickListener { showToast("Card details coming soon") }
-        }
-    }
-
-    private fun navigateToProfile() {
-        try {
-            startActivity(Intent(this, CompleteProfileActivity::class.java).apply {
-                putExtra("USER_ID", userId)
-            })
-        } catch (e: Exception) {
-            showToast("Error opening profile: ${e.message}")
-        }
-    }
-
-    private fun setupBottomNavigation() {
-        binding.bottomNavigation.setOnItemSelectedListener { item ->
-            try {
-                when (item.itemId) {
-                    R.id.navigation_home -> true
-                    R.id.navigation_add_expense -> {
-                        navigateTo(AddExpenseActivity::class.java)
-                        true
-                    }
-                    R.id.navigation_transactions -> {
-                        navigateTo(ViewExpensesActivity::class.java)
-                        true
-                    }
-                    R.id.navigation_profile -> {
-                        navigateTo(CompleteProfileActivity::class.java)
-                        true
-                    }
-                    else -> false
+    private fun loadCategories() {
+        userId?.let { id ->
+            lifecycleScope.launch {
+                try {
+                    viewModel.loadCategories()
+                } catch (e: Exception) {
+                    showToast("Error loading categories: ${e.message}")
                 }
-            } catch (e: Exception) {
-                showToast("Error navigating: ${e.message}")
-                false
             }
         }
-    }
-
-    private fun navigateTo(activityClass: Class<*>) {
-        startActivity(Intent(this, activityClass).apply {
-            putExtra("USER_ID", userId)
-        })
     }
 
     private fun setInitialValues() {
         try {
             with(binding) {
-                availableBalanceValue.text = currencyFormat.format(250000.0)
-                budgetValue.text = currencyFormat.format(26000.0)
                 savingsStart.text = currencyFormat.format(currentSavings)
                 savingsGoal.text = currencyFormat.format(savingsGoal)
-                var savingsGoalFinal = savingsGoal.text.toString().toInt().toDouble()
-                savingsProgress.progress = calculateProgress(currentSavings, savingsGoalFinal)
+                savingsProgress.progress = calculateProgress(currentSavings, savingsGoal)
             }
             updateCurrentMonth()
         } catch (e: Exception) {
@@ -260,9 +204,7 @@ class DashboardActivity : AppCompatActivity() {
             with(binding) {
                 savingsStart.text = currencyFormat.format(currentSavings)
                 savingsGoal.text = currencyFormat.format(savingsGoal)
-
-                var savingsGoalFinal = savingsGoal.text.toString().toInt().toDouble()
-                savingsProgress.progress = calculateProgress(currentSavings, savingsGoalFinal)
+                savingsProgress.progress = calculateProgress(currentSavings, savingsGoal)
             }
         } catch (e: Exception) {
             showToast("Error updating savings UI: ${e.message}")
@@ -273,7 +215,7 @@ class DashboardActivity : AppCompatActivity() {
         userId?.let { id ->
             lifecycleScope.launch {
                 try {
-                    userViewModel.updateUserGoalsAndBudget(
+                    viewModel.updateUserData(
                         userId = id,
                         minGoal = currentSavings,
                         maxGoal = savingsGoal,

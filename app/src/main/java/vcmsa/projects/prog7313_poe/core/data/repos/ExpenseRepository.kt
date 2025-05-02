@@ -66,4 +66,24 @@ class ExpenseRepository(
     suspend fun getAllExpenses(): List<Expense> {
         return dao.getAllExpenses()
     }
+
+    suspend fun getById(id: UUID): Expense? = dao.getById(id)
+
+    suspend fun getByUserId(userId: UUID): List<Expense> = dao.getByUserId(userId)
+
+    suspend fun getByCategoryId(categoryId: UUID): List<Expense> = dao.getByCategoryId(categoryId)
+
+    suspend fun insert(expense: Expense) = dao.insert(expense)
+
+    suspend fun update(expense: Expense) = dao.update(expense)
+
+    suspend fun delete(expense: Expense) = dao.delete(expense)
+
+    suspend fun deleteById(id: UUID) = dao.deleteById(id)
+
+    suspend fun deleteByUserId(userId: UUID) = dao.deleteByUserId(userId)
+
+    suspend fun deleteByCategoryId(categoryId: UUID) = dao.deleteByCategoryId(categoryId)
+
+    suspend fun getAll(): List<Expense> = dao.getAll()
 }

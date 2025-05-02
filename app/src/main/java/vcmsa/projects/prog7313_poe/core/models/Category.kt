@@ -30,78 +30,41 @@ import java.util.UUID
  * @reference https://kotlinlang.org/docs/data-classes.html
  */
 @Entity(
-    tableName = "category",
-    indices = [
-        Index(value = ["id"], unique = true),
-        Index(value = ["name"], unique = true),
-        Index(value = ["user_id"])
-    ],
+    tableName = "categories",
     foreignKeys = [
         ForeignKey(
             entity = User::class,
             parentColumns = ["id"],
-            childColumns = ["user_id"],
+            childColumns = ["userId"],
             onDelete = ForeignKey.CASCADE
         )
+    ],
+    indices = [
+        Index("userId")
     ]
 )
 data class Category(
-
-    /**
-     * Unique identifier for the category.
-     */
     @PrimaryKey
-    override val id: UUID = UUID.randomUUID(),
-
-    /**
-     * Timestamp of category creation.
-     */
-    @ColumnInfo(name = "created_at")
-    override val createdAt: Instant = Instant.now(),
-
-    /**
-     * Timestamp of last update.
-     */
-    @ColumnInfo(name = "updated_at")
-    override var updatedAt: Instant = Instant.now(),
-
-    /**
-     * The name of the category.
-     */
+    val id: UUID = UUID.randomUUID(),
+    
+    @ColumnInfo(name = "userId")
+    val userId: UUID,
+    
     @ColumnInfo(name = "name")
-    val name: String = "",
-
-    /**
-     * The UUID of the user who owns this category.
-     * Acts as a foreign key to the [User] table.
-     */
-    @ColumnInfo(name = "user_id")
-    val userId: UUID = UUID.randomUUID(),
-
-    /**
-     * Indicates if the category is the default one for the user.
-     */
-    @ColumnInfo(name = "is_default")
-    val isDefault: Boolean = false,
-
-    /**
-     * Running total of all expenses assigned to this category.
-     */
-    @ColumnInfo(name = "total_amount")
-    var totalAmount: Double = 0.0
-
-) : AuditableEntity, KeyedEntity {
+    val name: String,
+    
+    @ColumnInfo(name = "color")
+    val color: String,
+    
+    @ColumnInfo(name = "totalAmount")
+    val totalAmount: Double = 0.0,
+    
+    override var createdAt: Instant = Instant.now(),
+    override var updatedAt: Instant = Instant.now()
+) : KeyedEntity, AuditableEntity {
 
     companion object {
         /** Constant to access the table name for Room-related queries. */
-        const val TABLE_NAME = "category"
+        const val TABLE_NAME = "categories"
     }
-
-    /**
-     * Secondary no-args constructor required by Room when using default values.
-     */
-    constructor() : this(
-        name = "",
-        userId = UUID.randomUUID()
-    )
 }

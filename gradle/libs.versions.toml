@@ -1,10 +1,18 @@
 [versions]
+activityKtx = "1.10.1"
 agp = "8.9.2"
+appcompatVersion = "1.6.1"
+cardview = "1.0.0"
+compiler = "4.16.0"
+constraintlayoutVersion = "2.1.4"
+coreKtxVersion = "1.12.0"
 firebaseBom = "33.13.0"
 firebaseAnalytics = "22.4.0"
 firebaseAuth = "23.2.0"
+firebaseBomVersion = "32.7.2"
 glide = "4.12.0"
 glideCompiler = "4.12.0"
+glideVersion = "4.16.0"
 kotlin = "2.1.0"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -12,11 +20,18 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.0"
 lifecycleRuntimeKtx = "2.8.7"
+lifecycleRuntimeKtxVersion = "2.7.0"
 lifecycleViewmodelKtx = "2.8.7"
+lifecycleViewmodelKtxVersion = "2.7.0"
 material = "1.12.0"
 activity = "1.10.1"
 constraintlayout = "2.2.1"
 firebaseDatabase = "21.0.0"
+materialVersion = "1.11.0"
+roomCommonVersion = "2.6.1"
+roomCompilerVersion = "2.6.1"
+roomKtxVersion = "2.6.1"
+roomRuntime = "2.7.1"
 uiGraphicsAndroid = "1.8.0"
 roomCompiler = "2.7.1"
 roomCommon = "2.7.1"
@@ -24,13 +39,30 @@ roomKtx = "2.7.1"
 identityJvm = "202411.1"
 
 [libraries]
+androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityKtx" }
+androidx-appcompat-v161 = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
+androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
+androidx-constraintlayout-v214 = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayoutVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-ktx-v1120 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
+androidx-lifecycle-runtime-ktx-v270 = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtxVersion" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+androidx-lifecycle-viewmodel-ktx-v270 = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtxVersion" }
+androidx-room-common-v261 = { module = "androidx.room:room-common", version.ref = "roomCommonVersion" }
+androidx-room-compiler-v261 = { module = "androidx.room:room-compiler", version.ref = "roomCompilerVersion" }
+androidx-room-ktx-v261 = { module = "androidx.room:room-ktx", version.ref = "roomKtxVersion" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+compiler-v4160 = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics", version.ref = "firebaseAnalytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuth" }
+firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-bom-v3272 = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
+firebase-database-ktx = { module = "com.google.firebase:firebase-database-ktx" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glideCompiler" }
+glide-v4160 = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersion" }
+google-firebase-analytics-ktx = { module = "com.google.firebase:firebase-analytics-ktx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -45,6 +77,7 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 identity-jvm = { group = "com.android.identity", name = "identity-jvm", version.ref = "identityJvm" }
+material-v1110 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

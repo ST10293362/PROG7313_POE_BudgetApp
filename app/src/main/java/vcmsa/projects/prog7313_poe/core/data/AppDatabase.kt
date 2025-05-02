@@ -4,7 +4,11 @@ import android.content.Context
 import androidx.room.*
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import vcmsa.projects.prog7313_poe.core.data.access.*
+import vcmsa.projects.prog7313_poe.data.dao.AccountDao
+import vcmsa.projects.prog7313_poe.data.dao.CategoryDao
+import vcmsa.projects.prog7313_poe.data.dao.ExpenseDao
+import vcmsa.projects.prog7313_poe.data.dao.SessionDao
+import vcmsa.projects.prog7313_poe.data.dao.UserDao
 import vcmsa.projects.prog7313_poe.core.data.converters.DateConverter
 import vcmsa.projects.prog7313_poe.core.data.converters.UuidConverter
 import vcmsa.projects.prog7313_poe.core.models.*
@@ -63,7 +67,7 @@ abstract class AppDatabase : RoomDatabase() {
         }
 
         /**
-         * Array of supported migrations. Passed into Room’s builder.
+         * Array of supported migrations. Passed into Room's builder.
          */
         private val MIGRATIONS = arrayOf(MIGRATION_1_2)
 

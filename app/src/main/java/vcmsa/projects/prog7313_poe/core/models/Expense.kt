@@ -2,12 +2,9 @@ package vcmsa.projects.prog7313_poe.core.models
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
 import androidx.room.PrimaryKey
-import vcmsa.projects.prog7313_poe.core.models.supers.AuditableEntity
-import vcmsa.projects.prog7313_poe.core.models.supers.KeyedEntity
-import java.time.Instant
+import androidx.room.TypeConverters
+import vcmsa.projects.prog7313_poe.data.converters.StringListConverter
 import java.util.UUID
 
 /**
@@ -25,100 +22,27 @@ import java.util.UUID
  * @reference https://developer.android.com/reference/androidx/room/Entity
  * @reference https://developer.android.com/reference/kotlin/java/time/Instant
  */
-@Entity(
-    tableName = "expense",
-    indices = [
-        Index(value = ["id"], unique = true),
-        Index(value = ["user_id"]),
-        Index(value = ["category_id"]),
-        Index(value = ["account_id"])
-    ],
-    foreignKeys = [
-        ForeignKey(
-            entity = User::class,
-            parentColumns = ["id"],
-            childColumns = ["user_id"],
-            onDelete = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = Category::class,
-            parentColumns = ["id"],
-            childColumns = ["category_id"],
-            onDelete = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = Account::class,
-            parentColumns = ["id"],
-            childColumns = ["account_id"]
-        )
-    ]
-)
+@Entity(tableName = "expenses")
+@TypeConverters(StringListConverter::class)
 data class Expense(
-
-    /**
-     * Primary key unique identifier for the expense.
-     */
     @PrimaryKey
-    override val id: UUID = UUID.randomUUID(),
-
-    /**
-     * Timestamp of when the expense was created.
-     */
-    @ColumnInfo(name = "created_at")
-    override val createdAt: Instant = Instant.now(),
-
-    /**
-     * Timestamp of the last time this record was updated.
-     */
-    @ColumnInfo(name = "updated_at")
-    override var updatedAt: Instant = Instant.now(),
-
-    /**
-     * The amount spent in this expense entry.
-     */
+    val id: UUID = UUID.randomUUID(),
+    @ColumnInfo(name = "userId")
+    val userId: UUID,
+    @ColumnInfo(name = "categoryId")
+    val categoryId: UUID,
     @ColumnInfo(name = "amount")
     val amount: Double,
-
-    /**
-     * Optional textual description of the expense.
-     */
     @ColumnInfo(name = "description")
     val description: String,
-
-    /**
-     * The start date of the expense period.
-     */
-    @ColumnInfo(name = "start_date")
-    val startDate: Instant,
-
-    /**
-     * The optional end date of the expense period.
-     */
-    @ColumnInfo(name = "end_date")
-    val endDate: Instant? = null,
-
-    /**
-     * Foreign key reference to the user who recorded this expense.
-     */
-    @ColumnInfo(name = "user_id")
-    val userId: UUID,
-
-    /**
-     * Foreign key reference to the account used for the expense.
-     */
-    @ColumnInfo(name = "account_id")
-    val accountId: UUID,
-
-    /**
-     * Foreign key reference to the category associated with this expense.
-     */
-    @ColumnInfo(name = "category_id")
-    val categoryId: UUID
-
-) : AuditableEntity, KeyedEntity {
+    @ColumnInfo(name = "date")
+    val date: Long = System.currentTimeMillis(),
+    @ColumnInfo(name = "photos")
+    val photos: List<String> = emptyList()
+) {
 
     companion object {
         /** Constant for Room table name. */
-        const val TABLE_NAME = "expense"
+        const val TABLE_NAME = "expenses"
     }
 }

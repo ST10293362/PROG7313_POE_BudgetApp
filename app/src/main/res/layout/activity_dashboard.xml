@@ -55,34 +55,7 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Cards Section Title -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="8dp">
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Cards"
-                    android:textStyle="bold"
-                    android:textSize="20sp"
-                    android:textColor="#000" />
-                <TextView
-                    android:id="@+id/addNewCard"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Add New"
-                    android:textColor="#000"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:drawableEnd="@android:drawable/ic_input_add"
-                    android:drawablePadding="4dp" />
-            </LinearLayout>
-
-            <!-- Visa Card -->
+            <!-- Analytics View (Under Development) -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
@@ -95,46 +68,28 @@
                     android:layout_height="match_parent"
                     android:padding="20dp">
                     <TextView
+                        android:id="@+id/analyticsTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Available balance"
-                        android:textColor="#CCCCCC"
-                        android:textSize="14sp"
-                        android:id="@+id/availableBalanceLabel" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="R250 000"
+                        android:text="Analytics Dashboard"
                         android:textColor="#FFFFFF"
-                        android:textSize="28sp"
-                        android:textStyle="bold"
-                        android:layout_below="@id/availableBalanceLabel"
-                        android:layout_marginTop="8dp"
-                        android:id="@+id/availableBalanceValue" />
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="See details"
+                        android:text="Coming Soon"
                         android:textColor="#CCCCCC"
-                        android:textSize="12sp"
+                        android:textSize="16sp"
+                        android:layout_below="@id/analyticsTitle"
+                        android:layout_marginTop="8dp" />
+                    <ProgressBar
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginBottom="8dp" />
-                    <ImageView
-                        android:layout_width="48dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/visa_logo"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:contentDescription="Visa Logo" />
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/chip"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginBottom="8dp"
-                        android:contentDescription="Chip" />
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:indeterminate="true"
+                        android:progressTint="#58bc82" />
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
 
@@ -151,13 +106,14 @@
                     android:layout_height="match_parent"
                     android:padding="20dp">
                     <TextView
+                        android:id="@+id/budgetLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Budget for October"
                         android:textColor="#FFFFFF"
-                        android:textSize="16sp"
-                        android:id="@+id/budgetLabel" />
+                        android:textSize="16sp" />
                     <TextView
+                        android:id="@+id/budgetValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="R26 000"
@@ -165,8 +121,7 @@
                         android:textSize="22sp"
                         android:textStyle="bold"
                         android:layout_alignParentEnd="true"
-                        android:layout_alignParentTop="true"
-                        android:id="@+id/budgetValue" />
+                        android:layout_alignParentTop="true" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -191,36 +146,45 @@
                     android:layout_height="match_parent"
                     android:padding="20dp">
                     <TextView
+                        android:id="@+id/minSavingsLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Min Savings"
+                        android:textColor="#666666"
+                        android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/savingsStart"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="R1 000"
                         android:textColor="#000000"
                         android:textSize="16sp"
-                        android:id="@+id/savingsStart" />
+                        android:layout_below="@id/minSavingsLabel"
+                        android:layout_marginTop="4dp" />
                     <TextView
+                        android:id="@+id/maxSavingsLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Max Savings"
+                        android:textColor="#666666"
+                        android:textSize="12sp"
+                        android:layout_alignParentEnd="true" />
+                    <TextView
+                        android:id="@+id/savingsGoal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="R10 000"
                         android:textColor="#000000"
                         android:textSize="16sp"
+                        android:layout_below="@id/maxSavingsLabel"
                         android:layout_alignParentEnd="true"
-                        android:id="@+id/savingsGoal" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Savings goal"
-                        android:textColor="#666666"
-                        android:textSize="14sp"
-                        android:layout_centerHorizontal="true"
-                        android:id="@+id/savingsGoalLabel" />
+                        android:layout_marginTop="4dp" />
                     <ProgressBar
-                        style="@android:style/Widget.ProgressBar.Horizontal"
                         android:id="@+id/savingsProgress"
+                        style="@android:style/Widget.ProgressBar.Horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="12dp"
-                        android:layout_below="@id/savingsGoalLabel"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginTop="16dp"
+                        android:layout_alignParentBottom="true"
                         android:progress="10"
                         android:max="100"
                         android:progressDrawable="@drawable/progress_bar_savings" />

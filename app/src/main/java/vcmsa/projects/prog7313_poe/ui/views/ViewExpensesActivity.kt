@@ -1,8 +1,10 @@
 package vcmsa.projects.prog7313_poe.ui.views
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
@@ -10,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import vcmsa.projects.prog7313_poe.R
@@ -21,6 +24,7 @@ import vcmsa.projects.prog7313_poe.ui.viewmodels.ExpenseViewModelFactory
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.util.*
+import kotlinx.coroutines.launch
 
 class ViewExpensesActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
@@ -29,6 +33,13 @@ class ViewExpensesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_expenses)
+
+        val userId = intent.getSerializableExtra("USER_ID") as? UUID
+        if (userId == null) {
+            Toast.makeText(this, "User session not found", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
 
         recyclerView = findViewById(R.id.transactionsRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -40,8 +51,13 @@ class ViewExpensesActivity : AppCompatActivity() {
         val factory = ExpenseViewModelFactory(repository)
         val expenseViewModel = ViewModelProvider(this, factory)[ExpenseViewModel::class.java]
 
-        expenseViewModel.expenses.observe(this) { expenses ->
-            adapter.submitList(expenses)
+        lifecycleScope.launch {
+            try {
+                val expenses = repository.getExpensesByUserId(userId)
+                adapter.submitList(expenses)
+            } catch (e: Exception) {
+                Toast.makeText(this@ViewExpensesActivity, "Error loading expenses: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -68,7 +84,7 @@ class ViewExpensesActivity : AppCompatActivity() {
                 title.text = expense.description
                 amount.text = "R" + String.format("%.2f", expense.amount)
 
-                val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+                val dateFormat = SimpleDateFormat("MMM dd, yyyy hh:mm a", Locale.getDefault())
                 val date = Date.from(expense.startDate)
                 time.text = dateFormat.format(date)
 
@@ -76,6 +92,13 @@ class ViewExpensesActivity : AppCompatActivity() {
                     card.setBackgroundColor(itemView.context.getColor(R.color.deposit_green))
                 } else {
                     card.setBackgroundColor(itemView.context.getColor(android.R.color.white))
+                }
+
+                itemView.setOnClickListener {
+                    val intent = Intent(itemView.context, TransactionDetailsActivity::class.java).apply {
+                        putExtra("EXPENSE_ID", expense.id)
+                    }
+                    itemView.context.startActivity(intent)
                 }
             }
         }

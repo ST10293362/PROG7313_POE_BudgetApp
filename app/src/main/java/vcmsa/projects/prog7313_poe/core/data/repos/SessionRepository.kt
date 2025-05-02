@@ -1,10 +1,11 @@
 package vcmsa.projects.prog7313_poe.core.data.repos
 
-import vcmsa.projects.prog7313_poe.core.data.access.SessionDao
-import vcmsa.projects.prog7313_poe.core.data.access.UserDao
+import vcmsa.projects.prog7313_poe.data.dao.SessionDao
+import vcmsa.projects.prog7313_poe.data.dao.UserDao
 import vcmsa.projects.prog7313_poe.core.models.User
 import vcmsa.projects.prog7313_poe.core.models.UserSession
 import java.util.UUID
+import vcmsa.projects.prog7313_poe.core.models.Session
 
 /**
  * Handles authentication and session management using RoomDB.
@@ -21,8 +22,8 @@ import java.util.UUID
  */
 
 class SessionRepository(
-    private val userDao: UserDao,
-    private val sessionDao: SessionDao
+    private val sessionDao: SessionDao,
+    private val userDao: UserDao
 ) {
 
     //<editor-fold desc="Authentication">
@@ -155,7 +156,47 @@ class SessionRepository(
      *
      * @param userId UUID of the user to assign to the session.
      */
-    private suspend fun createSession(userId: UUID) {
-        sessionDao.create(UserSession(userId = userId))
+    suspend fun createSession(userId: UUID) {
+        val session = UserSession(userId = userId)
+        sessionDao.insertSession(session)
     }
+
+    suspend fun getCurrentSession(): UserSession? {
+        return sessionDao.getSessionById(1)
+    }
+
+    suspend fun clearSession() {
+        sessionDao.deleteSessionById(1)
+    }
+
+    suspend fun updateSession(userId: UUID) {
+        val session = UserSession(userId = userId)
+        sessionDao.updateSession(session)
+    }
+
+    suspend fun deleteSessionsByUserId(userId: UUID) {
+        sessionDao.deleteSessionsByUserId(userId.toString())
+    }
+
+    suspend fun getById(id: UUID): Session? = sessionDao.getById(id)
+
+    suspend fun getByUserId(userId: UUID): List<Session> = sessionDao.getByUserId(userId)
+
+    suspend fun getByToken(token: String): UserSession? = sessionDao.getByToken(token)
+
+    suspend fun insert(session: Session) = sessionDao.insert(session)
+
+    suspend fun update(session: Session) = sessionDao.update(session)
+
+    suspend fun delete(session: Session) = sessionDao.delete(session)
+
+    suspend fun deleteById(id: UUID) = sessionDao.deleteById(id)
+
+    suspend fun deleteByUserId(userId: UUID) = sessionDao.deleteByUserId(userId)
+
+    suspend fun deleteAll() = sessionDao.deleteAll()
+
+    suspend fun getActiveSession(userId: UUID): Session? = sessionDao.getActiveSession(userId)
+
+    suspend fun endSession(sessionId: UUID) = sessionDao.endSession(sessionId)
 }

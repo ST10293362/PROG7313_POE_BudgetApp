@@ -27,6 +27,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import vcmsa.projects.prog7313_poe.R
 import vcmsa.projects.prog7313_poe.core.data.AppDatabase
 import vcmsa.projects.prog7313_poe.core.data.repos.ExpenseRepository
@@ -35,6 +36,13 @@ import vcmsa.projects.prog7313_poe.ui.viewmodels.ExpenseViewModelFactory
 import vcmsa.projects.prog7313_poe.core.models.Expense
 import vcmsa.projects.prog7313_poe.core.models.Account
 import vcmsa.projects.prog7313_poe.core.models.Category
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import vcmsa.projects.prog7313_poe.core.data.repos.CategoryRepository
+import vcmsa.projects.prog7313_poe.core.services.AuthService
+import vcmsa.projects.prog7313_poe.data.dao.ExpenseDao
+import java.util.UUID
 
 /**
  * @author ST10326084
@@ -69,6 +77,10 @@ class AddExpenseActivity : AppCompatActivity() {
     )
 
     private val REQUEST_CODE_PERMISSIONS = 1001
+
+    private lateinit var expenseRepository: ExpenseRepository
+    private lateinit var categoryRepository: CategoryRepository
+    private lateinit var authService: AuthService
 
     inner class PhotoAdapter : BaseAdapter() {
         private val photoNames = mutableListOf<String>()
@@ -110,14 +122,19 @@ class AddExpenseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_expense)
 
-        /**
-         * @author ST10326084
-         */
-        // Set up ViewModel and Repository
-        val db = AppDatabase.getDatabase(applicationContext)
-        val repository = ExpenseRepository(db.expenseDao())
-        val factory = ExpenseViewModelFactory(repository)
-        val expenseViewModel = ViewModelProvider(this, factory)[ExpenseViewModel::class.java]
+        // Initialize repositories and services
+        expenseRepository = ExpenseRepository(expenseDao)
+        categoryRepository = CategoryRepository(categoryDao)
+        authService = AuthService(sessionRepository, userRepository)
+
+        // Load categories
+        lifecycleScope.launch {
+            val currentUser = authService.getCurrentUser().getOrNull()
+            if (currentUser != null) {
+                val categories = categoryRepository.getByUserId(currentUser.id)
+                // Update UI with categories
+            }
+        }
 
         // Initialize views
         initializeViews()
@@ -352,50 +369,95 @@ class AddExpenseActivity : AppCompatActivity() {
             val accountDao = db.accountDao()
             val categoryDao = db.categoryDao()
 
-            // Get or create a default account
-            val account = accountDao.getDefaultAccount(userId) ?: run {
-                val newAccount = Account(
-                    name = "Default Account",
-                    userId = userId,
-                    isDefault = true
-                )
-                accountDao.insert(newAccount)
-                newAccount
+            lifecycleScope.launch {
+                try {
+                    // Get or create a default account
+                    val account = accountDao.fetchAll().find { it.idAuthor == userId } ?: run {
+                        val newAccount = Account(
+                            name = "Default Account",
+                            idAuthor = userId
+                        )
+                        accountDao.insert(newAccount)
+                        newAccount
+                    }
+
+                    // Get or create the selected category
+                    val categoryEntity = categoryDao.fetchAll().find { it.name == category && it.userId == userId } ?: run {
+                        val newCategory = Category(
+                            name = category,
+                            userId = userId
+                        )
+                        categoryDao.insert(newCategory)
+                        newCategory
+                    }
+
+                    val now = Instant.now()
+                    val expense = Expense(
+                        description = description,
+                        amount = amount,
+                        startDate = now,
+                        endDate = now,
+                        userId = userId,
+                        accountId = account.id,
+                        categoryId = categoryEntity.id
+                    )
+
+                    // Add photos if any
+                    expense.photos.addAll(imageUris)
+
+                    // Save to DB using ViewModel
+                    val viewModel = ViewModelProvider(
+                        this@AddExpenseActivity,
+                        ExpenseViewModelFactory(ExpenseRepository(db.expenseDao()))
+                    )[ExpenseViewModel::class.java]
+
+                    viewModel.addExpense(expense)
+
+                    // Show success message and return to dashboard
+                    Toast.makeText(this@AddExpenseActivity, "Expense added successfully", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this@AddExpenseActivity, DashboardActivity::class.java)
+                    intent.putExtra("USER_ID", userId)
+                    startActivity(intent)
+                    finish()
+                } catch (e: Exception) {
+                    Toast.makeText(this@AddExpenseActivity, "Error adding expense: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
             }
-
-            // Get or create the selected category
-            val categoryEntity = categoryDao.getCategoryByName(userId, category) ?: run {
-                val newCategory = Category(
-                    name = category,
-                    userId = userId
-                )
-                categoryDao.insert(newCategory)
-                newCategory
-            }
-
-            val now = Instant.now()
-            val expense = Expense(
-                description = description,
-                amount = amount,
-                startDate = now,
-                endDate = now,
-                userId = userId,
-                accountId = account.id,
-                categoryId = categoryEntity.id
-            )
-
-            // Save to DB using ViewModel
-            val viewModel = ViewModelProvider(
-                this,
-                ExpenseViewModelFactory(ExpenseRepository(db.expenseDao()))
-            )[ExpenseViewModel::class.java]
-
-            viewModel.addExpense(expense)
-
-            Toast.makeText(this, "Expense saved successfully!", Toast.LENGTH_SHORT).show()
-            finish()
         } catch (e: Exception) {
-            Toast.makeText(this, "Error saving expense: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun saveExpense(amount: Double, description: String, categoryId: UUID) {
+        lifecycleScope.launch {
+            val currentUser = authService.getCurrentUser().getOrNull()
+            if (currentUser != null) {
+                val expense = Expense(
+                    amount = amount,
+                    description = description,
+                    startDate = Instant.now(),
+                    userId = currentUser.id,
+                    categoryId = categoryId
+                )
+                expenseRepository.create(expense)
+                // Update category total
+                categoryRepository.updateTotalAmount(categoryId, amount)
+            }
+        }
+    }
+
+    private fun createCategory(name: String, description: String, color: String) {
+        lifecycleScope.launch {
+            val currentUser = authService.getCurrentUser().getOrNull()
+            if (currentUser != null) {
+                val category = Category(
+                    name = name,
+                    description = description,
+                    color = color,
+                    userId = currentUser.id
+                )
+                categoryRepository.create(category)
+            }
         }
     }
 }

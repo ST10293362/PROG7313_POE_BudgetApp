@@ -3,8 +3,10 @@ package vcmsa.projects.prog7313_poe.core.services
 import android.content.Context
 import vcmsa.projects.prog7313_poe.core.data.AppDatabase
 import vcmsa.projects.prog7313_poe.core.data.repos.SessionRepository
+import vcmsa.projects.prog7313_poe.core.data.repos.UserRepository
 import vcmsa.projects.prog7313_poe.core.utils.SecurityUtils
 import vcmsa.projects.prog7313_poe.core.models.User
+import java.util.UUID
 
 /**
  * Service class responsible for handling user authentication logic including sign-up,
@@ -21,7 +23,8 @@ import vcmsa.projects.prog7313_poe.core.models.User
  * @author ST13026084
  */
 class AuthService(
-    context: Context
+    private val sessionRepository: SessionRepository,
+    private val userRepository: UserRepository
 ) {
 
     private val data = AppDatabase.getDatabase(context)
