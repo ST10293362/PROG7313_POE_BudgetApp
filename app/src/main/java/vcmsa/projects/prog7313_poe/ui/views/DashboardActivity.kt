@@ -23,6 +23,7 @@ import vcmsa.projects.prog7313_poe.ui.viewmodels.UserViewModel
 import vcmsa.projects.prog7313_poe.ui.viewmodels.UserViewModelFactory
 import java.text.NumberFormat
 import java.util.*
+import kotlin.jvm.java
 
 class DashboardActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDashboardBinding
@@ -154,7 +155,7 @@ class DashboardActivity : AppCompatActivity() {
                         true
                     }
                     R.id.navigation_profile -> {
-                        startActivity(Intent(this, CompleteProfileActivity::class.java))
+                        startActivity(Intent(this, ProfileActivity::class.java))
                         true
                     }
                     else -> false
