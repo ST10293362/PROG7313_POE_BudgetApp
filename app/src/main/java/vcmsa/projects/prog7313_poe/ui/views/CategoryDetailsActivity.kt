@@ -7,6 +7,7 @@ import vcmsa.projects.prog7313_poe.R
 class CategoryDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.item_category)
+        setContentView(R.layout.activity_category_details)
+
     }
 }

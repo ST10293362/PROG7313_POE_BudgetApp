@@ -1,4 +1,4 @@
-package vcmsa.projects.prog7313_poe.core.data
+package vcmsa.projects.prog7313_poe.data
 
 import android.content.Context
 import androidx.room.Room
@@ -10,6 +10,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.runner.RunWith
+import vcmsa.projects.prog7313_poe.core.data.AppDatabase
 import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)

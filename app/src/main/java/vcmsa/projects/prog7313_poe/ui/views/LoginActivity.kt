@@ -11,6 +11,8 @@ import vcmsa.projects.prog7313_poe.databinding.ActivityLoginBinding
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import vcmsa.projects.prog7313_poe.core.services.AuthService
+import java.util.UUID
+
 
 
 /**
@@ -158,8 +160,13 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             binding.bypassLogin.id -> {
-                startActivity(Intent(this, DashboardActivity::class.java))
+                val guestId = UUID.randomUUID()
+                val intent = Intent(this, DashboardActivity::class.java)
+                intent.putExtra("USER_ID", guestId)
+                intent.putExtra("IS_GUEST", true)
+                startActivity(intent)
             }
+
 
             binding.loginButton.id -> {
                 tryLogin()

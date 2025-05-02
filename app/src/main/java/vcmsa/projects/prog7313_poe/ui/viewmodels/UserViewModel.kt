@@ -2,7 +2,9 @@
 package vcmsa.projects.prog7313_poe.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import vcmsa.projects.prog7313_poe.core.data.repos.UserRepository
 import vcmsa.projects.prog7313_poe.core.models.User
@@ -52,4 +54,16 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
             repository.updateProfileCompletion(userId, isCompleted)
         }
     }
+
+    fun insertUser(user: User) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                repository.createUser(user)
+            } catch (e: Exception) {
+                // Optional: log or handle error
+            }
+        }
+    }
+
+
 }
