@@ -226,6 +226,10 @@ class AddExpenseActivity : AppCompatActivity() {
 
         submitButton.setOnClickListener {
             submitExpense()
+
+            val intent = Intent(this, DashboardActivity::class.java)
+            startActivity(intent)
+
         }
     }
 
@@ -362,7 +366,10 @@ class AddExpenseActivity : AppCompatActivity() {
             viewModel.addExpense(expense)
 
             Toast.makeText(this, "Expense saved successfully!", Toast.LENGTH_SHORT).show()
-            finish()
+
+
+
+
         } catch (e: Exception) {
             Toast.makeText(this, "Error saving expense: ${e.message}", Toast.LENGTH_SHORT).show()
         }
