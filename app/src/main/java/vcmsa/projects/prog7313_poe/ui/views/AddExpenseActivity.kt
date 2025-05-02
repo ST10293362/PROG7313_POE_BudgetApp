@@ -33,6 +33,8 @@ import vcmsa.projects.prog7313_poe.core.data.repos.ExpenseRepository
 import vcmsa.projects.prog7313_poe.ui.viewmodels.ExpenseViewModel
 import vcmsa.projects.prog7313_poe.ui.viewmodels.ExpenseViewModelFactory
 import vcmsa.projects.prog7313_poe.core.models.Expense
+import vcmsa.projects.prog7313_poe.core.models.Account
+import vcmsa.projects.prog7313_poe.core.models.Category
 
 /**
  * @author ST10326084
@@ -338,24 +340,51 @@ class AddExpenseActivity : AppCompatActivity() {
                 return
             }
 
-            // TODO: Replace with actual user/account IDs from session
-            val userId = UUID.randomUUID()
-            val accountId = UUID.randomUUID()
-            val categoryId = UUID.randomUUID() // or null if category is not required
+            // Get the user ID from the intent
+            val userId = intent.getSerializableExtra("USER_ID") as? UUID
+            if (userId == null) {
+                Toast.makeText(this, "User session not found", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+            // Create a default account for the user if none exists
+            val db = AppDatabase.getDatabase(applicationContext)
+            val accountDao = db.accountDao()
+            val categoryDao = db.categoryDao()
+
+            // Get or create a default account
+            val account = accountDao.getDefaultAccount(userId) ?: run {
+                val newAccount = Account(
+                    name = "Default Account",
+                    userId = userId,
+                    isDefault = true
+                )
+                accountDao.insert(newAccount)
+                newAccount
+            }
+
+            // Get or create the selected category
+            val categoryEntity = categoryDao.getCategoryByName(userId, category) ?: run {
+                val newCategory = Category(
+                    name = category,
+                    userId = userId
+                )
+                categoryDao.insert(newCategory)
+                newCategory
+            }
 
             val now = Instant.now()
             val expense = Expense(
                 description = description,
                 amount = amount,
-                startDate = now, // Using current instant for start
-                endDate = now,   // Using current instant for end
+                startDate = now,
+                endDate = now,
                 userId = userId,
-                accountId = accountId,
-                categoryId = categoryId
+                accountId = account.id,
+                categoryId = categoryEntity.id
             )
 
             // Save to DB using ViewModel
-            val db = AppDatabase.getDatabase(applicationContext)
             val viewModel = ViewModelProvider(
                 this,
                 ExpenseViewModelFactory(ExpenseRepository(db.expenseDao()))
@@ -368,6 +397,5 @@ class AddExpenseActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Toast.makeText(this, "Error saving expense: ${e.message}", Toast.LENGTH_SHORT).show()
         }
-
     }
 }

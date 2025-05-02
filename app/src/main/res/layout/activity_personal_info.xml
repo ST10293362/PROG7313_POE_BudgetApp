@@ -89,13 +89,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:hint="Full Name"
+                app:boxStrokeColor="#000000"
+                app:hintTextColor="#000000"
                 app:layout_constraintTop_toBottomOf="@id/changePhotoText">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/nameInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPersonName" />
+                    android:inputType="textPersonName"
+                    android:textColor="#000000" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -105,13 +108,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="Email"
+                app:boxStrokeColor="#000000"
+                app:hintTextColor="#000000"
                 app:layout_constraintTop_toBottomOf="@id/nameInputLayout">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/emailInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress" />
+                    android:inputType="textEmailAddress"
+                    android:textColor="#000000" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -121,13 +127,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="Phone Number"
+                app:boxStrokeColor="#000000"
+                app:hintTextColor="#000000"
                 app:layout_constraintTop_toBottomOf="@id/emailInputLayout">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/phoneInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="phone" />
+                    android:inputType="phone"
+                    android:textColor="#000000" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton

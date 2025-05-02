@@ -27,6 +27,8 @@
             android:hint="Enter expense description"
             android:inputType="text"
             android:minHeight="48dp"
+            android:textColor="#000000"
+            android:textColorHint="#000000"
             android:layout_marginBottom="16dp" />
 
         <!-- Amount Section -->
@@ -45,6 +47,8 @@
             android:hint="Enter amount (R)"
             android:inputType="numberDecimal"
             android:minHeight="48dp"
+            android:textColor="#000000"
+            android:textColorHint="#000000"
             android:layout_marginBottom="16dp" />
 
         <!-- Time Section -->
@@ -70,6 +74,8 @@
                 android:hint="Start Time"
                 android:inputType="none"
                 android:minHeight="48dp"
+                android:textColor="#000000"
+                android:textColorHint="#000000"
                 android:layout_marginEnd="8dp"
                 tools:ignore="TouchTargetSizeCheck" />
 
@@ -81,6 +87,8 @@
                 android:hint="End Time"
                 android:inputType="none"
                 android:minHeight="48dp"
+                android:textColor="#000000"
+                android:textColorHint="#000000"
                 android:layout_marginStart="8dp"
                 tools:ignore="TouchTargetSizeCheck" />
         </LinearLayout>

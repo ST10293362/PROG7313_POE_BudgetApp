@@ -29,8 +29,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:hint="Username or Email"
-        app:boxStrokeColor="#58bc82"
-        app:hintTextColor="#58bc82"
+        app:boxStrokeColor="#000000"
+        app:hintTextColor="#000000"
         app:boxStrokeWidth="2dp"
         app:boxCornerRadiusTopStart="8dp"
         app:boxCornerRadiusTopEnd="8dp"
@@ -43,6 +43,7 @@
             android:layout_height="wrap_content"
             android:inputType="text"
             android:textSize="16sp"
+            android:textColor="#000000"
             android:padding="16dp" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -53,15 +54,15 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:hint="Password"
-        app:boxStrokeColor="#58bc82"
-        app:hintTextColor="#58bc82"
+        app:boxStrokeColor="#000000"
+        app:hintTextColor="#000000"
         app:boxStrokeWidth="2dp"
         app:boxCornerRadiusTopStart="8dp"
         app:boxCornerRadiusTopEnd="8dp"
         app:boxCornerRadiusBottomStart="8dp"
         app:boxCornerRadiusBottomEnd="8dp"
         app:passwordToggleEnabled="true"
-        app:passwordToggleTint="#58bc82">
+        app:passwordToggleTint="#000000">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/passwordEditText"
@@ -69,6 +70,7 @@
             android:layout_height="wrap_content"
             android:inputType="textPassword"
             android:textSize="16sp"
+            android:textColor="#000000"
             android:padding="16dp" />
     </com.google.android.material.textfield.TextInputLayout>
 

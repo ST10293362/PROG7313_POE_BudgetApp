@@ -80,24 +80,21 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 val result = auth.signIn(identifier, password)
 
                 if (result.isSuccess) {
+                    Toast.makeText(
+                        this@LoginActivity, "Login successful!", Toast.LENGTH_SHORT
+                    ).show()
+                    
+                    // Get the user ID from the User object
                     val user = result.getOrNull()
                     if (user != null) {
-                        if (!user.profileCompleted) {
-                            // Navigate to complete profile if not completed
-                            val intent = Intent(this@LoginActivity, CompleteProfileActivity::class.java).apply {
-                                putExtra("USER_ID", user.id)
-                                putExtra("FIRST_NAME", user.name)
-                                putExtra("LAST_NAME", user.surname)
-                            }
-                            startActivity(intent)
-                        } else {
-                            // Navigate to dashboard if profile is completed
-                            val intent = Intent(this@LoginActivity, DashboardActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                            startActivity(intent)
-                        }
+                        val intent = Intent(this@LoginActivity, DashboardActivity::class.java)
+                        intent.putExtra("USER_ID", user.id)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        finish()
+                    } else {
                         Toast.makeText(
-                            this@LoginActivity, "Login successful!", Toast.LENGTH_LONG
+                            this@LoginActivity, "Failed to get user data", Toast.LENGTH_LONG
                         ).show()
                     }
                 } else {
