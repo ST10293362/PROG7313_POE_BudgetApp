@@ -182,7 +182,7 @@ class DashboardActivity : AppCompatActivity() {
                         true
                     }
                     R.id.navigation_profile -> {
-                        navigateTo(CompleteProfileActivity::class.java)
+                        navigateTo(ProfileActivity::class.java)
                         true
                     }
                     else -> false
