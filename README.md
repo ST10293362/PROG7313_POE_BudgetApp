@@ -44,3 +44,5 @@ An Android app for managing expenses, setting savings goals, and viewing financi
 
 - Dashboard is currently not working
 
+## Youtube Video
+- https://youtu.be/8BSIMDU7bRc
