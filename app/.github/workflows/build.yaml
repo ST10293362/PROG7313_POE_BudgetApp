@@ -1,4 +1,4 @@
-name: Build and Test Android App
+name: Workflow(Build and Test App)
 
 on:
   push:
