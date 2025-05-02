@@ -1,5 +1,7 @@
 # 💸 Bank Boosta Personal Finance Tracker App
 
+-'Rollback-working' is the main branch
+
 An Android app for managing expenses, setting savings goals, and viewing financial data — built with Kotlin and RoomDB.
 
 ## 📱 Features
