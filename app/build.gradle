@@ -75,6 +75,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-identity:18.0.1")
     implementation("androidx.test.ext:junit-ktx:1.1.5")
     implementation("androidx.room:room-testing:2.6.1")
+    implementation libs.androidx.navigation.fragment.ktx
+    implementation libs.androidx.navigation.ui.ktx
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
     kapt("com.github.bumptech.glide:compiler:4.16.0")
 

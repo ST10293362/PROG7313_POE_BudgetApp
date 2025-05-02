@@ -21,10 +21,10 @@ import java.util.UUID
  * @author ST10326084
  */
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
-    
+
     private lateinit var binding: ActivityLoginBinding
     private lateinit var auth: AuthService
-    
+
 
     // <editor-fold desc="Lifecycle">
 
@@ -83,7 +83,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     Toast.makeText(
                         this@LoginActivity, "Login successful!", Toast.LENGTH_SHORT
                     ).show()
-                    
+
                     // Get the user ID from the User object
                     val user = result.getOrNull()
                     if (user != null) {

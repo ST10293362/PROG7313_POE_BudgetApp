@@ -10,9 +10,7 @@ import vcmsa.projects.prog7313_poe.core.services.AuthService
  * @author ST10326084
  */
 class ExpenseViewModelFactory(
-    private val expenseRepository: ExpenseRepository,
-    private val categoryRepository: CategoryRepository,
-    private val authService: AuthService
+    private val expenseRepository: ExpenseRepository
 ) : ViewModelProvider.Factory {
 
     /**
@@ -22,7 +20,7 @@ class ExpenseViewModelFactory(
         modelClass: Class<T>
     ): T {
         if (modelClass.isAssignableFrom(ExpenseViewModel::class.java)) {
-            return ExpenseViewModel(expenseRepository, categoryRepository, authService) as T
+            return ExpenseViewModel(expenseRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

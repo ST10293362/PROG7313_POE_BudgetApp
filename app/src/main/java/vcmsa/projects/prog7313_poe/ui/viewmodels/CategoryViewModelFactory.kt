@@ -3,9 +3,10 @@ package vcmsa.projects.prog7313_poe.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import vcmsa.projects.prog7313_poe.core.data.repos.CategoryRepository
+import java.util.UUID
 
 class CategoryViewModelFactory(
-    private val repository: CategoryRepository
+    private val repository: CategoryRepository,
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

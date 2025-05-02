@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import vcmsa.projects.prog7313_poe.core.data.access.ExpenseDao
 import vcmsa.projects.prog7313_poe.core.models.Expense
 import java.util.UUID
+import java.time.Instant
 
 /**
  * Repository for managing [Expense] data via [ExpenseDao].
@@ -67,23 +68,35 @@ class ExpenseRepository(
         return dao.getAllExpenses()
     }
 
-    suspend fun getById(id: UUID): Expense? = dao.getById(id)
+    suspend fun getExpenseById(id: UUID): Expense? {
+        return dao.fetchOne(id)
+    }
 
-    suspend fun getByUserId(userId: UUID): List<Expense> = dao.getByUserId(userId)
+    suspend fun addPhoto(expenseId: UUID, photoUri: String) {
+        val expense = getExpenseById(expenseId) ?: return
+        val updatedExpense = expense.copy(photos = expense.photos + photoUri)
+        updateExpense(updatedExpense)
+    }
 
-    suspend fun getByCategoryId(categoryId: UUID): List<Expense> = dao.getByCategoryId(categoryId)
+    suspend fun deletePhoto(expenseId: UUID, photoUri: String) {
+        val expense = getExpenseById(expenseId) ?: return
+        val updatedExpense = expense.copy(photos = expense.photos.filter { it != photoUri })
+        updateExpense(updatedExpense)
+    }
 
-    suspend fun insert(expense: Expense) = dao.insert(expense)
+    suspend fun getExpensesByUserId(userId: UUID): List<Expense> {
+        return dao.getExpensesByUserId(userId)
+    }
 
-    suspend fun update(expense: Expense) = dao.update(expense)
+    suspend fun getExpensesByCategory(userId: UUID, categoryId: UUID): List<Expense> {
+        return dao.getExpensesByCategory(userId, categoryId)
+    }
 
-    suspend fun delete(expense: Expense) = dao.delete(expense)
+    suspend fun getExpensesByDateRange(userId: UUID, startDate: Instant, endDate: Instant): List<Expense> {
+        return dao.getExpensesByDateRange(userId, startDate, endDate)
+    }
 
-    suspend fun deleteById(id: UUID) = dao.deleteById(id)
-
-    suspend fun deleteByUserId(userId: UUID) = dao.deleteByUserId(userId)
-
-    suspend fun deleteByCategoryId(categoryId: UUID) = dao.deleteByCategoryId(categoryId)
-
-    suspend fun getAll(): List<Expense> = dao.getAll()
+    suspend fun getTotalExpensesByCategory(userId: UUID, categoryId: UUID): Double? {
+        return dao.getTotalExpensesByCategory(userId, categoryId)
+    }
 }

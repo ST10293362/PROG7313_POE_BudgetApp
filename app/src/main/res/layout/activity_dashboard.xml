@@ -18,6 +18,16 @@
         android:paddingEnd="16dp"
         android:gravity="center_vertical">
 
+        <TextView
+            android:id="@+id/welcomeTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Welcome"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#000000" />
+
         <ImageButton
             android:id="@+id/searchButton"
             android:layout_width="40dp"
@@ -26,11 +36,6 @@
             android:contentDescription="Search"
             android:src="@android:drawable/ic_menu_search"
             tools:ignore="TouchTargetSizeCheck" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
 
         <ImageView
             android:id="@+id/profileImage"
@@ -55,140 +60,125 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Analytics View (Under Development) -->
-            <androidx.cardview.widget.CardView
+            <!-- Progress Bar -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="160dp"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="6dp"
-                android:backgroundTint="#111111">
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="20dp">
-                    <TextView
-                        android:id="@+id/analyticsTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Analytics Dashboard"
-                        android:textColor="#FFFFFF"
-                        android:textSize="24sp"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Coming Soon"
-                        android:textColor="#CCCCCC"
-                        android:textSize="16sp"
-                        android:layout_below="@id/analyticsTitle"
-                        android:layout_marginTop="8dp" />
-                    <ProgressBar
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:indeterminate="true"
-                        android:progressTint="#58bc82" />
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:indeterminate="true"
+                android:progressTint="#58bc82" />
 
             <!-- Budget Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
                 android:backgroundTint="#A259FF">
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:padding="20dp">
                     <TextView
                         android:id="@+id/budgetLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Budget for October"
+                        android:text="Monthly Budget"
                         android:textColor="#FFFFFF"
                         android:textSize="16sp" />
                     <TextView
-                        android:id="@+id/budgetValue"
+                        android:id="@+id/monthlyBudgetTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="R26 000"
+                        android:text="R0.00"
                         android:textColor="#FFFFFF"
                         android:textSize="22sp"
                         android:textStyle="bold"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentTop="true" />
+                        android:layout_marginTop="8dp" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Cash Available"
+                        android:text="Current Budget"
                         android:textColor="#E0E0E0"
                         android:textSize="12sp"
-                        android:layout_below="@id/budgetLabel"
                         android:layout_marginTop="4dp" />
-                </RelativeLayout>
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <!-- Savings Goal Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
                 android:backgroundTint="#E6F0FA">
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:padding="20dp">
-                    <TextView
-                        android:id="@+id/minSavingsLabel"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Min Savings"
-                        android:textColor="#666666"
-                        android:textSize="12sp" />
-                    <TextView
-                        android:id="@+id/savingsStart"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="R1 000"
-                        android:textColor="#000000"
-                        android:textSize="16sp"
-                        android:layout_below="@id/minSavingsLabel"
-                        android:layout_marginTop="4dp" />
-                    <TextView
-                        android:id="@+id/maxSavingsLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Max Savings"
-                        android:textColor="#666666"
-                        android:textSize="12sp"
-                        android:layout_alignParentEnd="true" />
-                    <TextView
-                        android:id="@+id/savingsGoal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="R10 000"
-                        android:textColor="#000000"
-                        android:textSize="16sp"
-                        android:layout_below="@id/maxSavingsLabel"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginTop="4dp" />
+                        android:orientation="horizontal">
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/currentSavingsLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Current Savings"
+                                android:textColor="#666666"
+                                android:textSize="12sp" />
+                            <TextView
+                                android:id="@+id/currentSavingsTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="R0.00"
+                                android:textColor="#000000"
+                                android:textSize="16sp"
+                                android:layout_marginTop="4dp" />
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/savingsGoalLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Savings Goal"
+                                android:textColor="#666666"
+                                android:textSize="12sp" />
+                            <TextView
+                                android:id="@+id/savingsGoalTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="R0.00"
+                                android:textColor="#000000"
+                                android:textSize="16sp"
+                                android:layout_marginTop="4dp" />
+                        </LinearLayout>
+                    </LinearLayout>
                     <ProgressBar
                         android:id="@+id/savingsProgress"
                         style="@android:style/Widget.ProgressBar.Horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="12dp"
-                        android:layout_alignParentBottom="true"
-                        android:progress="10"
+                        android:layout_marginTop="16dp"
+                        android:progress="0"
                         android:max="100"
                         android:progressDrawable="@drawable/progress_bar_savings" />
-                </RelativeLayout>
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <!-- Categories Section Title -->

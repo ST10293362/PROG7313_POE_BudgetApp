@@ -1,10 +1,9 @@
 package vcmsa.projects.prog7313_poe.core.models
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import java.time.Instant
 import java.util.UUID
 
 /**
@@ -20,25 +19,23 @@ import java.util.UUID
  * @reference https://developer.android.com/reference/java/util/UUID
  */
 @Entity(
-    tableName = "user_sessions",
-    foreignKeys = [
-        ForeignKey(
-            entity = User::class,
-            parentColumns = ["id"],
-            childColumns = ["userId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ],
+    tableName = "user_session",
     indices = [
-        Index("userId")
+        Index(value = ["id"], unique = true)
     ]
 )
 data class UserSession(
+
+    /**
+     * Fixed primary key used to enforce a single-row session table.
+     */
     @PrimaryKey
-    override val id: UUID = UUID.randomUUID(),
-    val userId: UUID,
-    val token: String,
-    val expiresAt: Instant,
-    override val createdAt: Instant = Instant.now(),
-    override val updatedAt: Instant = Instant.now()
-) : KeyedEntity, AuditableEntity
+    val id: Int = 1,
+
+    /**
+     * UUID of the currently authenticated user.
+     */
+    @ColumnInfo(name = "user_id")
+    val userId: UUID
+
+)

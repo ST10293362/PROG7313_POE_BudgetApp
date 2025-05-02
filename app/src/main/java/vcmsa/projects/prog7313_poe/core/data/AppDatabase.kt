@@ -4,13 +4,11 @@ import android.content.Context
 import androidx.room.*
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import vcmsa.projects.prog7313_poe.data.dao.AccountDao
-import vcmsa.projects.prog7313_poe.data.dao.CategoryDao
-import vcmsa.projects.prog7313_poe.data.dao.ExpenseDao
-import vcmsa.projects.prog7313_poe.data.dao.SessionDao
-import vcmsa.projects.prog7313_poe.data.dao.UserDao
+import vcmsa.projects.prog7313_poe.core.data.access.*
 import vcmsa.projects.prog7313_poe.core.data.converters.DateConverter
 import vcmsa.projects.prog7313_poe.core.data.converters.UuidConverter
+import vcmsa.projects.prog7313_poe.core.data.converters.InstantConverter
+import vcmsa.projects.prog7313_poe.core.data.converters.StringListConverter
 import vcmsa.projects.prog7313_poe.core.models.*
 
 /**
@@ -40,12 +38,15 @@ import vcmsa.projects.prog7313_poe.core.models.*
         Category::class,
         User::class,
         UserSession::class,
+        Session::class,
     ],
     exportSchema = true
 )
 @TypeConverters(
     DateConverter::class,
-    UuidConverter::class
+    UuidConverter::class,
+    InstantConverter::class,
+    StringListConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
 

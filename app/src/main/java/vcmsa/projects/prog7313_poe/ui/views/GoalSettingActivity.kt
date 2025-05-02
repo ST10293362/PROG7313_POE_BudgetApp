@@ -13,34 +13,26 @@ import vcmsa.projects.prog7313_poe.core.data.repos.UserRepository
 import vcmsa.projects.prog7313_poe.databinding.ActivityGoalSettingBinding
 import vcmsa.projects.prog7313_poe.ui.viewmodels.UserViewModel
 import vcmsa.projects.prog7313_poe.ui.viewmodels.UserViewModelFactory
-import java.util.UUID
+import vcmsa.projects.prog7313_poe.core.services.AuthService
 
 class GoalSettingActivity : AppCompatActivity() {
     private lateinit var binding: ActivityGoalSettingBinding
     private lateinit var userViewModel: UserViewModel
-    private var userId: UUID? = null
+    private lateinit var authService: AuthService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGoalSettingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        userId = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            intent.getSerializableExtra("USER_ID", UUID::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            intent.getSerializableExtra("USER_ID") as? UUID
-        }
-
-        if (userId == null) {
-            Toast.makeText(this, "Error: User ID not found", Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
-
-        // Set up ViewModel
+        // Set up services and ViewModel
         val db = AppDatabase.getDatabase(applicationContext)
         val repository = UserRepository(db.userDao())
+        authService = AuthService(
+            applicationContext,
+            db.sessionDao(),
+            db.userDao()
+        )
         val factory = UserViewModelFactory(repository)
         userViewModel = ViewModelProvider(this, factory)[UserViewModel::class.java]
 
@@ -55,18 +47,16 @@ class GoalSettingActivity : AppCompatActivity() {
     }
 
     private fun loadExistingValues() {
-        userId?.let { id ->
-            lifecycleScope.launch {
-                try {
-                    val user = userViewModel.getUserById(id)
-                    user?.let {
-                        binding.minGoalEditText.setText(it.minGoal?.toString() ?: "0.0")
-                        binding.maxGoalEditText.setText(it.maxGoal?.toString() ?: "0.0")
-                        binding.budgetEditText.setText(it.monthlyBudget.toString())
-                    }
-                } catch (e: Exception) {
-                    Toast.makeText(this@GoalSettingActivity, "Error loading user data: ${e.message}", Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            try {
+                val user = userViewModel.getCurrentUser()
+                user?.let {
+                    binding.minGoalEditText.setText(it.minGoal?.toString() ?: "0.0")
+                    binding.maxGoalEditText.setText(it.maxGoal?.toString() ?: "0.0")
+                    binding.budgetEditText.setText(it.monthlyBudget?.toString() ?: "0.0")
                 }
+            } catch (e: Exception) {
+                Toast.makeText(this@GoalSettingActivity, "Error loading user data: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -94,7 +84,6 @@ class GoalSettingActivity : AppCompatActivity() {
 
             // Update goals, budget, and goals_set status
             userViewModel.updateUserGoalsAndBudget(
-                userId = userId!!,
                 minGoal = minGoal,
                 maxGoal = maxGoal,
                 monthlyBudget = monthlyBudget,
@@ -102,9 +91,7 @@ class GoalSettingActivity : AppCompatActivity() {
             )
 
             // Navigate to DashboardActivity
-            val intent = Intent(this, DashboardActivity::class.java)
-            intent.putExtra("USER_ID", userId)
-            startActivity(intent)
+            startActivity(Intent(this, DashboardActivity::class.java))
             finish()
         } catch (e: Exception) {
             Toast.makeText(this, "Error saving goals: ${e.message}", Toast.LENGTH_SHORT).show()

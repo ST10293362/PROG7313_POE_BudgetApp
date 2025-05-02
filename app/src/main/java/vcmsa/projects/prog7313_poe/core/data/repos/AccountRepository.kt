@@ -2,26 +2,19 @@ package vcmsa.projects.prog7313_poe.core.data.repos
 
 import vcmsa.projects.prog7313_poe.core.data.access.AccountDao
 import vcmsa.projects.prog7313_poe.core.models.Account
-import vcmsa.projects.prog7313_poe.core.models.AccountWithExpenses
 import java.util.UUID
 
 /**
  * Repository for handling operations on [Account] data models using [AccountDao].
- * Encapsulates DB logic using safe exception handling via `runCatching`.
- *
- * This abstraction allows the UI/viewmodels to interact with a clean and testable API
- * while all Room-specific logic remains here.
+ * Provides basic CRUD operations for accounts.
  *
  * @author ST10257002
  * @author ST10326084
  * @since 2024
- *
- * @reference https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/run-catching.html
  */
 class AccountRepository(
     private val dao: AccountDao
 ) {
-
     /**
      * Creates a new account entry in the database.
      *
@@ -81,13 +74,10 @@ class AccountRepository(
     }
 
     /**
-     * Retrieves an account along with all of its related expenses.
-     * Uses a Room `@Transaction` relationship.
+     * Checks whether an account with the given ID exists in the database.
      *
-     * @param id The UUID of the target account.
-     * @return An [AccountWithExpenses] composite object.
+     * @param id The unique identifier of the account to check.
+     * @return true if the account exists, false otherwise.
      */
-    suspend fun getAccountWithExpenses(id: UUID): Result<AccountWithExpenses> = runCatching {
-        dao.fetchAccountWithExpenses(id)
-    }
+    suspend fun exists(id: UUID): Boolean = dao.exists(id)
 }

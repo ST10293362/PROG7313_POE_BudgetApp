@@ -1,8 +1,6 @@
 package vcmsa.projects.prog7313_poe.ui.views
 
 import android.Manifest
-import android.annotation.SuppressLint
-import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,7 +9,6 @@ import android.os.Bundle
 import java.time.Instant
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,27 +24,29 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import vcmsa.projects.prog7313_poe.R
 import vcmsa.projects.prog7313_poe.core.data.AppDatabase
+import vcmsa.projects.prog7313_poe.core.data.repos.CategoryRepository
 import vcmsa.projects.prog7313_poe.core.data.repos.ExpenseRepository
+import vcmsa.projects.prog7313_poe.core.services.AuthService
+import vcmsa.projects.prog7313_poe.databinding.ActivityAddExpenseBinding
 import vcmsa.projects.prog7313_poe.ui.viewmodels.ExpenseViewModel
 import vcmsa.projects.prog7313_poe.ui.viewmodels.ExpenseViewModelFactory
 import vcmsa.projects.prog7313_poe.core.models.Expense
-import vcmsa.projects.prog7313_poe.core.models.Account
-import vcmsa.projects.prog7313_poe.core.models.Category
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import vcmsa.projects.prog7313_poe.core.data.repos.CategoryRepository
-import vcmsa.projects.prog7313_poe.core.services.AuthService
-import vcmsa.projects.prog7313_poe.data.dao.ExpenseDao
-import java.util.UUID
 
 /**
  * @author ST10326084
  */
 class AddExpenseActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityAddExpenseBinding
+    private lateinit var expenseViewModel: ExpenseViewModel
+    private lateinit var getImageLauncher: ActivityResultLauncher<Intent>
+    private lateinit var takePictureLauncher: ActivityResultLauncher<Intent>
+    private var currentPhotoPath: String = ""
+    private val imageUris = mutableListOf<Uri>()
+    private val photoNames = mutableListOf<String>()
     private lateinit var descriptionEditText: EditText
     private lateinit var amountEditText: EditText
     private lateinit var startTimeEditText: EditText
@@ -58,10 +57,6 @@ class AddExpenseActivity : AppCompatActivity() {
     private lateinit var capturePhotoButton: Button
     private lateinit var submitButton: Button
     private lateinit var photoListView: ListView
-    private var imageUris: MutableList<Uri> = mutableListOf()
-    private lateinit var getImageLauncher: ActivityResultLauncher<Intent>
-    private lateinit var takePictureLauncher: ActivityResultLauncher<Intent>
-    private lateinit var currentPhotoPath: String
     private lateinit var photoAdapter: PhotoAdapter
     private val categories = mutableListOf(
         "Food & Dining",
@@ -78,175 +73,247 @@ class AddExpenseActivity : AppCompatActivity() {
 
     private val REQUEST_CODE_PERMISSIONS = 1001
 
-    private lateinit var expenseRepository: ExpenseRepository
-    private lateinit var categoryRepository: CategoryRepository
-    private lateinit var authService: AuthService
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        try {
+            binding = ActivityAddExpenseBinding.inflate(layoutInflater)
+            setContentView(binding.root)
+
+            initializeViewModels()
+            setupImageLaunchers()
+            setupClickListeners()
+            setupCategorySpinner()
+            setupTimePickers()
+            observeViewModel()
+        } catch (e: Exception) {
+            showToast("Error initializing activity: ${e.message}")
+            finish()
+        }
+    }
+
+    private fun initializeViewModels() {
+        val db = AppDatabase.getDatabase(applicationContext)
+        val expenseRepository = ExpenseRepository(db.expenseDao())
+        val categoryRepository = CategoryRepository(db.categoryDao())
+        val authService = AuthService(applicationContext)
+        
+        expenseViewModel = ViewModelProvider(
+            this,
+            ExpenseViewModelFactory(expenseRepository, categoryRepository, authService)
+        )[ExpenseViewModel::class.java]
+    }
+
+    private fun observeViewModel() {
+        expenseViewModel.error.observe(this) { error ->
+            error?.let { showToast(it) }
+        }
+
+        expenseViewModel.loading.observe(this) { loading ->
+            binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
+            binding.submitButton.isEnabled = !loading
+        }
+
+        expenseViewModel.expenseAdded.observe(this) { success ->
+            if (success) {
+                showToast("Expense added successfully")
+                navigateToDashboard()
+            }
+        }
+    }
+
+    private fun setupImageLaunchers() {
+        getImageLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                result.data?.data?.let { uri ->
+                    addImage(uri)
+                }
+            }
+        }
+
+        takePictureLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                File(currentPhotoPath).let { file ->
+                    if (file.exists()) {
+                        addImage(Uri.fromFile(file))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setupClickListeners() {
+        binding.apply {
+            addPhotoButton.setOnClickListener { openGallery() }
+            capturePhotoButton.setOnClickListener { takePicture() }
+            submitButton.setOnClickListener { submitExpense() }
+            addCategoryButton.setOnClickListener { showAddCategoryDialog() }
+        }
+    }
+
+    private fun openGallery() {
+        if (checkPermissions()) {
+            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            getImageLauncher.launch(intent)
+        }
+    }
+
+    private fun takePicture() {
+        if (checkPermissions()) {
+            val photoFile = createImageFile()
+            photoFile?.let { file ->
+                currentPhotoPath = file.absolutePath
+                val photoURI = FileProvider.getUriForFile(
+                    this,
+                    "${packageName}.fileprovider",
+                    file
+                )
+                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+                    putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                }
+                takePictureLauncher.launch(intent)
+            }
+        }
+    }
+
+    private fun addImage(uri: Uri) {
+        imageUris.add(uri)
+        photoNames.add("Photo ${photoNames.size + 1}")
+        updatePhotoList()
+    }
+
+    private fun updatePhotoList() {
+        binding.photoListView.adapter = PhotoAdapter()
+    }
+
+    private fun submitExpense() {
+        val amount = binding.amountEditText.text.toString().toDoubleOrNull()
+        val description = binding.descriptionEditText.text.toString()
+        val startTime = binding.startTimeEditText.text.toString()
+        val endTime = binding.endTimeEditText.text.toString()
+        val category = binding.categorySpinner.selectedItem.toString()
+
+        if (amount == null || amount <= 0) {
+            showToast("Please enter a valid amount")
+            return
+        }
+
+        if (description.isBlank()) {
+            showToast("Please enter a description")
+            return
+        }
+
+        lifecycleScope.launch {
+            try {
+                val expense = Expense(
+                    amount = amount,
+                    description = description,
+                    startDate = parseDateTime(startTime),
+                    endDate = if (endTime.isNotBlank()) parseDateTime(endTime) else null,
+                    categoryId = UUID.randomUUID(), // TODO: Get actual category ID
+                    userId = UUID.randomUUID(), // TODO: Get actual user ID
+                    accountId = UUID.randomUUID() // TODO: Get actual account ID
+                )
+                expenseViewModel.addExpense(expense)
+            } catch (e: Exception) {
+                showToast("Error submitting expense: ${e.message}")
+            }
+        }
+    }
+
+    private fun navigateToDashboard() {
+        val intent = Intent(this, DashboardActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        startActivity(intent)
+        finish()
+    }
+
+    private fun checkPermissions(): Boolean {
+        val permissions = arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        val permissionsToRequest = permissions.filter {
+            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+        }
+        if (permissionsToRequest.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, permissionsToRequest.toTypedArray(), REQUEST_CODE_PERMISSIONS)
+            return false
+        }
+        return true
+    }
+
+    private fun createImageFile(): File? {
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_",
+            ".jpg",
+            storageDir
+        )
+    }
+
+    private fun parseDateTime(dateTime: String): Instant {
+        // TODO: Implement proper date/time parsing
+        return Instant.now()
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
 
     inner class PhotoAdapter : BaseAdapter() {
-        private val photoNames = mutableListOf<String>()
-
-        fun addPhoto(name: String) {
-            photoNames.add(name)
-            notifyDataSetChanged()
-        }
-
-        fun removePhoto(position: Int) {
-            photoNames.removeAt(position)
-            imageUris.removeAt(position)
-            notifyDataSetChanged()
-        }
-
         override fun getCount(): Int = photoNames.size
-
         override fun getItem(position: Int): Any = photoNames[position]
-
         override fun getItemId(position: Int): Long = position.toLong()
-
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             val view = convertView ?: LayoutInflater.from(this@AddExpenseActivity)
                 .inflate(R.layout.item_photo, parent, false)
-
-            val photoNameTextView = view.findViewById<TextView>(R.id.photoNameTextView)
-            val removeButton = view.findViewById<ImageButton>(R.id.removePhotoButton)
-
-            photoNameTextView.text = photoNames[position]
-            removeButton.setOnClickListener {
+            view.findViewById<TextView>(R.id.photoNameTextView).text = photoNames[position]
+            view.findViewById<ImageButton>(R.id.removePhotoButton).setOnClickListener {
                 removePhoto(position)
             }
-
             return view
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_expense)
-
-        // Initialize repositories and services
-        expenseRepository = ExpenseRepository(expenseDao)
-        categoryRepository = CategoryRepository(categoryDao)
-        authService = AuthService(sessionRepository, userRepository)
-
-        // Load categories
-        lifecycleScope.launch {
-            val currentUser = authService.getCurrentUser().getOrNull()
-            if (currentUser != null) {
-                val categories = categoryRepository.getByUserId(currentUser.id)
-                // Update UI with categories
-            }
+    private fun removePhoto(position: Int) {
+        if (position in photoNames.indices) {
+            photoNames.removeAt(position)
+            imageUris.removeAt(position)
+            updatePhotoList()
         }
-
-        // Initialize views
-        initializeViews()
-
-        // Set up category spinner
-        setupCategorySpinner()
-
-        // Set up time pickers
-        setupTimePickers()
-
-        // Set up image handling
-        setupImageHandling()
-
-        // Set up click listeners
-        setupClickListeners()
-
-        // Set up photo list
-        photoAdapter = PhotoAdapter()
-        photoListView.adapter = photoAdapter
-    }
-
-    private fun initializeViews() {
-        descriptionEditText = findViewById(R.id.descriptionEditText)
-        amountEditText = findViewById(R.id.amountEditText)
-        startTimeEditText = findViewById(R.id.startTimeEditText)
-        endTimeEditText = findViewById(R.id.endTimeEditText)
-        categorySpinner = findViewById(R.id.categorySpinner)
-        addCategoryButton = findViewById(R.id.addCategoryButton)
-        addPhotoButton = findViewById(R.id.addPhotoButton)
-        capturePhotoButton = findViewById(R.id.capturePhotoButton)
-        submitButton = findViewById(R.id.submitButton)
-        photoListView = findViewById(R.id.photoListView)
     }
 
     private fun setupCategorySpinner() {
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        categorySpinner.adapter = adapter
+        binding.categorySpinner.adapter = adapter
     }
 
     private fun setupTimePickers() {
         val calendar = Calendar.getInstance()
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
-        startTimeEditText.setOnClickListener {
+        binding.startTimeEditText.setOnClickListener {
             TimePickerDialog(this, { _, hour, minute ->
                 calendar.set(Calendar.HOUR_OF_DAY, hour)
                 calendar.set(Calendar.MINUTE, minute)
-                startTimeEditText.setText(timeFormat.format(calendar.time))
+                binding.startTimeEditText.setText(timeFormat.format(calendar.time))
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
         }
 
-        endTimeEditText.setOnClickListener {
+        binding.endTimeEditText.setOnClickListener {
             TimePickerDialog(this, { _, hour, minute ->
                 calendar.set(Calendar.HOUR_OF_DAY, hour)
                 calendar.set(Calendar.MINUTE, minute)
-                endTimeEditText.setText(timeFormat.format(calendar.time))
+                binding.endTimeEditText.setText(timeFormat.format(calendar.time))
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
-        }
-    }
-
-    private fun setupImageHandling() {
-        getImageLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == RESULT_OK) {
-                    val data = result.data
-                    data?.let {
-                        val clipData = it.clipData
-                        if (clipData != null) {
-                            for (i in 0 until clipData.itemCount) {
-                                val imageUri: Uri = clipData.getItemAt(i).uri
-                                imageUris.add(imageUri)
-                                photoAdapter.addPhoto("Photo ${imageUris.size}")
-                            }
-                        } else {
-                            val imageUri: Uri? = it.data
-                            imageUri?.let { uri ->
-                                imageUris.add(uri)
-                                photoAdapter.addPhoto("Photo ${imageUris.size}")
-                            }
-                        }
-                    }
-                }
-            }
-
-        takePictureLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == RESULT_OK) {
-                    val imageFile = File(currentPhotoPath)
-                    val imageUri =
-                        FileProvider.getUriForFile(this, "${packageName}.fileprovider", imageFile)
-                    imageUris.add(imageUri)
-                    photoAdapter.addPhoto("Photo ${imageUris.size}")
-                }
-            }
-    }
-
-    private fun setupClickListeners() {
-        addCategoryButton.setOnClickListener {
-            showAddCategoryDialog()
-        }
-
-        addPhotoButton.setOnClickListener {
-            openGallery()
-        }
-
-        capturePhotoButton.setOnClickListener {
-            checkPermissions()
-        }
-
-        submitButton.setOnClickListener {
-            submitExpense()
         }
     }
 
@@ -259,205 +326,14 @@ class AddExpenseActivity : AppCompatActivity() {
                 val newCategory = input.text.toString().trim()
                 if (newCategory.isNotEmpty()) {
                     categories.add(newCategory)
-                    (categorySpinner.adapter as ArrayAdapter<String>).notifyDataSetChanged()
+                    (binding.categorySpinner.adapter as ArrayAdapter<String>).notifyDataSetChanged()
                 }
             }
             .setNegativeButton("Cancel", null)
             .show()
     }
 
-    private fun checkPermissions() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                REQUEST_CODE_PERMISSIONS
-            )
-        } else {
-            capturePhoto()
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                capturePhoto()
-            } else {
-                Toast.makeText(
-                    this,
-                    "Camera permission is required to capture photos",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
-
-    private fun openGallery() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-            type = "image/*"
-            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-        }
-        getImageLauncher.launch(intent)
-    }
-
-    @SuppressLint("QueryPermissionsNeeded")
-    private fun capturePhoto() {
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (intent.resolveActivity(packageManager) != null) {
-            val photoFile: File? = createImageFile()
-            if (photoFile != null) {
-                currentPhotoPath = photoFile.absolutePath
-                val photoURI: Uri =
-                    FileProvider.getUriForFile(this, "${packageName}.fileprovider", photoFile)
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                takePictureLauncher.launch(intent)
-            } else {
-                Toast.makeText(this, "Error creating file for photo", Toast.LENGTH_SHORT).show()
-            }
-        } else {
-            Toast.makeText(this, "No camera app available", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun createImageFile(): File? {
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        return try {
-            val file = File.createTempFile("JPEG_${timeStamp}_", ".jpg", storageDir)
-            Log.d("AddExpenseActivity", "Image file created at: ${file.absolutePath}")
-            file
-        } catch (e: Exception) {
-            Log.e("AddExpenseActivity", "Error creating file: ${e.message}")
-            null
-        }
-    }
-
-    /**
-     * @author ST10326084
-     */
-    private fun submitExpense() {
-        try {
-            val description = descriptionEditText.text.toString().trim()
-            val amount = amountEditText.text.toString().toDoubleOrNull()
-            val category = categorySpinner.selectedItem.toString()
-            val startTime = startTimeEditText.text.toString()
-            val endTime = endTimeEditText.text.toString()
-
-            if (description.isEmpty() || amount == null || startTime.isEmpty() || endTime.isEmpty()) {
-                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
-                return
-            }
-
-            // Get the user ID from the intent
-            val userId = intent.getSerializableExtra("USER_ID") as? UUID
-            if (userId == null) {
-                Toast.makeText(this, "User session not found", Toast.LENGTH_SHORT).show()
-                return
-            }
-
-            // Create a default account for the user if none exists
-            val db = AppDatabase.getDatabase(applicationContext)
-            val accountDao = db.accountDao()
-            val categoryDao = db.categoryDao()
-
-            lifecycleScope.launch {
-                try {
-                    // Get or create a default account
-                    val account = accountDao.fetchAll().find { it.idAuthor == userId } ?: run {
-                        val newAccount = Account(
-                            name = "Default Account",
-                            idAuthor = userId
-                        )
-                        accountDao.insert(newAccount)
-                        newAccount
-                    }
-
-                    // Get or create the selected category
-                    val categoryEntity = categoryDao.fetchAll().find { it.name == category && it.userId == userId } ?: run {
-                        val newCategory = Category(
-                            name = category,
-                            userId = userId
-                        )
-                        categoryDao.insert(newCategory)
-                        newCategory
-                    }
-
-                    val now = Instant.now()
-                    val expense = Expense(
-                        description = description,
-                        amount = amount,
-                        startDate = now,
-                        endDate = now,
-                        userId = userId,
-                        accountId = account.id,
-                        categoryId = categoryEntity.id
-                    )
-
-                    // Add photos if any
-                    expense.photos.addAll(imageUris)
-
-                    // Save to DB using ViewModel
-                    val viewModel = ViewModelProvider(
-                        this@AddExpenseActivity,
-                        ExpenseViewModelFactory(ExpenseRepository(db.expenseDao()))
-                    )[ExpenseViewModel::class.java]
-
-                    viewModel.addExpense(expense)
-
-                    // Show success message and return to dashboard
-                    Toast.makeText(this@AddExpenseActivity, "Expense added successfully", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this@AddExpenseActivity, DashboardActivity::class.java)
-                    intent.putExtra("USER_ID", userId)
-                    startActivity(intent)
-                    finish()
-                } catch (e: Exception) {
-                    Toast.makeText(this@AddExpenseActivity, "Error adding expense: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
-        } catch (e: Exception) {
-            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun saveExpense(amount: Double, description: String, categoryId: UUID) {
-        lifecycleScope.launch {
-            val currentUser = authService.getCurrentUser().getOrNull()
-            if (currentUser != null) {
-                val expense = Expense(
-                    amount = amount,
-                    description = description,
-                    startDate = Instant.now(),
-                    userId = currentUser.id,
-                    categoryId = categoryId
-                )
-                expenseRepository.create(expense)
-                // Update category total
-                categoryRepository.updateTotalAmount(categoryId, amount)
-            }
-        }
-    }
-
-    private fun createCategory(name: String, description: String, color: String) {
-        lifecycleScope.launch {
-            val currentUser = authService.getCurrentUser().getOrNull()
-            if (currentUser != null) {
-                val category = Category(
-                    name = name,
-                    description = description,
-                    color = color,
-                    userId = currentUser.id
-                )
-                categoryRepository.create(category)
-            }
-        }
+    companion object {
+        private const val REQUEST_CODE_PERMISSIONS = 1001
     }
 }

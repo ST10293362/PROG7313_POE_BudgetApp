@@ -10,8 +10,7 @@ import vcmsa.projects.prog7313_poe.core.data.repos.ExpenseRepository
 import vcmsa.projects.prog7313_poe.core.data.repos.SessionRepository
 import vcmsa.projects.prog7313_poe.core.data.repos.UserRepository
 import vcmsa.projects.prog7313_poe.core.services.AuthService
-import vcmsa.projects.prog7313_poe.data.AppDatabase
-import vcmsa.projects.prog7313_poe.ui.adapters.ExpenseAdapter
+import vcmsa.projects.prog7313_poe.core.data.AppDatabase
 import vcmsa.projects.prog7313_poe.ui.viewmodels.ExpenseViewModel
 import vcmsa.projects.prog7313_poe.ui.viewmodels.ExpenseViewModelFactory
 

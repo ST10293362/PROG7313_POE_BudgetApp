@@ -2,17 +2,12 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
-    id("kotlin-kapt")
+    kotlin("kapt")
 }
 
 android {
     namespace = "vcmsa.projects.prog7313_poe"
     compileSdk = 35
-    packaging {
-        resources {
-            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
-        }
-    }
 
     defaultConfig {
         applicationId = "vcmsa.projects.prog7313_poe"
@@ -22,7 +17,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        
+
         // Add Room schema export location
         kapt {
             arguments {
@@ -57,66 +52,48 @@ android {
 
 // APP-LEVEL DEPENDENCIES
 dependencies {
-    
+
     // - Android
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.11.0")
-    implementation("androidx.activity:activity-ktx:1.8.2")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.recyclerview:recyclerview:1.3.2")
+
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
+    implementation ("androidx.recyclerview:recyclerview:1.3.2")
 
     // - Material Design
+
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.cardview:cardview:1.0.0")
 
     // - Glide
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-    implementation("com.google.android.gms:play-services-identity:18.0.1")
-    implementation("androidx.test.ext:junit-ktx:1.1.5")
-    implementation("androidx.room:room-testing:2.6.1")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
-    kapt("com.github.bumptech.glide:compiler:4.16.0")
+
+    implementation(libs.glide)
+    annotationProcessor(libs.glide.compiler) // Java
+    kapt(libs.glide.compiler) // Kotlin
 
     // - Firebase
-    implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.firebase:firebase-database-ktx")
-    
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.database)
+
     // - RoomDB
-    kapt("androidx.room:room-compiler:2.7.0")
-    implementation("androidx.room:room-common:2.7.0")
-    implementation("androidx.room:room-ktx:2.7.0")
+
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.common)
+    implementation(libs.androidx.room.ktx)
 
     // - Kotlin coroutines with lifecycle support
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.lifecycle.runtime.ktx)
 
     // - Testing
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
-    // JUnit 5
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
-
-    // Coroutine test support
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-
-    // MockK for mocking classes/interfaces
-    testImplementation("io.mockk:mockk:1.13.10")
-
-    // Android Instrumentation tests
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-
-    // JUnit 4 for unit testing
-    testImplementation("junit:junit:4.13.2")
-
-    // MockK for mocking classes and functions
-    testImplementation("io.mockk:mockk:1.13.10")
-
-    // Kotlin Coroutines Test library for testing coroutines
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }

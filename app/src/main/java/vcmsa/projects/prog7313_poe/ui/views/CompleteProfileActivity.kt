@@ -21,7 +21,7 @@ import vcmsa.projects.prog7313_poe.core.data.AppDatabase
 import vcmsa.projects.prog7313_poe.core.data.repos.UserRepository
 import vcmsa.projects.prog7313_poe.ui.viewmodels.UserViewModel
 import vcmsa.projects.prog7313_poe.ui.viewmodels.UserViewModelFactory
-import java.util.UUID
+import vcmsa.projects.prog7313_poe.core.services.AuthService
 
 class CompleteProfileActivity : AppCompatActivity() {
     private lateinit var accountEditText: EditText
@@ -34,26 +34,23 @@ class CompleteProfileActivity : AppCompatActivity() {
     private lateinit var profileImageView: ImageView
     private lateinit var addProfilePicButton: Button
     private lateinit var userViewModel: UserViewModel
+    private lateinit var authService: AuthService
 
     private val PICK_IMAGE_REQUEST = 1
     private var imageUri: Uri? = null
-    private var userId: UUID? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_complete_profile)
 
-        // Get userId from intent
-        userId = intent.getSerializableExtra("USER_ID") as? UUID
-        if (userId == null) {
-            Toast.makeText(this, "Error: User ID not found", Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
-
-        // Initialize ViewModel
+        // Initialize services and ViewModel
         val db = AppDatabase.getDatabase(applicationContext)
         val repository = UserRepository(db.userDao())
+        authService = AuthService(
+            applicationContext,
+            db.sessionDao(),
+            db.userDao()
+        )
         val factory = UserViewModelFactory(repository)
         userViewModel = ViewModelProvider(this, factory)[UserViewModel::class.java]
 
@@ -96,12 +93,10 @@ class CompleteProfileActivity : AppCompatActivity() {
             }
 
             // Update user profile completion status
-            userViewModel.updateProfileCompletion(userId!!, true)
+            userViewModel.updateProfileCompletion(true)
 
             // Navigate to GoalSettingActivity
-            val intent = Intent(this, GoalSettingActivity::class.java)
-            intent.putExtra("USER_ID", userId)
-            startActivity(intent)
+            startActivity(Intent(this, GoalSettingActivity::class.java))
             finish()
         } catch (e: Exception) {
             Toast.makeText(this, "Error saving profile: ${e.message}", Toast.LENGTH_SHORT).show()

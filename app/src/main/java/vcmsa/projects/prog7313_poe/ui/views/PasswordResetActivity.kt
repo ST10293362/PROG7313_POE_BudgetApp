@@ -5,17 +5,15 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
 import vcmsa.projects.prog7313_poe.databinding.ActivityPasswordResetBinding
+import vcmsa.projects.prog7313_poe.core.services.AuthService
+import vcmsa.projects.prog7313_poe.core.data.AppDatabase
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class PasswordResetActivity : AppCompatActivity(), View.OnClickListener {
-
     private lateinit var binding: ActivityPasswordResetBinding
-    private lateinit var auth: FirebaseAuth
-
-
-    // <editor-fold desc="Lifecycle">
-
+    private lateinit var auth: AuthService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,65 +21,54 @@ class PasswordResetActivity : AppCompatActivity(), View.OnClickListener {
         setupBindings()
         setupLayoutUi()
 
-        setupOnClickListeners()
+        // Initialize AuthService
+        val db = AppDatabase.getDatabase(applicationContext)
+        auth = AuthService(
+            applicationContext,
+            db.sessionDao(),
+            db.userDao()
+        )
 
-        auth = FirebaseAuth.getInstance()
+        setupOnClickListeners()
     }
 
-
-    // </editor-fold>
-    // <editor-fold desc="Functions">
-
-
-    /**
-     * Initiate the reset process.
-     *
-     * @author ST10293362
-     * @author ST10257002
-     */
     private fun tryReset() {
         val email = binding.emailEditText.text.toString().trim()
 
         if (isValidCredentials(email)) {
-            completeReset(
-                email = email
-            )
+            completeReset(email)
         }
     }
 
-
-    /**
-     * Query firebase to send a password reset email to the given address.
-     *
-     * @author ST10293362
-     * @author ST10257002
-     */
-    private fun completeReset(
-        email: String
-    ) {
-        auth.sendPasswordResetEmail(email).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
+    private fun completeReset(email: String) {
+        lifecycleScope.launch {
+            try {
+                val result = auth.resetPassword(email)
+                if (result.isSuccess) {
+                    Toast.makeText(
+                        this@PasswordResetActivity, 
+                        "Done. Check your inbox for an email from us!", 
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    finish()
+                } else {
+                    Toast.makeText(
+                        this@PasswordResetActivity, 
+                        result.exceptionOrNull()?.message ?: "Failed to send reset email", 
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } catch (e: Exception) {
                 Toast.makeText(
-                    this, "Done. Check your inbox for an email from us!", Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                Toast.makeText(
-                    this, task.exception?.message, Toast.LENGTH_SHORT
+                    this@PasswordResetActivity, 
+                    "Error: ${e.message}", 
+                    Toast.LENGTH_SHORT
                 ).show()
             }
         }
     }
 
-
-    /**
-     * Validates whether the given credentials are correctly formatted.
-     *
-     * @author ST10293362
-     * @author ST10257002
-     */
-    private fun isValidCredentials(
-        email: String
-    ): Boolean {
+    private fun isValidCredentials(email: String): Boolean {
         if (email.isNotBlank()) {
             return true
         }
@@ -93,55 +80,26 @@ class PasswordResetActivity : AppCompatActivity(), View.OnClickListener {
         return false
     }
 
-
-    // </editor-fold>
-    // <editor-fold desc="Event Handler">
-
-
-    /**
-     * Catch and handle on-click events from the view.
-     *
-     * @author ST10293362
-     * @author ST10257002
-     */
     override fun onClick(view: View?) {
         when (view?.id) {
-            binding.resetButton.id -> {
-                tryReset()
+            binding.resetButton.id -> tryReset()
+            binding.backToLoginTextView.id -> {
+                finish()
             }
         }
     }
 
-
-    /**
-     * @author ST10257002
-     */
     private fun setupOnClickListeners() {
         binding.resetButton.setOnClickListener(this)
+        binding.backToLoginTextView.setOnClickListener(this)
     }
 
-
-    // </editor-fold>
-    // <editor-fold desc="Configuration">
-
-
-    /**
-     * @author ST10257002
-     */
     private fun setupBindings() {
         binding = ActivityPasswordResetBinding.inflate(layoutInflater)
-    }
-
-
-    /**
-     * @author ST10257002
-     */
-    private fun setupLayoutUi() {
-        enableEdgeToEdge()
         setContentView(binding.root)
     }
 
-
-    // </editor-fold>
-
+    private fun setupLayoutUi() {
+        enableEdgeToEdge()
+    }
 }

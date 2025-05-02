@@ -4,50 +4,65 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import vcmsa.projects.prog7313_poe.core.data.repos.CategoryRepository
+import kotlinx.coroutines.withContext
 import vcmsa.projects.prog7313_poe.core.data.repos.ExpenseRepository
-import vcmsa.projects.prog7313_poe.core.models.Category
 import vcmsa.projects.prog7313_poe.core.models.Expense
-import vcmsa.projects.prog7313_poe.core.services.AuthService
 import java.util.UUID
 
-class ExpenseViewModel(
-    private val expenseRepository: ExpenseRepository,
-    private val categoryRepository: CategoryRepository,
-    private val authService: AuthService
-) : ViewModel() {
+class ExpenseViewModel(private val repository: ExpenseRepository) : ViewModel() {
 
     private val _expenses = MutableLiveData<List<Expense>>()
     val expenses: LiveData<List<Expense>> = _expenses
 
-    private val _categories = MutableLiveData<List<Category>>()
-    val categories: LiveData<List<Category>> = _categories
+    private val _currentExpense = MutableLiveData<Expense?>()
+    val currentExpense: LiveData<Expense?> = _currentExpense
 
-    private val _currentUser = MutableLiveData<UUID?>()
-    val currentUser: LiveData<UUID?> = _currentUser
+    private val _photos = MutableLiveData<List<String>>()
+    val photos: LiveData<List<String>> = _photos
+
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> = _error
+
+    private val _loading = MutableLiveData<Boolean>()
+    val loading: LiveData<Boolean> = _loading
 
     init {
-        loadCurrentUser()
+        loadExpenses()
     }
 
-    private fun loadCurrentUser() {
+    fun loadExpenses() {
         viewModelScope.launch {
-            val user = authService.getCurrentUser()
-            _currentUser.value = user?.id
-            user?.id?.let { loadUserData(it) }
+            try {
+                _loading.postValue(true)
+                val result = withContext(Dispatchers.IO) {
+                    repository.getAllExpenses()
+                }
+                _expenses.postValue(result)
+            } catch (e: Exception) {
+                _error.postValue(e.message)
+            } finally {
+                _loading.postValue(false)
+            }
         }
     }
 
-    private fun loadUserData(userId: UUID) {
+    fun loadExpenseById(expenseId: UUID) {
         viewModelScope.launch {
             try {
-                val userExpenses = expenseRepository.getByUserId(userId)
-                val userCategories = categoryRepository.getByUserId(userId)
-                _expenses.value = userExpenses
-                _categories.value = userCategories
+                _loading.postValue(true)
+                val result = withContext(Dispatchers.IO) {
+                    repository.getExpenseById(expenseId)
+                }
+                _currentExpense.postValue(result)
+                result?.let { expense ->
+                    _photos.postValue(expense.photos)
+                }
             } catch (e: Exception) {
-                // Handle error
+                _error.postValue(e.message)
+            } finally {
+                _loading.postValue(false)
             }
         }
     }
@@ -55,11 +70,15 @@ class ExpenseViewModel(
     fun addExpense(expense: Expense) {
         viewModelScope.launch {
             try {
-                expenseRepository.insert(expense)
-                categoryRepository.updateTotalAmount(expense.categoryId, expense.amount)
-                loadUserData(expense.userId)
+                _loading.postValue(true)
+                withContext(Dispatchers.IO) {
+                    repository.createExpense(expense)
+                }
+                loadExpenses() // Refresh the list
             } catch (e: Exception) {
-                // Handle error
+                _error.postValue(e.message)
+            } finally {
+                _loading.postValue(false)
             }
         }
     }
@@ -67,73 +86,96 @@ class ExpenseViewModel(
     fun updateExpense(expense: Expense) {
         viewModelScope.launch {
             try {
-                val oldExpense = expenseRepository.getById(expense.id)
-                expenseRepository.update(expense)
-                if (oldExpense != null) {
-                    // Update category totals
-                    if (oldExpense.categoryId != expense.categoryId) {
-                        categoryRepository.updateTotalAmount(oldExpense.categoryId, -oldExpense.amount)
-                        categoryRepository.updateTotalAmount(expense.categoryId, expense.amount)
-                    } else {
-                        val amountDiff = expense.amount - oldExpense.amount
-                        categoryRepository.updateTotalAmount(expense.categoryId, amountDiff)
-                    }
+                _loading.postValue(true)
+                withContext(Dispatchers.IO) {
+                    repository.updateExpense(expense)
                 }
-                loadUserData(expense.userId)
+                loadExpenses() // Refresh the list
             } catch (e: Exception) {
-                // Handle error
+                _error.postValue(e.message)
+            } finally {
+                _loading.postValue(false)
             }
         }
     }
 
-    fun deleteExpense(expenseId: UUID) {
+    fun deleteExpense(expense: Expense) {
         viewModelScope.launch {
             try {
-                val expense = expenseRepository.getById(expenseId)
-                if (expense != null) {
-                    expenseRepository.deleteById(expenseId)
-                    categoryRepository.updateTotalAmount(expense.categoryId, -expense.amount)
-                    loadUserData(expense.userId)
+                _loading.postValue(true)
+                withContext(Dispatchers.IO) {
+                    repository.deleteExpense(expense)
                 }
+                loadExpenses() // Refresh the list
             } catch (e: Exception) {
-                // Handle error
+                _error.postValue(e.message)
+            } finally {
+                _loading.postValue(false)
             }
         }
     }
 
-    fun addCategory(category: Category) {
+    fun addPhoto(expenseId: UUID, photoUri: String) {
         viewModelScope.launch {
             try {
-                categoryRepository.insert(category)
-                loadUserData(category.userId)
-            } catch (e: Exception) {
-                // Handle error
-            }
-        }
-    }
-
-    fun updateCategory(category: Category) {
-        viewModelScope.launch {
-            try {
-                categoryRepository.update(category)
-                loadUserData(category.userId)
-            } catch (e: Exception) {
-                // Handle error
-            }
-        }
-    }
-
-    fun deleteCategory(categoryId: UUID) {
-        viewModelScope.launch {
-            try {
-                val category = categoryRepository.getById(categoryId)
-                if (category != null) {
-                    categoryRepository.deleteById(categoryId)
-                    loadUserData(category.userId)
+                _loading.postValue(true)
+                withContext(Dispatchers.IO) {
+                    repository.addPhoto(expenseId, photoUri)
                 }
+                loadExpenseById(expenseId) // Refresh the expense with new photos
             } catch (e: Exception) {
-                // Handle error
+                _error.postValue(e.message)
+            } finally {
+                _loading.postValue(false)
             }
         }
     }
-} 
+
+    fun deletePhoto(expenseId: UUID, photoUri: String) {
+        viewModelScope.launch {
+            try {
+                _loading.postValue(true)
+                withContext(Dispatchers.IO) {
+                    repository.deletePhoto(expenseId, photoUri)
+                }
+                loadExpenseById(expenseId) // Refresh the expense with updated photos
+            } catch (e: Exception) {
+                _error.postValue(e.message)
+            } finally {
+                _loading.postValue(false)
+            }
+        }
+    }
+
+    fun getExpensesByUserId(userId: UUID) {
+        viewModelScope.launch {
+            try {
+                _loading.postValue(true)
+                val result = withContext(Dispatchers.IO) {
+                    repository.getExpensesByUserId(userId)
+                }
+                _expenses.postValue(result)
+            } catch (e: Exception) {
+                _error.postValue(e.message)
+            } finally {
+                _loading.postValue(false)
+            }
+        }
+    }
+
+    fun getExpensesByCategory(userId: UUID, categoryId: UUID) {
+        viewModelScope.launch {
+            try {
+                _loading.postValue(true)
+                val result = withContext(Dispatchers.IO) {
+                    repository.getExpensesByCategory(userId, categoryId)
+                }
+                _expenses.postValue(result)
+            } catch (e: Exception) {
+                _error.postValue(e.message)
+            } finally {
+                _loading.postValue(false)
+            }
+        }
+    }
+}

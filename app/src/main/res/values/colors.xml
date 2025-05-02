@@ -27,4 +27,11 @@
     <color name="password_strength_very_strong">#008000</color>
     
     <color name="primary">#58bc82</color>
+    
+    <!-- Error and Primary Colors -->
+    <color name="error">#FF0000</color>
+    <color name="primary_dark">#1976D2</color>
+    
+    <!-- Gray Colors -->
+    <color name="gray_light">#E0E0E0</color>
 </resources>

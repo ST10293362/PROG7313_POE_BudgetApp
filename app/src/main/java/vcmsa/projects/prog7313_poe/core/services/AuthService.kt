@@ -3,10 +3,8 @@ package vcmsa.projects.prog7313_poe.core.services
 import android.content.Context
 import vcmsa.projects.prog7313_poe.core.data.AppDatabase
 import vcmsa.projects.prog7313_poe.core.data.repos.SessionRepository
-import vcmsa.projects.prog7313_poe.core.data.repos.UserRepository
 import vcmsa.projects.prog7313_poe.core.utils.SecurityUtils
 import vcmsa.projects.prog7313_poe.core.models.User
-import java.util.UUID
 
 /**
  * Service class responsible for handling user authentication logic including sign-up,
@@ -23,14 +21,12 @@ import java.util.UUID
  * @author ST13026084
  */
 class AuthService(
-    private val sessionRepository: SessionRepository,
-    private val userRepository: UserRepository
+    context: Context
 ) {
-
-    private val data = AppDatabase.getDatabase(context)
-    private val userDao = data.userDao()
-    private val sessionDao = data.sessionDao()
-    private val session = SessionRepository(userDao, sessionDao)
+    private val db = AppDatabase.getDatabase(context)
+    private val userDao = db.userDao()
+    private val sessionDao = db.sessionDao()
+    private val sessionRepository = SessionRepository(sessionDao, userDao)
 
     /**
      * Registers a new user with the given credentials.
@@ -43,22 +39,21 @@ class AuthService(
      * @return A [Result] containing the created [User] object or a failure.
      */
     suspend fun signUp(
-        firstName: String, finalName: String, username: String, password: String, email: String
+        firstName: String,
+        finalName: String,
+        username: String,
+        password: String,
+        email: String
     ): Result<User> {
-        // Check if email already exists
-        val existingUser = userDao.fetchOneByEmail(email)
-        if (existingUser != null) {
-            return Result.failure(Exception("Email address is already registered"))
-        }
-
-        // Check if username already exists
-        val existingUsername = userDao.fetchOneByUsername(username)
-        if (existingUsername != null) {
-            return Result.failure(Exception("Username is already taken"))
-        }
-
         val (hashedPassword, salt) = SecurityUtils.hashPassword(password)
-        return session.signUp(firstName, finalName, username, hashedPassword, email, salt)
+        return sessionRepository.signUp(
+            firstName = firstName,
+            finalName = finalName,
+            username = username,
+            hashedPassword = hashedPassword,
+            email = email,
+            passwordSalt = salt
+        )
     }
 
     /**
@@ -69,45 +64,31 @@ class AuthService(
      * @return A [Result] containing the [User] if successful, or a failure otherwise.
      */
     suspend fun signIn(
-        identifier: String, password: String
+        identifier: String,
+        password: String
     ): Result<User> {
-        // Try to find user by email first
-        var user = userDao.fetchOneByEmail(identifier)
-        
-        // If not found by email, try username
-        if (user == null) {
-            user = userDao.fetchOneByUsername(identifier)
-        }
-        
-        if (user == null) {
-            return Result.failure(Exception("User not found"))
-        }
+        val user = userDao.fetchOneByEmail(identifier)
+            ?: userDao.fetchOneByUsername(identifier)
+            ?: return Result.failure(Exception("User not found"))
 
         if (!SecurityUtils.verifyPassword(password, user.password, user.passwordSalt)) {
             return Result.failure(Exception("Invalid password"))
         }
 
-        // Create a new session for the user
-        val sessionResult = session.signIn(user.emailAddress, user.password)
-        
-        if (sessionResult.isSuccess) {
-            return Result.success(user)
-        }
-        
-        return Result.failure(Exception("Failed to create session"))
+        return sessionRepository.signIn(user.emailAddress, user.password)
     }
 
     /**
      * Logs out the current user session.
      */
-    suspend fun logout() = session.logout()
+    suspend fun logout(): Result<Boolean> = sessionRepository.logout()
 
     /**
      * Retrieves the currently authenticated user from the session.
      *
      * @return A [Result] containing the current [User] or an error if not logged in.
      */
-    suspend fun getCurrentUser() = session.getCurrentUser()
+    suspend fun getCurrentUser(): Result<User?> = sessionRepository.getCurrentUser()
 
     /**
      * Checks whether a user is currently logged in.

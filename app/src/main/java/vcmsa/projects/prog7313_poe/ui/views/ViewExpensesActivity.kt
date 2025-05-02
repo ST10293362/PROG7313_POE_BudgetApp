@@ -2,113 +2,160 @@ package vcmsa.projects.prog7313_poe.ui.views
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import vcmsa.projects.prog7313_poe.R
 import vcmsa.projects.prog7313_poe.core.data.AppDatabase
 import vcmsa.projects.prog7313_poe.core.data.repos.ExpenseRepository
 import vcmsa.projects.prog7313_poe.core.models.Expense
+import vcmsa.projects.prog7313_poe.databinding.ActivityViewExpensesBinding
 import vcmsa.projects.prog7313_poe.ui.viewmodels.ExpenseViewModel
 import vcmsa.projects.prog7313_poe.ui.viewmodels.ExpenseViewModelFactory
-import java.text.SimpleDateFormat
-import java.time.ZoneId
+import java.text.NumberFormat
 import java.util.*
 import kotlinx.coroutines.launch
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 class ViewExpensesActivity : AppCompatActivity() {
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: TransactionAdapter
+    private lateinit var binding: ActivityViewExpensesBinding
+    private lateinit var expenseViewModel: ExpenseViewModel
+    private lateinit var expenseAdapter: ExpenseAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_view_expenses)
+        try {
+            binding = ActivityViewExpensesBinding.inflate(layoutInflater)
+            setContentView(binding.root)
 
-        val userId = intent.getSerializableExtra("USER_ID") as? UUID
-        if (userId == null) {
-            Toast.makeText(this, "User session not found", Toast.LENGTH_SHORT).show()
+            initializeViewModels()
+            setupRecyclerView()
+            observeViewModel()
+            loadExpenses()
+        } catch (e: Exception) {
+            showToast("Error initializing activity: ${e.message}")
             finish()
-            return
+        }
+    }
+
+    private fun initializeViewModels() {
+        val db = AppDatabase.getDatabase(applicationContext)
+        val expenseRepository = ExpenseRepository(db.expenseDao())
+        expenseViewModel = ViewModelProvider(
+            this,
+            ExpenseViewModelFactory(expenseRepository)
+        )[ExpenseViewModel::class.java]
+    }
+
+    private fun setupRecyclerView() {
+        expenseAdapter = ExpenseAdapter { expense ->
+            navigateToExpenseDetails(expense.id)
         }
 
-        recyclerView = findViewById(R.id.transactionsRecyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = TransactionAdapter()
-        recyclerView.adapter = adapter
+        binding.expensesRecyclerView.apply {
+            layoutManager = LinearLayoutManager(this@ViewExpensesActivity)
+            adapter = expenseAdapter
+        }
+    }
 
-        val db = AppDatabase.getDatabase(applicationContext)
-        val repository = ExpenseRepository(db.expenseDao())
-        val factory = ExpenseViewModelFactory(repository)
-        val expenseViewModel = ViewModelProvider(this, factory)[ExpenseViewModel::class.java]
+    private fun observeViewModel() {
+        expenseViewModel.error.observe(this) { error ->
+            error?.let { showToast(it) }
+        }
 
+
+        expenseViewModel.expenses.observe(this) { expenses ->
+            expenseAdapter.submitList(expenses)
+        }
+    }
+
+    private fun loadExpenses() {
         lifecycleScope.launch {
             try {
-                val expenses = repository.getExpensesByUserId(userId)
-                adapter.submitList(expenses)
+                expenseViewModel.loadExpenses()
             } catch (e: Exception) {
-                Toast.makeText(this@ViewExpensesActivity, "Error loading expenses: ${e.message}", Toast.LENGTH_SHORT).show()
+                showToast("Error loading expenses: ${e.message}")
             }
         }
     }
 
-    class TransactionAdapter : ListAdapter<Expense, TransactionAdapter.TransactionViewHolder>(ExpenseDiffCallback()) {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
+    private fun navigateToExpenseDetails(expenseId: UUID) {
+        val intent = Intent(this, TransactionDetailsActivity::class.java).apply {
+            putExtra("EXPENSE_ID", expenseId.toString())
+        }
+        startActivity(intent)
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    class ExpenseAdapter(
+        private val onExpenseClick: (Expense) -> Unit
+    ) : RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder>() {
+        private var expenses: List<Expense> = emptyList()
+        private val currencyFormat = NumberFormat.getCurrencyInstance(Locale("en", "ZA"))
+        private val dateFormat = DateTimeFormatter.ofPattern("MMM dd, yyyy")
+
+        fun submitList(newExpenses: List<Expense>) {
+            expenses = newExpenses
+            notifyDataSetChanged()
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseViewHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_transaction, parent, false)
-            return TransactionViewHolder(view)
+            return ExpenseViewHolder(view, onExpenseClick)
         }
 
-        override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
-            holder.bind(getItem(position))
+        override fun onBindViewHolder(holder: ExpenseViewHolder, position: Int) {
+            holder.bind(expenses[position])
         }
 
-        class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            private val icon: ImageView = itemView.findViewById(R.id.transactionIcon)
-            private val title: TextView = itemView.findViewById(R.id.transactionTitle)
-            private val amount: TextView = itemView.findViewById(R.id.transactionAmount)
-            private val time: TextView = itemView.findViewById(R.id.transactionTime)
-            private val card: View = itemView
+        override fun getItemCount(): Int = expenses.size
+
+        class ExpenseViewHolder(
+            itemView: View,
+            private val onExpenseClick: (Expense) -> Unit
+        ) : RecyclerView.ViewHolder(itemView) {
+            private val descriptionTextView: TextView =
+                itemView.findViewById(R.id.descriptionTextView)
+            private val amountTextView: TextView = itemView.findViewById(R.id.amountTextView)
+            private val dateTextView: TextView = itemView.findViewById(R.id.dateTextView)
+            private val categoryTextView: TextView = itemView.findViewById(R.id.categoryTextView)
 
             fun bind(expense: Expense) {
-                icon.setImageResource(R.drawable.ic_transactions)
-                title.text = expense.description
-                amount.text = "R" + String.format("%.2f", expense.amount)
+                descriptionTextView.text = expense.description
+                amountTextView.text = formatAmount(expense.amount)
+                dateTextView.text = formatDate(expense.startDate)
+                categoryTextView.text = expense.categoryId?.toString() ?: "Uncategorized"
 
-                val dateFormat = SimpleDateFormat("MMM dd, yyyy hh:mm a", Locale.getDefault())
-                val date = Date.from(expense.startDate)
-                time.text = dateFormat.format(date)
+                itemView.setOnClickListener { onExpenseClick(expense) }
+            }
 
-                if (expense.description.contains("Deposit", ignoreCase = true)) {
-                    card.setBackgroundColor(itemView.context.getColor(R.color.deposit_green))
+            private fun formatAmount(amount: Double?): String {
+                return if (amount != null) {
+                    NumberFormat.getCurrencyInstance(Locale("en", "ZA")).format(amount)
                 } else {
-                    card.setBackgroundColor(itemView.context.getColor(android.R.color.white))
+                    NumberFormat.getCurrencyInstance(Locale("en", "ZA")).format(0.0)
                 }
+            }
 
-                itemView.setOnClickListener {
-                    val intent = Intent(itemView.context, TransactionDetailsActivity::class.java).apply {
-                        putExtra("EXPENSE_ID", expense.id)
-                    }
-                    itemView.context.startActivity(intent)
+            private fun formatDate(date: Instant?): String {
+                return if (date != null) {
+                    DateTimeFormatter.ofPattern("MMM dd, yyyy").format(date)
+                } else {
+                    "No date"
                 }
             }
         }
-    }
-
-    class ExpenseDiffCallback : DiffUtil.ItemCallback<Expense>() {
-        override fun areItemsTheSame(oldItem: Expense, newItem: Expense): Boolean =
-            oldItem.id == newItem.id
-
-        override fun areContentsTheSame(oldItem: Expense, newItem: Expense): Boolean =
-            oldItem == newItem
     }
 }

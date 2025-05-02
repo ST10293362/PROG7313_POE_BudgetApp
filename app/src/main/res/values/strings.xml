@@ -27,4 +27,13 @@
     <string name="button_cancel">Cancel</string>
     <string name="button_delete">Delete</string>
     <string name="button_retry">Retry</string>
+    
+    <!-- Password Reset Activity -->
+    <string name="app_logo">Expense Tracker</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="reset_password_instructions">Enter your email address and we\'ll send you a link to reset your password.</string>
+    <string name="email">Email</string>
+    <string name="email_helper">Enter your registered email address</string>
+    <string name="send_reset_link">Send Reset Link</string>
+    <string name="back_to_login">Back to Login</string>
 </resources>
