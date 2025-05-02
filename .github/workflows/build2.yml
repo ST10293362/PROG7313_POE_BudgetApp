@@ -1,10 +1,12 @@
-name: Build and Test Android App
+
+name: Workflow(Build and Test App)
 
 on:
   push:
-    branches: [ main, rollback-working ]
+    branches: [ Rollback-working ]
   pull_request:
-    branches: [ main, rollback-working  ]
+    branches: [Rollback-working ]
+
   workflow_dispatch:
 jobs:
   build:
@@ -25,8 +27,7 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
-        env:
-         GRADLE_OPTS: -Xmx2048m -Dfile.encoding=UTF-8
+        
       - name: Run Tests
         run: ./gradlew test
 
