@@ -7,142 +7,79 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import vcmsa.projects.prog7313_poe.databinding.ActivityLoginBinding
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import vcmsa.projects.prog7313_poe.databinding.ActivityLoginBinding
 import vcmsa.projects.prog7313_poe.core.services.AuthService
 import java.util.UUID
 
-
-
 /**
+ * Handles user login and redirection to DashboardActivity on success.
+ *
  * @author ST10293362
  * @author ST10257002
  * @author ST10326084
  */
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
-    
+
     private lateinit var binding: ActivityLoginBinding
     private lateinit var auth: AuthService
-    
-
-    // <editor-fold desc="Lifecycle">
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setupBindings()
         setupLayoutUi()
-
         auth = AuthService(applicationContext)
-
         setupOnClickListeners()
     }
 
-
-    // </editor-fold>
-    // <editor-fold desc="Functions">
-
-
-    /**
-     * Initiate the login process.
-     *
-     * @author ST10293362
-     * @author ST10257002
-     * @author ST10326084
-     */
     private fun tryLogin() {
         val username = binding.userNameEditText.text.toString().trim()
         val password = binding.passwordEditText.text.toString().trim()
 
         if (isValidCredentials(username, password)) {
             binding.loadingIndicator.visibility = ProgressBar.VISIBLE
-
-            completeLogin(
-                username, password
-            )
+            completeLogin(username, password)
         }
     }
 
-
-    /**
-     * Query firebase to log the user in with the given credentials.
-     *
-     * @author ST10293362
-     * @author ST10257002
-     * @author ST10326084
-     */
-    private fun completeLogin(
-        username: String, password: String
-    ) {
+    private fun completeLogin(username: String, password: String) {
         binding.loadingIndicator.visibility = ProgressBar.VISIBLE
 
         lifecycleScope.launch {
             val result = auth.signIn(username, password)
-
             binding.loadingIndicator.visibility = ProgressBar.GONE
 
             if (result.isSuccess) {
-                Toast.makeText(
-                    this@LoginActivity, "Login successful!", Toast.LENGTH_LONG
-                ).show()
-
-                val intent = Intent(this@LoginActivity, DashboardActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
+                val user = result.getOrNull()
+                if (user != null) {
+                    Toast.makeText(this@LoginActivity, "Login successful!", Toast.LENGTH_LONG).show()
+                    val intent = Intent(this@LoginActivity, DashboardActivity::class.java)
+                    intent.putExtra("USER_ID", user.id)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    showToast("Login error: User is null")
+                }
             } else {
-                Toast.makeText(
-                    this@LoginActivity, result.exceptionOrNull()?.message ?: "Unknown error", Toast.LENGTH_LONG
-                ).show()
+                showToast(result.exceptionOrNull()?.message ?: "Unknown error")
             }
         }
     }
 
-
-
-    /**
-     * Validates whether the given credentials are correctly formatted.
-     *
-     * @author ST10293362
-     * @author ST10257002
-     * @author ST10326084
-     */
-    private fun isValidCredentials(
-        username: String, password: String
-    ): Boolean {
-        if (username.isNotBlank() && password.isNotBlank()) {
-            return true
+    private fun isValidCredentials(username: String, password: String): Boolean {
+        return if (username.isNotBlank() && password.isNotBlank()) {
+            true
+        } else {
+            showToast("Username and password are required.")
+            false
         }
-
-        Toast.makeText(
-            this, "Username and password are required.", Toast.LENGTH_SHORT
-        ).show()
-        return false
     }
 
-
-    // </editor-fold>
-    // <editor-fold desc="Event Handler">
-
-
-    /**
-     * Catch and handle on-click events from the view.
-     *
-     * @author ST10293362
-     * @author ST10257002
-     * @author ST10326084
-     */
     override fun onClick(view: View?) {
         when (view?.id) {
-            binding.registerTextView.id -> {
-                startActivity(Intent(this, RegisterActivity::class.java))
-            }
-
-            binding.forgotPasswordTextView.id -> {
-                startActivity(Intent(this, PasswordResetActivity::class.java))
-            }
-
+            binding.registerTextView.id -> startActivity(Intent(this, RegisterActivity::class.java))
+            binding.forgotPasswordTextView.id -> startActivity(Intent(this, PasswordResetActivity::class.java))
             binding.bypassLogin.id -> {
                 val guestId = UUID.randomUUID()
                 val intent = Intent(this, DashboardActivity::class.java)
@@ -150,19 +87,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 intent.putExtra("IS_GUEST", true)
                 startActivity(intent)
             }
-
-
-            binding.loginButton.id -> {
-                tryLogin()
-            }
+            binding.loginButton.id -> tryLogin()
         }
     }
 
-
-    /**
-     * @author ST10257002
-     * @author ST10326084
-     */
     private fun setupOnClickListeners() {
         binding.loginButton.setOnClickListener(this)
         binding.forgotPasswordTextView.setOnClickListener(this)
@@ -170,29 +98,16 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         binding.bypassLogin.setOnClickListener(this)
     }
 
-
-    // </editor-fold>
-    // <editor-fold desc="Configuration">
-
-
-    /**
-     * @author ST10257002
-     * @author ST10326084
-     */
     private fun setupBindings() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
     }
 
-
-    /**
-     * @author ST10257002
-     * @author ST10326084
-     */
     private fun setupLayoutUi() {
         enableEdgeToEdge()
         setContentView(binding.root)
     }
 
-    // </editor-fold>
-
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
 }
