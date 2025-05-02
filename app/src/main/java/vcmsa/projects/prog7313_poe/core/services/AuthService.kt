@@ -15,8 +15,6 @@ import vcmsa.projects.prog7313_poe.core.models.UserSession
  * @reference https://developer.android.com/training/data-storage/room
  * @reference https://owasp.org/www-community/controls/Password_Storage_Cheat_Sheet
  *
- * @author ST10257002
- * @author ST13026084
  */
 class AuthService(context: Context) {
     private val data = AppDatabase.getDatabase(context)

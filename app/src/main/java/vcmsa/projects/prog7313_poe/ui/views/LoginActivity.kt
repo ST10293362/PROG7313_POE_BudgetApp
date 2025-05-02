@@ -16,9 +16,6 @@ import java.util.UUID
 /**
  * Handles user login and redirection to DashboardActivity on success.
  *
- * @author ST10293362
- * @author ST10257002
- * @author ST10326084
  */
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
 

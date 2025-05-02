@@ -20,8 +20,6 @@ import vcmsa.projects.prog7313_poe.core.services.AuthService
  * @reference https://developer.android.com/reference/androidx/lifecycle/LifecycleCoroutineScope
  * @reference https://developer.android.com/guide/components/activities/activity-lifecycle
  * @reference https://developer.android.com/guide/topics/ui/notifiers/toasts
- *
- * @author ST13026084
  */
 abstract class BaseActivity : AppCompatActivity() {
 

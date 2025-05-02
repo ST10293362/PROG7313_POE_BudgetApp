@@ -16,8 +16,6 @@ import java.util.Date
  * @see androidx.room.TypeConverter
  * @see androidx.room.RoomDatabase
  *
- * @author ST10257002
- * @author ST10326084
  *
  * @References: https://developer.android.com/reference/androidx/room/TypeConverter
  */

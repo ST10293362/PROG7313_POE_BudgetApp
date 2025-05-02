@@ -16,10 +16,6 @@ import vcmsa.projects.prog7313_poe.core.services.AuthService
 import vcmsa.projects.prog7313_poe.core.utils.ValidationUtils
 import vcmsa.projects.prog7313_poe.R
 
-/**
- * @author ST10293362
- * @author ST10257002
- */
 class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var binding: ActivityRegisterBinding

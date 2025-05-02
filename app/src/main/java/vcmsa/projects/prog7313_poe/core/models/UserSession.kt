@@ -10,8 +10,6 @@ import java.util.UUID
  * Represents a single-entry table storing the currently authorized/logged-in user.
  * Used for session persistence in Room.
  *
- * @author ST10257002
- * @author ST13026084
  */
 @Entity(
     tableName = "user_session",

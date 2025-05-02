@@ -4,9 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import vcmsa.projects.prog7313_poe.core.data.repos.ExpenseRepository
 
-/**
- * @author ST10326084
- */
+
 class ExpenseViewModelFactory(
     private val repository: ExpenseRepository
 ) : ViewModelProvider.Factory {

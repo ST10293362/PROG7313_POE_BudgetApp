@@ -22,8 +22,6 @@ import vcmsa.projects.prog7313_poe.core.models.*
  * @see Database
  * @see TypeConverters
  *
- * @author ST10257002
- * @author ST10326084
  *
  * @reference https://developer.android.com/training/data-storage/room
  * @reference https://developer.android.com/reference/androidx/room/RoomDatabase

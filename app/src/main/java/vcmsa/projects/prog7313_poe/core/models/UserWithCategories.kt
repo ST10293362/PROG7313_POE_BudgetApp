@@ -12,8 +12,6 @@ import androidx.room.Relation
  *
  * @reference https://developer.android.com/training/data-storage/room/relationships#one-to-many
  *
- * @author ST10257002
- * @author ST13026084
  */
 data class UserWithCategories(
 

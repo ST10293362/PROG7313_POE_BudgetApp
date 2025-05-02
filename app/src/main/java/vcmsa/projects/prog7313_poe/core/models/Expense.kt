@@ -18,8 +18,6 @@ import java.util.UUID
  *
  * It is used with Room for persistence and includes indexing for optimized queries.
  *
- * @author ST10257002
- * @author ST13026084
  *
  * @reference https://developer.android.com/training/data-storage/room/defining-data
  * @reference https://developer.android.com/reference/androidx/room/Entity

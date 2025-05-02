@@ -12,9 +12,7 @@ import java.util.UUID
  * This abstraction allows the UI/viewmodels to interact with a clean and testable API
  * while all Room-specific logic remains here.
  *
- * @author ST10257002
- * @author ST10326084
- * @since 2024
+ * @since 2025
  *
  * @reference https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/run-catching.html
  */

@@ -12,9 +12,7 @@ import vcmsa.projects.prog7313_poe.core.models.UserSession
  * This assumes a **single-user session model**, where session is stored
  * with a fixed primary key (id = 1). Inserting replaces any existing session.
  *
- * @author ST10257002
- * @author ST10326084
- * @since 2024
+ * @since 2025
  *
  * @see androidx.room.Dao
  * @see https://developer.android.com/training/data-storage/room/accessing-data

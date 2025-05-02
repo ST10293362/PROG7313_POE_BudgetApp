@@ -13,7 +13,6 @@ import java.util.UUID
  *
  * @see [vcmsa.projects.prog7313_poe.core.models.Expense]
  * @see [androidx.room.Dao]
- * @author ST10257002
  */
 @Dao
 interface ExpenseDao : BaseDao<Expense> {
@@ -25,8 +24,6 @@ interface ExpenseDao : BaseDao<Expense> {
      * Deletes a specific entity from the database using its unique ID.
      *
      * @param targetId The unique identifier ([java.util.UUID]) of the entity to delete.
-     *
-     * @author ST10257002
      */
     @Query(
         """
@@ -41,7 +38,6 @@ interface ExpenseDao : BaseDao<Expense> {
      * Fetches the contents of the database table.
      *
      * @return [LiveData] containing every entity in the database.
-     * @author ST10257002
      */
     @Query(
         """
@@ -57,7 +53,6 @@ interface ExpenseDao : BaseDao<Expense> {
      * @param targetId The unique identifier ([UUID]) of the entity to query.
      *
      * @return The specific entity that was queried.
-     * @author ST10257002
      */
     @Query(
         """
@@ -77,7 +72,6 @@ interface ExpenseDao : BaseDao<Expense> {
      *
      * @param targetId The unique identifier ([UUID]) of the entity to query.
      *
-     * @author ST10257002
      */
     @Query(
         """

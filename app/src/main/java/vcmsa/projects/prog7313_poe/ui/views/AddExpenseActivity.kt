@@ -34,9 +34,7 @@ import vcmsa.projects.prog7313_poe.ui.viewmodels.ExpenseViewModel
 import vcmsa.projects.prog7313_poe.ui.viewmodels.ExpenseViewModelFactory
 import vcmsa.projects.prog7313_poe.core.models.Expense
 
-/**
- * @author ST10326084
- */
+
 class AddExpenseActivity : AppCompatActivity() {
     private lateinit var descriptionEditText: EditText
     private lateinit var amountEditText: EditText

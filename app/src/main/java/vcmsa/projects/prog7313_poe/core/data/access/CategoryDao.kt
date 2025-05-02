@@ -26,7 +26,6 @@ interface CategoryDao : BaseDao<Category> {
      *
      * @param targetId The unique identifier ([java.util.UUID]) of the entity to delete.
      *
-     * @author ST10257002
      */
     @Query(
         """
@@ -41,7 +40,6 @@ interface CategoryDao : BaseDao<Category> {
      * Fetches the contents of the database table.
      *
      * @return [List] collection containing every entity in the database.
-     * @author ST10257002
      */
     @Query(
         """
@@ -57,7 +55,6 @@ interface CategoryDao : BaseDao<Category> {
      * @param targetId The unique identifier ([UUID]) of the entity to query.
      *
      * @return The specific entity that was queried.
-     * @author ST10257002
      */
     @Query(
         """
@@ -77,7 +74,6 @@ interface CategoryDao : BaseDao<Category> {
      *
      * @param targetId The unique identifier ([UUID]) of the entity to query.
      *
-     * @author ST10257002
      */
     @Query(
         """
@@ -96,7 +92,6 @@ interface CategoryDao : BaseDao<Category> {
      *
      * @param targetId The unique identifier ([UUID]) of the category.
      *
-     * @author ST10257002
      */
     @Transaction
     @Query(

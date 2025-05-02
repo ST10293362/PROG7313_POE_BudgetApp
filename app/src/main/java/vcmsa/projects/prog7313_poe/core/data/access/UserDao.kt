@@ -20,9 +20,7 @@ import java.util.UUID
  * @see vcmsa.projects.prog7313_poe.core.models.User
  * @see https://developer.android.com/training/data-storage/room/accessing-data
  *
- * @author ST10257002
- * @author ST10326084
- * @since 2024
+ * @since 2025
  */
 @Dao
 interface UserDao : BaseDao<User> {
