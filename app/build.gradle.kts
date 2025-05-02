@@ -76,6 +76,8 @@ dependencies {
     
     implementation(libs.glide)
     implementation(libs.identity.jvm)
+    implementation(libs.androidx.junit.ktx)
+    implementation(libs.androidx.room.testing.android)
     annotationProcessor(libs.glide.compiler) // Java
     kapt(libs.glide.compiler) // Kotlin
 
