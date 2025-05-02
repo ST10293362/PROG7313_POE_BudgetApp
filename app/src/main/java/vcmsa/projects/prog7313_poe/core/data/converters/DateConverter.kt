@@ -3,7 +3,6 @@ package vcmsa.projects.prog7313_poe.core.data.converters
 import androidx.room.TypeConverter
 import java.time.Instant
 import java.util.Date
-import java.util.UUID
 
 /**
  * Type converter for [Date] and [Instant] objects to and from [Long],
@@ -31,8 +30,12 @@ class DateConverter {
      * @return A corresponding [Instant] object.
      */
     @TypeConverter
-    fun toInstant(data: Long): Instant {
-        return Instant.ofEpochMilli(data)
+    fun toInstant(data: Long?): Instant? {
+        if (data != null) {
+            return Instant.ofEpochMilli(data)
+        }
+
+        return null
     }
 
     /**
@@ -42,8 +45,12 @@ class DateConverter {
      * @return A corresponding [Date] object.
      */
     @TypeConverter
-    fun toDate(data: Long): Date {
-        return Date(data)
+    fun toDate(data: Long?): Date? {
+        if (data != null) {
+            return Date(data)
+        }
+
+        return null
     }
 
     /**
@@ -53,8 +60,8 @@ class DateConverter {
      * @return The number of milliseconds since the Unix epoch.
      */
     @TypeConverter
-    fun toLong(data: Instant): Long {
-        return data.toEpochMilli()
+    fun toNullableLong(data: Instant?): Long? {
+        return data?.toEpochMilli()
     }
 
     /**
@@ -64,7 +71,7 @@ class DateConverter {
      * @return The number of milliseconds since the Unix epoch.
      */
     @TypeConverter
-    fun toLong(data: Date): Long {
-        return data.time
+    fun toNullableLong(data: Date?): Long? {
+        return data?.time
     }
 }

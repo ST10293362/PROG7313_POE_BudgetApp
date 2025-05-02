@@ -51,15 +51,12 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
      * @author ST10326084
      */
     private fun tryLogin() {
-        val username = binding.userNameEditText.text.toString().trim()
+        val identifier = binding.userNameEditText.text.toString().trim()
         val password = binding.passwordEditText.text.toString().trim()
 
-        if (isValidCredentials(username, password)) {
+        if (isValidCredentials(identifier, password)) {
             binding.loadingIndicator.visibility = ProgressBar.VISIBLE
-
-            completeLogin(
-                username, password
-            )
+            completeLogin(identifier, password)
         }
     }
 
@@ -72,27 +69,46 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
      * @author ST10326084
      */
     private fun completeLogin(
-        username: String, password: String
+        identifier: String, password: String
     ) {
         binding.loadingIndicator.visibility = ProgressBar.VISIBLE
 
         lifecycleScope.launch {
-            val result = auth.signIn(username, password)
+            try {
+                val result = auth.signIn(identifier, password)
 
-            binding.loadingIndicator.visibility = ProgressBar.GONE
-
-            if (result.isSuccess) {
+                if (result.isSuccess) {
+                    val user = result.getOrNull()
+                    if (user != null) {
+                        if (!user.profileCompleted) {
+                            // Navigate to complete profile if not completed
+                            val intent = Intent(this@LoginActivity, CompleteProfileActivity::class.java).apply {
+                                putExtra("USER_ID", user.id)
+                                putExtra("FIRST_NAME", user.name)
+                                putExtra("LAST_NAME", user.surname)
+                            }
+                            startActivity(intent)
+                        } else {
+                            // Navigate to dashboard if profile is completed
+                            val intent = Intent(this@LoginActivity, DashboardActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                        }
+                        Toast.makeText(
+                            this@LoginActivity, "Login successful!", Toast.LENGTH_LONG
+                        ).show()
+                    }
+                } else {
+                    Toast.makeText(
+                        this@LoginActivity, result.exceptionOrNull()?.message ?: "Unknown error", Toast.LENGTH_LONG
+                    ).show()
+                }
+            } catch (e: Exception) {
                 Toast.makeText(
-                    this@LoginActivity, "Login successful!", Toast.LENGTH_LONG
+                    this@LoginActivity, "Login failed: ${e.message}", Toast.LENGTH_LONG
                 ).show()
-
-                val intent = Intent(this@LoginActivity, DashboardActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-            } else {
-                Toast.makeText(
-                    this@LoginActivity, result.exceptionOrNull()?.message ?: "Unknown error", Toast.LENGTH_LONG
-                ).show()
+            } finally {
+                binding.loadingIndicator.visibility = ProgressBar.GONE
             }
         }
     }
@@ -107,14 +123,14 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
      * @author ST10326084
      */
     private fun isValidCredentials(
-        username: String, password: String
+        email: String, password: String
     ): Boolean {
-        if (username.isNotBlank() && password.isNotBlank()) {
+        if (email.isNotBlank() && password.isNotBlank()) {
             return true
         }
 
         Toast.makeText(
-            this, "Username and password are required.", Toast.LENGTH_SHORT
+            this, "Email and password are required.", Toast.LENGTH_SHORT
         ).show()
         return false
     }

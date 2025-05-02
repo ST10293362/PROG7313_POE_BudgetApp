@@ -42,27 +42,56 @@ class AuthService(
     suspend fun signUp(
         firstName: String, finalName: String, username: String, password: String, email: String
     ): Result<User> {
+        // Check if email already exists
+        val existingUser = userDao.fetchOneByEmail(email)
+        if (existingUser != null) {
+            return Result.failure(Exception("Email address is already registered"))
+        }
+
+        // Check if username already exists
+        val existingUsername = userDao.fetchOneByUsername(username)
+        if (existingUsername != null) {
+            return Result.failure(Exception("Username is already taken"))
+        }
+
         val (hashedPassword, salt) = SecurityUtils.hashPassword(password)
         return session.signUp(firstName, finalName, username, hashedPassword, email, salt)
     }
 
     /**
-     * Authenticates a user using the provided email and password.
+     * Authenticates a user using the provided email/username and password.
      *
-     * @param email The user's email address.
+     * @param identifier The user's email address or username.
      * @param password The raw password to verify.
      * @return A [Result] containing the [User] if successful, or a failure otherwise.
      */
     suspend fun signIn(
-        email: String, password: String
+        identifier: String, password: String
     ): Result<User> {
-        val user = userDao.fetchOneByEmail(email) ?: return Result.failure(Exception("User not found"))
+        // Try to find user by email first
+        var user = userDao.fetchOneByEmail(identifier)
+        
+        // If not found by email, try username
+        if (user == null) {
+            user = userDao.fetchOneByUsername(identifier)
+        }
+        
+        if (user == null) {
+            return Result.failure(Exception("User not found"))
+        }
 
         if (!SecurityUtils.verifyPassword(password, user.password, user.passwordSalt)) {
             return Result.failure(Exception("Invalid password"))
         }
 
-        return session.signIn(email, user.password)
+        // Create a new session for the user
+        val sessionResult = session.signIn(user.emailAddress, user.password)
+        
+        if (sessionResult.isSuccess) {
+            return Result.success(user)
+        }
+        
+        return Result.failure(Exception("Failed to create session"))
     }
 
     /**

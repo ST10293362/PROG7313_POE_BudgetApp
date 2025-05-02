@@ -15,6 +15,7 @@ import vcmsa.projects.prog7313_poe.core.models.CredentialStrength
 import vcmsa.projects.prog7313_poe.core.services.AuthService
 import vcmsa.projects.prog7313_poe.core.utils.ValidationUtils
 import vcmsa.projects.prog7313_poe.R
+import java.util.UUID
 
 /**
  * @author ST10293362
@@ -119,7 +120,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
 
                 if (result.isSuccess) {
                     showSuccess(getString(R.string.success_registration))
-                    navigateToCompleteProfile(firstName, lastName)
+                    navigateToCompleteProfile(firstName, lastName, result.getOrNull()?.id)
                 } else {
                     showError(result.exceptionOrNull()?.message ?: getString(R.string.error_generic))
                 }
@@ -148,10 +149,11 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun navigateToCompleteProfile(firstName: String, lastName: String) {
+    private fun navigateToCompleteProfile(firstName: String, lastName: String, userId: UUID?) {
         val intent = Intent(this, CompleteProfileActivity::class.java).apply {
             putExtra("FIRST_NAME", firstName)
             putExtra("LAST_NAME", lastName)
+            putExtra("USER_ID", userId)
         }
         startActivity(intent)
         finish()
